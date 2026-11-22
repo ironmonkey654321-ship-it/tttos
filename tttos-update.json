@@ -1,0 +1,9 @@
+{
+  "repo": "ironmonkey654321-ship-it/tttos",
+  "default": "chung",
+  "channels": {
+    "chung": {"branch": "main", "label": "Chung"},
+    "dich-vu": {"branch": "dich-vu", "label": "Kinh doanh dịch vụ"},
+    "thuong-mai": {"branch": "thuong-mai", "label": "Thương mại"}
+  }
+}

@@ -1,4 +1,4 @@
-"""Lời mời tặng sao Javis trên GitHub (0.324.0, chủ repo 25/10/2026).
+"""Lời mời tặng sao TTTOS trên GitHub (0.324.0, chủ repo 25/10/2026).
 
 Chủ repo muốn tăng sao cho dự án bằng một lời mời hiện "thi thoảng, đúng lúc", viết cho người
 không biết GitHub là gì. Ba quyết định của chủ repo nằm ở đây:
@@ -11,7 +11,7 @@ không biết GitHub là gì. Ba quyết định của chủ repo nằm ở đâ
   ngày một lần, mốc kế tiếp tự tính theo bước tròn. Không đọc được thì không hiện số nào.
 
 Trạng thái (đã tặng, để sau, đừng hỏi nữa) nằm trong settings.json của server chứ không trong
-trình duyệt: người dùng Javis trên cả máy tính lẫn điện thoại không bị hỏi hai lần.
+trình duyệt: người dùng TTTOS trên cả máy tính lẫn điện thoại không bị hỏi hai lần.
 
 Module này không biết gì về FastAPI: mọi hàm nhận thời điểm `now` và dữ liệu đầu vào, để test
 gọi thẳng. Route nằm ở routes/star_nudge.py.

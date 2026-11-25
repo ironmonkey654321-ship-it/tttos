@@ -1,7 +1,7 @@
 """Which files in a brain's memory/ folder are memory indexes (0.432.1, #934).
 
 MEMORY.md is the core index, preloaded before every chat turn, so a brain with many memories can split it: the core lines
-stay in MEMORY.md and the rest go to secondary index files in memory/. Before this module Javis only knew MEMORY.md, so
+stay in MEMORY.md and the rest go to secondary index files in memory/. Before this module TTTOS only knew MEMORY.md, so
 the learn loop and the curator saw every memory listed elsewhere as "missing" and appended a duplicate line to MEMORY.md,
 pushing it back over JAVIS_MEMORY_INDEX_MAX.
 

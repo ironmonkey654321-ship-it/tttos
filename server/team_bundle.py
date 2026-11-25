@@ -7,7 +7,7 @@ members' partner files and their skills, plus one more entry, `javis-team.json`:
     {"format": "javis-team", "version": 1, "name", "description", "tags", "leader", "members": [slugs],
      "instructions": [pinned team messages, as text]}
 
-Older Javis versions open the same file as a plain bundle (they ignore the extra entry and import
+Older TTTOS versions open the same file as a plain bundle (they ignore the extra entry and import
 the partners), so a team file never breaks an old install.
 
 What NEVER travels: chat history, keys and passwords, model choices, Auto switches, memory. Text that

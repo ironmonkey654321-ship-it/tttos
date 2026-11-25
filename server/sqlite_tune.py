@@ -1,11 +1,11 @@
-"""One place for the durability level of Javis's SQLite stores (performance, 2026-11-10).
+"""One place for the durability level of TTTOS's SQLite stores (performance, 2026-11-10).
 
 A WAL database at SQLite's default `synchronous=FULL` calls fsync on every commit. One chat turn commits about 26 times
 across the stores (measured with strace: telemetry rows, the two chat messages, the registry), part of it on the event
 loop. On the fast disk of a dev machine that is a millisecond; on a small VPS or a spinning disk an fsync costs 2 to
 20 ms, so a turn paid 50 to 500 ms for it.
 
-`synchronous=NORMAL` in WAL mode syncs at checkpoints instead. A crash of Javis loses nothing. A power cut or kernel
+`synchronous=NORMAL` in WAL mode syncs at checkpoints instead. A crash of TTTOS loses nothing. A power cut or kernel
 crash can lose the last few commits, and never corrupts the database (SQLite's own guarantee for WAL + NORMAL). That is
 the trade `task_store` has made since the Kanban store was written. It is only safe in WAL mode, so it is applied only
 when the database really is in WAL mode: a filesystem that refuses WAL keeps FULL.

@@ -101,7 +101,7 @@ class TeamApiDeps:
     work_dir: Optional[Callable[[dict], str]] = None     # team -> pinned working folder, "" when none (0.260.0)
     job_done: Optional[Callable[[dict, dict], Any]] = None  # (team, task) after a job closed as done (0.449.0)
     skill_block: Optional[Callable[[dict, list], str]] = None  # (team, slugs) -> skills named by /skill (0.449.0)
-    # 0.357.0: report a job Javis Core gave the team back where it was asked (main._notify_owner):
+    # 0.357.0: report a job TTTOS Core gave the team back where it was asked (main._notify_owner):
     # (owner_chat, text, *, kind, label, source, ngan, brain, dedup) -> (ok, error), sync or async. None: no reports.
     report: Optional[Callable[..., Any]] = None
 
@@ -359,7 +359,7 @@ class TeamApi:
         return dict(m, sources_state=team_mandate.sources_view(st, m), observing=self.deps.mandate_deps is not None)
 
     def creator(self, team: dict) -> dict:
-        """Người tạo, quản lý nhóm (0.142.0): người thật, không phải trợ lý. Javis có một tài khoản chủ máy nên mọi nhóm,
+        """Người tạo, quản lý nhóm (0.142.0): người thật, không phải trợ lý. TTTOS có một tài khoản chủ máy nên mọi nhóm,
         kể cả nhóm tạo trước 0.142.0, thuộc chủ đó; tên lấy từ cấu hình đăng nhập của server, không từ client."""
         name = ""
         if self.deps.owner_name is not None:
@@ -434,7 +434,7 @@ class TeamApi:
         await self.core_reports()
 
     async def core_reports(self) -> int:
-        """0.357.0 (issue #826): jobs Javis Core gave a team report back to the chat that asked, once per state worth
+        """0.357.0 (issue #826): jobs TTTOS Core gave a team report back to the chat that asked, once per state worth
         reporting (done, cancelled, stopped for the owner). A failed send is retried next tick; the inbox copy dedupes."""
         if self.deps.report is None:
             return 0
@@ -488,7 +488,7 @@ class OpError(Exception):
 
 class TeamOps:
     """Thao tác quản lý nhóm dùng chung cho route `/teams/*` và công cụ `javis_team` (0.173.0): một chỗ duy nhất giữ luật
-    (kiểm trợ lý có thật, khoá `accept_lock`, huỷ việc khi lưu trữ, chạy lại khi mở lại), nên trang web và Javis trong chat
+    (kiểm trợ lý có thật, khoá `accept_lock`, huỷ việc khi lưu trữ, chạy lại khi mở lại), nên trang web và TTTOS trong chat
     làm y như nhau. Mọi hàm chạy ở luồng phụ (route qua `api.io`, công cụ qua `asyncio.to_thread`). Lỗi: `OpError` hay
     `TeamError` của kho."""
 
@@ -552,7 +552,7 @@ class TeamOps:
         keys = {slug: self.api.register_agent(root, slug)["agent_key"] for slug in dict.fromkeys(members)}
         tid = team_store.new_team_id()
         sid = self.deps.session_store().create_session(brain=brain, channel=f"team:{tid}", title=name[:120])
-        # Người tạo: luôn là chủ máy đã qua cổng đăng nhập của server (Javis có một tài khoản), không đọc từ client.
+        # Người tạo: luôn là chủ máy đã qua cổng đăng nhập của server (TTTOS có một tài khoản), không đọc từ client.
         try:
             team = teams.create_team(root, name, str(description or ""), sid, team_id=tid,
                                      members=[(keys[s], s) for s in keys], leader_key=keys[leader] if leader else None,

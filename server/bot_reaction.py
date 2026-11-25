@@ -10,7 +10,7 @@ on, and adds the tool `zalo_add_reaction`. Here:
   - `pick` takes the bot's own `[CAM_XUC:<name>]` marker out of an answer (Agent turns, private chats included);
   - `NAMES` is the one list both the judge and the Agent choose from.
 
-Javis never decides on its own to answer or to react: the judge (group chats in "Tự đánh giá") or the Agent does.
+TTTOS never decides on its own to answer or to react: the judge (group chats in "Tự đánh giá") or the Agent does.
 """
 from __future__ import annotations
 

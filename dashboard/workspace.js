@@ -72,7 +72,7 @@
   // cộng sự ghim mà hai tuần không gọi sẽ tụt xuống cuối và cái ghim thành vô nghĩa.
   function sapXep(ds, khoa) {
     return ds.slice().sort(function (a, b) {
-      // Javis Core (0.185.0, `system`) is always first, ahead of the pinned ones.
+      // TTTOS Core (0.185.0, `system`) is always first, ahead of the pinned ones.
       var sa = a.system ? 1 : 0, sb = b.system ? 1 : 0;
       if (sa !== sb) return sb - sa;
       var ga = a.pinned ? 1 : 0, gb = b.pinned ? 1 : 0;
@@ -119,7 +119,7 @@
   // nằm lẫn giữa danh sách theo giờ chat. Mỗi mục vẫn chỉ hiện một lần.
   function gomNhom(ds, nhomLoc, nhomTrong, can) {
     var ra = [];
-    // Javis Core (0.185.0): its own first block, above "needs you" and the pinned ones, with no heading (the row
+    // TTTOS Core (0.185.0): its own first block, above "needs you" and the pinned ones, with no heading (the row
     // carries the System badge).
     var he = (ds || []).filter(function (x) { return x.system; });
     if (he.length) { ra.push({ he: true, nhom: "", items: he }); ds = (ds || []).filter(function (x) { return !x.system; }); }
@@ -158,7 +158,7 @@
   // An assistant whose file went away (`missing`) or that was retired can never be "on", yet its Auto block is the only
   // place holding the two confirm buttons ("same assistant" / "new assistant") and its old goals. So it counts as shown.
   function autoBlocked(rs, slug) { var r = rs && rs[slug]; return !!(r && (r.status === "missing" || r.status === "retired")); }
-  // Javis Core's Auto is always on (owner, 05/11/2026): its row shows the switch on even before the server's list is in.
+  // TTTOS Core's Auto is always on (owner, 05/11/2026): its row shows the switch on even before the server's list is in.
   function coreAutoRow(x) {
     var r = S.rs[x.slug] || {};
     return { slug: x.slug, name: x.name, enabled: true, status: "active", goals_open: r.goals_open || 0 };
@@ -1145,7 +1145,7 @@
   }
   // 2026-11-08 (owner: "chữ Hệ thống nên cho xuống dòng bên dưới, bên trái, cạnh avatar", "tên của các agent nên gắn với
   // tag của nó ở dưới dòng đó"): an assistant card's second line, under the name and right beside the avatar, carries
-  // the System badge (Javis Core) and the assistant's tags, on the same row as the time and Auto switch in the right
+  // the System badge (TTTOS Core) and the assistant's tags, on the same row as the time and Auto switch in the right
   // corner. One line only: two chips, the rest folded into "+n" (every name in its title), each chip cuts its own text.
   var CARD_TAG_MAX = 2;
   function cardSubInner(x, he, max) {
@@ -1227,7 +1227,7 @@
     // tay dễ nhầm với dấu ghim) và nhãn Auto nhỏ khi Auto đang bật. Dấu ghim không vẽ: thẻ ghim đã nằm dưới tiêu đề "Đã ghim".
     // 2026-11-08: tags are back on the card, as the one-line row under the name (cardSubHtml), with the System badge.
     var laAgent = S.loai === "agent";
-    var he = laAgent && !!x.system;   // Javis Core: no Auto switch, no "..." menu (the server refuses those anyway)
+    var he = laAgent && !!x.system;   // TTTOS Core: no Auto switch, no "..." menu (the server refuses those anyway)
     var tg = laAgent ? tagsCua(x) : [];
     var bd = laAgent && S.jc && window.JavisAgentJobs && window.JavisAgentJobs.badgeHtml
       ? window.JavisAgentJobs.badgeHtml(S.jc[x.slug]) : "";
@@ -1255,7 +1255,7 @@
       // công tắc Auto đứng chung một cụm nhỏ ở góc dưới phải của thẻ. Công tắc có trên MỌI trợ lý, tắt thì màu xám.
       // Cụm nằm ngoài nút chọn mục (không lồng nút trong nút); CSS đặt nó BÊN TRONG thẻ.
       (laAgent ? '<div class="ws-item-end">' + gioNhanHtml(x.last_chat_at) + tinHtml(x) +
-        // 2026-11-05 (owner): Javis Core shows the same switch, always on and locked.
+        // 2026-11-05 (owner): TTTOS Core shows the same switch, always on and locked.
         (window.JavisResonanceAgent
           ? window.JavisResonanceAgent.rowToggleHtml(he ? coreAutoRow(x) : S.rs[x.slug],
               { saving: !he && !!S.rsSaving[x.slug], locked: he }) : "") + '</div>' : "") +
@@ -1678,7 +1678,7 @@
       if (moiHan && window.JavisSessions && window.JavisSessions.blank) window.JavisSessions.blank();
       var b = encodeURIComponent(brain()), ch = kenh(item), id = sidChiDinh || null;
       if (!id && !moiHan && item.system) {
-        // Javis Core: open the brain's default chat, the one reports land in (the server makes it when missing).
+        // TTTOS Core: open the brain's default chat, the one reports land in (the server makes it when missing).
         var c = await api("/javis-core/session", { method: "POST", body: fd({ brain: brain() }),
                                                    signal: abortAfter(CORE_SESSION_WAIT_MS) });
         if (!still()) return false;
@@ -1733,7 +1733,7 @@
   // reads in a row. 12 s showed the error on opens that were only slow, never stuck (#1213).
   var OPEN_WAIT_MS = 16000;
   var OPEN_RECHECK_MS = 2000;
-  // The Javis Core POST is never retried by fetch-gop.js and had no limit: a connection that hung kept the open waiting
+  // The TTTOS Core POST is never retried by fetch-gop.js and had no limit: a connection that hung kept the open waiting
   // for good (#1213). Past this it is cut and the error with its Retry shows.
   var CORE_SESSION_WAIT_MS = 15000;
   function reconnecting() {
@@ -1982,7 +1982,7 @@
     if (input) input.focus();
   }
 
-  // Javis Core may have saved a new name in the turn that just ended (`javis_core_name`): read it back so the list,
+  // TTTOS Core may have saved a new name in the turn that just ended (`javis_core_name`): read it back so the list,
   // the chat header and the card show it without a reload (owner, 04/11/2026).
   async function docLaiTenCore(ag) {
     var d = null;
@@ -2016,7 +2016,7 @@
       // 0.190.0 (owner, 16/10/2026: "tối giản nhất, người ta không cần hiểu gì về cài đặt cũng dùng được"): the column
       // opens on what every assistant app has (picture, name, role, instructions, documents, skills, model). The Auto
       // block sits below and shows only while Auto is on (veAuto); lessons are handled in chat (javis_memory).
-      // 2026-11-05 (owner): Javis Core opens this same form, picture, name, role, instructions, documents, skills,
+      // 2026-11-05 (owner): TTTOS Core opens this same form, picture, name, role, instructions, documents, skills,
       // model. Being the system assistant only drops Export and Delete; its Auto stays on (veAuto).
       host.innerHTML = '<div class="ws-form" id="wsAgentForm"></div><div class="ws-auto-block" id="wsAuto"></div>' +
         (item.system ? "" : '<div class="ws-acts"><button type="button" class="ws-btn" id="wsExport">' + esc(t("studio.export")) + '</button>' +

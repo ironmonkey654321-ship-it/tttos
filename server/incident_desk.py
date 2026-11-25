@@ -1,8 +1,8 @@
-"""incident_desk.py - a broken background run reaches Javis Core, which handles it (0.199.0).
+"""incident_desk.py - a broken background run reaches TTTOS Core, which handles it (0.199.0).
 
 Idea borrowed from OpenMausBot's "team incidents": a failed run used to leave one line where it died
 (a blocked Kanban card, a reminder error, a paused loop) and the owner found it hours later, on a
-phone, then retried by hand. Now the brain's coordinator, Javis Core, hears first and decides:
+phone, then retried by hand. Now the brain's coordinator, TTTOS Core, hears first and decides:
 
   - retry:  run it again once, the same job, with a line saying why (only for sources that can be
             re-run safely, and at most once per incident);
@@ -22,7 +22,7 @@ fallback rule decides.
 
 A report may name the chat the job came from (`chat`: "web:<session id>", a Telegram id...). The desk still
 triages and retries here, and the incident stays on this list, but its messages go to that chat, so a job made in a
-partner chat no longer reports its failures to Javis Core instead (the host routes an empty chat to Javis Core).
+partner chat no longer reports its failures to TTTOS Core instead (the host routes an empty chat to TTTOS Core).
 
 Store: STATE_DIR/incidents.json (last KEEP incidents). Turn the desk off with the setting
 `incidents.enabled = false`. The module does not import main.
@@ -63,7 +63,7 @@ class IncidentDeps:
     state_dir: Callable[[], Path]
     # async ask(prompt) -> model text; raise when no engine is ready
     ask: Optional[Callable] = None
-    # async post(brain, text, chat="") -> None: one message in `chat`, or the brain's Javis Core chat when it is empty
+    # async post(brain, text, chat="") -> None: one message in `chat`, or the brain's TTTOS Core chat when it is empty
     # (+ inbox). A post that takes no `chat` keyword (older hosts, tests) gets the two positional arguments only.
     post: Optional[Callable] = None
     # source -> async retry(incident) -> (ok, note)

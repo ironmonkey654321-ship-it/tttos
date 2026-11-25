@@ -1,4 +1,4 @@
-"""What Javis remembers, and the person's control over it (0.188.0, Javis Core spec sections 10, 12 and 13).
+"""What TTTOS remembers, and the person's control over it (0.188.0, TTTOS Core spec sections 10, 12 and 13).
 
 The brain's memory stays where it always was: `memory/MEMORY.md` (the index loaded before every turn) and one file
 per memory in `memory/facts/`. This module adds the controls the spec asks for, nothing parallel:
@@ -200,7 +200,7 @@ def set_learning(mem_dir: Path, on: bool) -> bool:
 LEARNING_OFF_NOTE = ("\n\n# === GHI NHỚ MỚI ĐANG TẮT ===\n"
                      "Người dùng đã tắt việc lưu ghi nhớ mới cho brain này. Vẫn dùng bộ nhớ đã có, nhưng KHÔNG tạo hay "
                      "sửa file trong memory/ và không thêm dòng vào MEMORY.md. Nếu người dùng nhờ nhớ điều gì, nói rõ "
-                     "việc ghi nhớ đang tắt và chỉ chỗ bật lại (Javis Core > Trí nhớ).")
+                     "việc ghi nhớ đang tắt và chỉ chỗ bật lại (TTTOS Core > Trí nhớ).")
 
 
 # ── list / edit / forget ──────────────────────────────────────────────────────
@@ -272,7 +272,7 @@ def edit_memory(mem_dir: Path, slug: str, body: str, type_: Optional[str] = None
     return {"slug": slug, "updated": meta["updated"]}
 
 
-# Set by main.py: called with (memory dir, {slug, title, learned}) after a memory was forgotten. A memory Javis
+# Set by main.py: called with (memory dir, {slug, title, learned}) after a memory was forgotten. A memory TTTOS
 # had learned on its own and the owner then removed is the clearest sign there is that the learner got it wrong.
 on_forget = None
 

@@ -3,7 +3,7 @@
 Owner, 16/10/2026: the memory list left the settings column; memory is handled in chat. Two things keep that honest:
 
 - **A receipt.** A turn that saved, changed or forgot a memory gets one small line under the answer: "Đã nhớ: ... ·
-  Hoàn tác". People see what Javis keeps at the moment it keeps it, and undo it with one tap. The line is a hidden
+  Hoàn tác". People see what TTTOS keeps at the moment it keeps it, and undo it with one tap. The line is a hidden
   block (`<!-- JAVIS_NHO: {...} -->`) in a message stored through `push_to_chat`, so a refresh draws it again
   (dashboard/chat-nho.js).
 - **No empty claims.** An answer that says "đã nhớ", "đã quên", "đã thu hồi" while nothing changed in the brain's

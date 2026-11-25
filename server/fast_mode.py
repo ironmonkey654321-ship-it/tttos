@@ -52,8 +52,8 @@ def claude_supports(model: str) -> bool:
 def claude_sdk_settings(model: str, on: bool) -> str:
     """`ClaudeAgentOptions(settings=...)` value (a JSON string).
 
-    Always explicit: Claude Code persists /fast in ~/.claude/settings.json, and Javis loads user
-    settings, so "nothing" would let a /fast typed once in a terminal bill every Javis turn 2x.
+    Always explicit: Claude Code persists /fast in ~/.claude/settings.json, and TTTOS loads user
+    settings, so "nothing" would let a /fast typed once in a terminal bill every TTTOS turn 2x.
     Flag settings win over user settings, so `false` here means normal speed (review 0.164.0)."""
     return json.dumps({"fastMode": bool(on and claude_supports(model))})
 

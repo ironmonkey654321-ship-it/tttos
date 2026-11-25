@@ -28,7 +28,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from config import STATE_DIR
-import session_brain   # {session_id: brain} - nhan du an dung cho phien Javis (cwd luon la goc project)
+import session_brain   # {session_id: brain} - nhan du an dung cho phien TTTOS (cwd luon la goc project)
 import usage_parsers as up
 
 # Múi giờ để cắt NGÀY của thống kê. Đọc từ cấu hình qua `localefmt`, KHÔNG còn là hằng số.
@@ -468,7 +468,7 @@ _EVENT_CODEX = {"codex", "openai-oauth", "chatgpt", "oauth"}
 # xAI la duong TRA TIEN theo luot goi, con day la duong THUE BAO - hai thu khac hoan toan ve
 # hoa don du cung ten model.
 _EVENT_GROK_CLI = {"grok-cli", "grok_cli", "grok"}
-# Antigravity CLI (Google plan) has no raw log Javis reads, so these lines are its only record.
+# Antigravity CLI (Google plan) has no raw log TTTOS reads, so these lines are its only record.
 _EVENT_ANTIGRAVITY = {"antigravity-cli", "agy"}
 
 
@@ -1180,13 +1180,13 @@ def luot_theo_ngay(period: str = "this_month", nguon: tuple = ("javis",),
 
     Vi sao khong dung thang `summary()["timeseries"]["turns"]`: no cong turns cua MOI dong,
     trong do co source='manual' - la nhung phien nguoi dung tu mo `claude` trong terminal o
-    bat ky repo nao tren cung may. Nhung luot do KHONG di qua prompt cua Javis, nen che do
-    tiet kiem cua Javis khong he lam chung re di. Nhan chung vao la thoi phong con so tiet
-    kiem len nhieu lan, va tren mot may vua dung Javis vua dung Claude Code tay thi phan thoi
+    bat ky repo nao tren cung may. Nhung luot do KHONG di qua prompt cua TTTOS, nen che do
+    tiet kiem cua TTTOS khong he lam chung re di. Nhan chung vao la thoi phong con so tiet
+    kiem len nhieu lan, va tren mot may vua dung TTTOS vua dung Claude Code tay thi phan thoi
     phong con lon hon phan that.
 
     Bo luon 'subagent': agent con do engine tu de ra mang prompt rieng cua no, khong phai goi
-    ngu canh ma muc tiet kiem cua Javis cat. Tha dem thieu con hon khoe thua.
+    ngu canh ma muc tiet kiem cua TTTOS cat. Tha dem thieu con hon khoe thua.
     """
     (cs, ce), _prev = resolve_period(period, today)
     where = ["day BETWEEN ? AND ?"]

@@ -1,4 +1,4 @@
-"""Lệnh "/" hệ thống của Javis: phần LÕI dùng chung cho khung chat web và Telegram.
+"""Lệnh "/" hệ thống của TTTOS: phần LÕI dùng chung cho khung chat web và Telegram.
 
 Vì sao có file này: web chat từng chỉ có ba lệnh (/new /reset /stop), còn Telegram có hẳn một
 bộ riêng nằm trong `main.py::_tg_command`. Hai kênh nói hai thứ khác nhau về cùng một khái
@@ -8,7 +8,7 @@ nén hội thoại của `/compact`, và cách định dạng số liệu cho k�
 
 Nguyên tắc: lệnh do JAVIS tự xử lý chứ không mượn lệnh có sẵn của Claude Code. Engine API,
 Codex, Grok, Antigravity đều không có `/compact` hay `/plan` của Claude Code, nên nếu dựa vào
-đó thì năng lực đổi theo bộ não - trái với nguyên tắc "năng lực của Javis không đổi theo model".
+đó thì năng lực đổi theo bộ não - trái với nguyên tắc "năng lực của TTTOS không đổi theo model".
 
 Hai khối chỉ dẫn (`/plan`, `/goal`) đi cùng dạng "khối ngoặc vuông đứng TRƯỚC câu người dùng,
 kết thúc bằng ]\\n\\n" như `[SKILL: ...]`, để bong bóng chat, tên hội thoại và nút "gửi lại" đều
@@ -36,11 +36,11 @@ GOAL_MAX_ROUNDS = 5
 # mà tình cờ nhắc chữ này giữa câu không bị coi là lệnh.
 _PLAN_RE = re.compile(r"(?m)^\[CHẾ ĐỘ KẾ HOẠCH:")
 
-# Phải có ít nhất chừng này tin (user + Javis) mới đáng nén: dưới đó là chưa có gì để gấp.
+# Phải có ít nhất chừng này tin (user + TTTOS) mới đáng nén: dưới đó là chưa có gì để gấp.
 MIN_TIN_NEN = 4
 # Số tin GẦN NHẤT giữ nguyên vẹn khi nén bằng tóm tắt (2 lượt hỏi-đáp).
 GIU_NGUYEN = 4
-# Nhà API mà bộ nén nền của Javis đã chạy được (cùng danh sách với móc nén nền sau mỗi lượt
+# Nhà API mà bộ nén nền của TTTOS đã chạy được (cùng danh sách với móc nén nền sau mỗi lượt
 # trong main.py). Nhà khác (Ollama, OpenAI-compat) chưa được kiểm chứng đường tóm tắt nên
 # không đoán mò: báo thẳng là chưa hỗ trợ thay vì nén hỏng.
 NHA_API_NEN_DUOC = ("openrouter", "openai", "anthropic-api", "gemini", "groq", "deepseek")
@@ -149,7 +149,7 @@ async def nen_phien(store, sid, *, kind, prov, api_key, model, api_stream, giu=G
       tóm tắt + đuôi thay vì cả lịch sử.
     - **Engine gói thuê bao** (Claude Code, Codex, Grok, Antigravity): các engine này tự giữ mạch
       native, và phần phình to nằm trong mạch đó (kết quả công cụ, vòng lặp agentic) chứ không
-      trong transcript của Javis. Nén = vứt mạch native đi; lượt sau Javis mở mạch mới và mồi
+      trong transcript của TTTOS. Nén = vứt mạch native đi; lượt sau TTTOS mở mạch mới và mồi
       lại bằng transcript đã lưu (`compaction.bootstrap_prompt`). Không có bước tóm tắt vì gói
       thuê bao không có API key để gọi một request tóm tắt riêng.
 
@@ -230,7 +230,7 @@ def dinh_dang_muc_dung(summary: dict, openrouter=None) -> str:
     summary = summary or {}
     hom_nay = summary.get("today") or {}
     tat_ca = summary.get("all_time") or {}
-    dong = [localefmt.chu("📈 Mức dùng Javis (số Javis tự đo)", "📈 Javis usage (as measured by Javis)"),
+    dong = [localefmt.chu("📈 Mức dùng TTTOS (số TTTOS tự đo)", "📈 TTTOS usage (as measured by TTTOS)"),
             _dong_muc_dung(localefmt.chu("Hôm nay", "Today"), hom_nay.get("total") or {})]
     for it in (hom_nay.get("items") or [])[:5]:
         dong.append(f"  - {it.get('provider', '?')} {it.get('model', '')}: "
@@ -244,9 +244,9 @@ def dinh_dang_muc_dung(summary: dict, openrouter=None) -> str:
     return "\n".join(dong)
 
 
-_NHAN_COT = (("running", "Đang chạy"), ("review", "Chờ duyệt"), ("blocked", "Tạm dừng, Javis đang lo"),
+_NHAN_COT = (("running", "Đang chạy"), ("review", "Chờ duyệt"), ("blocked", "Tạm dừng, TTTOS đang lo"),
              ("ready", "Sẵn sàng"), ("todo", "Chờ làm"), ("triage", "Mới nhận"))
-_NHAN_COT_EN = {"running": "Running", "review": "Awaiting review", "blocked": "Paused, Javis is on it",
+_NHAN_COT_EN = {"running": "Running", "review": "Awaiting review", "blocked": "Paused, TTTOS is on it",
                 "ready": "Ready", "todo": "To do", "triage": "New"}
 
 
@@ -256,7 +256,7 @@ def dinh_dang_viec(view: dict, moi_cot: int = 5) -> str:
     cot = view.get("columns") or {}
     dem = view.get("counts") or {}
     che_do = str(view.get("orchestration") or "")
-    dong = [localefmt.chu("📋 Việc nền của Javis", "📋 Javis background work")]
+    dong = [localefmt.chu("📋 Việc nền của TTTOS", "📋 TTTOS background work")]
     if che_do.lower() == "off":
         dong.append(localefmt.chu("⚠ Tự vận hành đang TẮT: việc chỉ nằm trong hàng đợi, chưa chạy. "
                                   "Bật ở trang Nhiệm vụ trên dashboard.",
@@ -290,9 +290,9 @@ def dinh_dang_bo_nho(noi_dung: str, toi_da: int = 3000) -> str:
     s = str(noi_dung or "").strip()
     if not s:
         return localefmt.chu("Brain này chưa có bộ nhớ dài hạn nào (memory/MEMORY.md trống). "
-                             "Nói \"nhớ giúp ... \" là Javis tự ghi.",
+                             "Nói \"nhớ giúp ... \" là TTTOS tự ghi.",
                              "This brain has no long-term memory yet (memory/MEMORY.md is empty). "
-                             "Say \"remember ...\" and Javis writes it down.")
+                             "Say \"remember ...\" and TTTOS writes it down.")
     if len(s) > toi_da:
         s = s[:toi_da].rstrip() + localefmt.chu("\n... (còn nữa, mở memory/MEMORY.md để xem đủ)",
                                                 "\n... (more, open memory/MEMORY.md for the rest)")

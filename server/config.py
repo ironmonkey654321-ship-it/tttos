@@ -1,5 +1,5 @@
 """
-Cấu hình tập trung của Javis OS - đọc/ghi server/settings.json (gitignored, chứa secret).
+Cấu hình tập trung của TTTOS - đọc/ghi server/settings.json (gitignored, chứa secret).
 Gồm: workspace, tài khoản admin (mật khẩu hash), model engine, telegram.
 Auth CHỈ bật khi đã đặt mật khẩu → bản local chưa đặt vẫn chạy như cũ.
 """
@@ -11,7 +11,7 @@ import hashlib
 import secrets
 from pathlib import Path
 
-# Mọi state Javis tự ghi (settings, auth sessions, loop config) nằm ở JAVIS_STATE_DIR.
+# Mọi state TTTOS tự ghi (settings, auth sessions, loop config) nằm ở JAVIS_STATE_DIR.
 # Mặc định = server/ (không đổi trên máy cũ). Docker/VPS đặt = /data/state (volume ghi được,
 # vì code tree /app là read-only trong container).
 STATE_DIR = Path(os.getenv("JAVIS_STATE_DIR", str(Path(__file__).parent)))
@@ -26,7 +26,7 @@ SETTINGS_PATH = STATE_DIR / "settings.json"
 BRANDING_DIR = STATE_DIR / "branding"
 
 _DEFAULT = {
-    "workspace_name": "Javis OS",
+    "workspace_name": "TTTOS",
     "setup_done": False,                       # đã qua bộ cài đặt lần đầu chưa
     # totp = xác thực 2 lớp. secret rỗng / enabled=false → cổng đăng nhập giữ nguyên như cũ.
     # `recovery` giữ BẢN BĂM của mã khôi phục (cùng cách băm mật khẩu), nên không có đường nào
@@ -41,7 +41,7 @@ _DEFAULT = {
     # Ngôn ngữ và locale. TÁCH BA BIẾN có chủ ý (spec đa ngôn ngữ mục 4.1):
     #   ui_lang     chữ trên màn hình      - "" = chưa ai chọn: dashboard đoán theo trình duyệt
     #               rồi ghi lại đây (0.66.0). Bản cài cũ đã lưu "vi" nên không bị đổi.
-    #   reply_lang  Javis trả lời          - "auto" = bám theo ngôn ngữ người dùng đang viết
+    #   reply_lang  TTTOS trả lời          - "auto" = bám theo ngôn ngữ người dùng đang viết
     #   tz/currency locale, KHÁC ngôn ngữ  - người dùng tiếng Anh ở VN vẫn xài UTC+7 và VND
     # Gộp ba cái làm một là chặn đứng ca dùng đáng tiền nhất: chủ Việt, giao diện Việt, brain
     # Việt, nhưng chatbot đối ngoại trả lời tiếng Nhật.
@@ -75,7 +75,7 @@ _DEFAULT = {
         "live_provider": "gemini",     # gemini | openai (đều cần API key ở trang Models)
         "live_model": "",              # rỗng = gợi ý trong voice_live.PROVIDERS
         "live_voice": "",
-        "live_proactive": True,        # Live qua API: bỏ qua tiếng không nói với Javis (TV, người bên cạnh)
+        "live_proactive": True,        # Live qua API: bỏ qua tiếng không nói với TTTOS (TV, người bên cạnh)
         "live_turn": "normal",         # fast | normal | slow: nhịp trả lời của Live qua API
     },
     "model": {
@@ -91,7 +91,7 @@ _DEFAULT = {
         # chủ repo đổi model liên tục trên web để thử (cả model local chạy 2-8 chữ/giây), mỗi
         # lần thử là điện thoại của cả nhà bị kéo theo.
         "telegram": {"provider": "", "model": ""},
-        # --- Tiền bạc: những gì Javis KHÔNG tự biết được và phải hỏi người dùng ---
+        # --- Tiền bạc: những gì TTTOS KHÔNG tự biết được và phải hỏi người dùng ---
         # Nhà cung cấp không cho lấy giá gói hay hạn mức gói qua API, nên bốn số này là do
         # người dùng khai. Để 0 = chưa khai, và trang Mức dùng phải nói "chưa khai" chứ đừng
         # đoán bừa rồi hiện một con số trông như thật.
@@ -116,7 +116,7 @@ _DEFAULT = {
         # --- Credentials theo provider ---
         # Gói Claude Code (provider 'anthropic-cli') xác thực bằng CÁI GÌ:
         #   "subscription" (mặc định) - phiên đăng nhập của chính Claude Code, tức gói Pro/Max
-        #       người dùng đang trả. Javis KHÔNG đọc token đó nữa; nó chỉ chạy binary `claude`
+        #       người dùng đang trả. TTTOS KHÔNG đọc token đó nữa; nó chỉ chạy binary `claude`
         #       và để chính sản phẩm của Anthropic lo đăng nhập.
         #   "api_key" - truyền `anthropic_api_key` xuống cho binary `claude` qua biến môi
         #       trường, tức trả tiền theo lượt dùng qua Claude Console. Đây là đường Anthropic
@@ -134,28 +134,28 @@ _DEFAULT = {
         "deepseek_api_key": "",                # provider DeepSeek (endpoint OpenAI-compat)
         # Provider 'ollama' = Ollama Cloud (ollama.com). Bản chạy trên máy nhà KHÔNG được đấu,
         # cố ý: nó đòi thêm một ô địa chỉ - ca đặc biệt duy nhất của cả lớp nhà cung cấp -
-        # trong khi phần đông người dùng Javis chạy nó trên VPS, nơi "localhost" là chính cái
+        # trong khi phần đông người dùng TTTOS chạy nó trên VPS, nơi "localhost" là chính cái
         # container chứ không phải máy họ.
         "ollama_key": "",
         # Provider 'openai-compat': MỘT endpoint bất kỳ nói chuẩn OpenAI Chat Completions
-        # (LiteLLM, vLLM, proxy tự dựng...). Base URL tính tới /v1, Javis tự nối /chat/completions
+        # (LiteLLM, vLLM, proxy tự dựng...). Base URL tính tới /v1, TTTOS tự nối /chat/completions
         # và /models. Key có thể rỗng nếu endpoint không đòi xác thực.
         "openai_compat_base": "",
         "openai_compat_key": "",
         # Provider 'anthropic-compat' (0.254.0): ONE gateway speaking the Anthropic Messages API
         # (resellers of Claude, DeepSeek/Kimi/MiniMax "anthropic" endpoints...). The base URL has
-        # the shape of Claude Code's ANTHROPIC_BASE_URL (no /v1); Javis appends /v1/messages.
+        # the shape of Claude Code's ANTHROPIC_BASE_URL (no /v1); TTTOS appends /v1/messages.
         "anthropic_compat_base": "",
         "anthropic_compat_key": "",
         # --- Ollama chạy trên MÁY NHÀ (provider 'ollama-local') ---
         # Ca đặc biệt mà khối chú thích ngay trên vừa từ chối, nay mở ra nhưng KHÔNG bằng cách
-        # giả định "localhost là máy người dùng". Cái Javis lưu là một ĐỊA CHỈ người dùng tự
-        # khai: có thể là máy đang chạy Javis (bản native), có thể là một máy khác trong nhà.
+        # giả định "localhost là máy người dùng". Cái TTTOS lưu là một ĐỊA CHỈ người dùng tự
+        # khai: có thể là máy đang chạy TTTOS (bản native), có thể là một máy khác trong nhà.
         # Nhờ vậy bản Docker/VPS cũng dùng được - trỏ sang máy để bàn ở nhà là xong.
         "ollama_local_endpoint": "",           # vd http://127.0.0.1:11434 hoặc http://192.168.1.20:11434
         "ollama_local_key": "",                # chỉ cần khi Ollama nấp sau reverse proxy có auth
         # Cấu hình máy CHẠY OLLAMA, để gợi ý model vừa sức. `source`:
-        #   auto    - Javis tự đọc được (chỉ khi endpoint là localhost VÀ Javis chạy native)
+        #   auto    - TTTOS tự đọc được (chỉ khi endpoint là localhost VÀ TTTOS chạy native)
         #   manual  - người dùng tự khai (mọi trường hợp còn lại)
         #   unknown - chưa biết, gợi ý ở mức an toàn
         "ollama_local_specs": {"source": "unknown", "ram_gb": 0, "has_gpu": False, "vram_gb": 0},
@@ -203,12 +203,12 @@ _DEFAULT = {
     "image": {"strip_c2pa": False},
     # Vùng cache media của brain: attachments/ + inbox/. Ảnh là NGUYÊN LIỆU đi qua, không
     # phải tri thức - đọc xong rút thành .md là đủ dùng, nên chúng tự hết hạn thay vì nằm
-    # mãi làm phình đĩa VPS. Muốn giữ ảnh lâu dài thì đấu kho ngoài (Drive), đừng để Javis ôm.
+    # mãi làm phình đĩa VPS. Muốn giữ ảnh lâu dài thì đấu kho ngoài (Drive), đừng để TTTOS ôm.
     # max_age_days / max_mb <= 0 = tắt luật tương ứng. enabled=False = không dọn gì cả.
     # staging_days: hạn RIÊNG cho STATE_DIR/.staging - nơi file dán vào khung chat rơi xuống.
     # Ngắn hơn hẳn vì đó là chỗ trung chuyển một lượt chat, không ai mở lại bao giờ.
     # Kho gói: một tệp JSON công khai. Đổi được sang kho khác; rỗng thì dùng kho
-    # mặc định của Javis. Xem docs/dev/pack-store-index.md.
+    # mặc định của TTTOS. Xem docs/dev/pack-store-index.md.
     "packs": {"store_url": "", "tokens": {}},
     "media": {"enabled": True, "max_age_days": 30, "max_mb": 300, "staging_days": 3},
     "telegram": {"enabled": False, "token": "", "chat_id": ""},
@@ -217,7 +217,7 @@ _DEFAULT = {
     #
     # `chat_id` là whitelist, và trên Zalo nó là chuỗi HEX chứ không phải số. Zalo KHÔNG có
     # công cụ kiểu @userinfobot để tự tra id của mình, nên đừng bắt user đi tìm: người lạ nhắn
-    # cho bot thì Javis đưa họ vào hàng chờ kèm mã ghép nối, chủ bấm một nút là xong.
+    # cho bot thì TTTOS đưa họ vào hàng chờ kèm mã ghép nối, chủ bấm một nút là xong.
     # Xem `_ZALO_CHO` trong main.py.
     "zalo_bot": {"enabled": False, "token": "", "chat_id": ""},
     # Owner's control channels on Slack (Socket Mode) and WhatsApp (Cloud API), 0.71.0. `allow`
@@ -260,8 +260,8 @@ _DEFAULT = {
         # lượt trong khung chat đổi giá trị này.
         "auto_resume": True,
     },
-    # MCP do Javis quản lý (registry connection ở mcp_servers.json). strict=True → CHỈ dùng
-    # kết nối của Javis (--strict-mcp-config), bỏ qua config MCP sẵn có của máy.
+    # MCP do TTTOS quản lý (registry connection ở mcp_servers.json). strict=True → CHỈ dùng
+    # kết nối của TTTOS (--strict-mcp-config), bỏ qua config MCP sẵn có của máy.
     # hub=True (mặc định): mọi engine đấu qua MCP HUB (1 entry "javis" - đa tài khoản, quyền,
     # audit tại hub). Đặt false để về chế độ cũ (per-server) nếu gặp sự cố.
     # lazy_tools: chống phình context khi đấu nhiều connector. "auto" = tự bật khi số tool
@@ -449,7 +449,7 @@ _DEFAULT = {
         # xét trước cái trần này ngay từ lượt sau.
         #
         # 32k là mức thận trọng: nằm dưới cửa sổ của gần như mọi model API đang bán, mà vẫn
-        # rộng gấp nhiều lần một capsule Javis điển hình (khoảng 1.000 token).
+        # rộng gấp nhiều lần một capsule TTTOS điển hình (khoảng 1.000 token).
         "api_context": {
             "context_window": 32000,
             "reserved_output_tokens": 4000,
@@ -463,7 +463,7 @@ _DEFAULT = {
         # đầu tiên, dùng luôn con số đó làm ngân sách thay vì đợi khai tay.
         #
         # safety_factor: chừa biên vì hạn mức mỗi phút là cửa sổ TRƯỢT (phần vừa gửi hỏng vẫn
-        # còn nằm trong cửa sổ) và bộ đếm token của Javis chỉ là ước lượng.
+        # còn nằm trong cửa sổ) và bộ đếm token của TTTOS chỉ là ước lượng.
         "learned_quota": {
             "enabled": True,
             "reserved_output_tokens": 1200,
@@ -605,7 +605,7 @@ class SettingsUnreadable(RuntimeError):
 
 # Đọc lại mấy lần trước khi coi file là hỏng. Lỗi đọc THOÁNG QUA là chuyện thường trên Windows: phần
 # mềm diệt virus hay trình đồng bộ khoá file vừa được ghi trong vài chục mili giây, và
-# `os.replace` của chính Javis cũng khoá đích trong tích tắc. Đọc đúng lúc đó là PermissionError.
+# `os.replace` của chính TTTOS cũng khoá đích trong tích tắc. Đọc đúng lúc đó là PermissionError.
 _READ_TRIES = 6
 
 
@@ -663,7 +663,7 @@ def _doc_file_settings() -> dict:
             # Không mở được file (khoá, quyền), chứ không phải nội dung hỏng: file thật vẫn còn nguyên
             # đó. Coi là máy mới thì lần ghi kế tiếp xoá nó.
             raise SettingsUnreadable(f"settings.json không đọc được ({type(e).__name__}: {e}) và không có bản "
-                                     f"dự phòng dùng được. Javis KHÔNG coi đây là máy mới để khỏi ghi đè cấu hình thật.")
+                                     f"dự phòng dùng được. TTTOS KHÔNG coi đây là máy mới để khỏi ghi đè cấu hình thật.")
         # Nội dung hỏng THẬT (JSON vỡ qua mọi lần đọc lại) và không có .bak: bản hỏng đã được giữ ở
         # `.bad-*` bên trên, nên vẫn như trước: chạy bằng mặc định để chủ cài lại được.
     return {}
@@ -902,7 +902,7 @@ def _no_rong_pham_vi_bo_nao(cfg: dict) -> bool:
     thì máy đã cài rồi KHÔNG BAO GIỜ thấy. Mặc định mới chỉ tới được máy cài mới.
 
     Nó cắn đúng chỗ đau nhất: trước 0.12.4, `memory_canary` và `lazy_skill_canary` chỉ cho
-    "api". Mọi máy chạy Javis từ trước mốc đó có file settings.json ghim cứng `["api"]`. Chủ
+    "api". Mọi máy chạy TTTOS từ trước mốc đó có file settings.json ghim cứng `["api"]`. Chủ
     máy nâng cấp lên, bấm mức Tối ưu, thấy trang báo xanh "đã bật, có hiệu lực ngay" - rồi
     mọi lượt chat trên gói ChatGPT hay gói Claude vẫn gửi nguyên CLAUDE.md, vì cả ba nguồn
     đều bị loại với lý do `provider_kind_not_allowed`. Không lỗi, không cảnh báo, chỉ có dòng
@@ -942,7 +942,7 @@ def _ui_lang_ban_cu(cfg: dict, data: dict) -> None:
 
     Từ 0.66.0 mặc định `ui_lang` là "" (chưa chọn: dashboard đoán theo trình duyệt). Máy cài
     trước khi có khối locale thì file của nó không có khoá này, và đọc ra "" sẽ làm người dùng
-    Việt có trình duyệt để tiếng Anh bị đổi giao diện trong im lặng. Hồi đó Javis chỉ có tiếng
+    Việt có trình duyệt để tiếng Anh bị đổi giao diện trong im lặng. Hồi đó TTTOS chỉ có tiếng
     Việt, nên "vi" là đúng sự thật chứ không phải đoán. Chỉ chạm vào bộ nhớ, không ghi file.
     """
     if data and "ui_lang" not in (data.get("locale") or {}):
@@ -1091,12 +1091,12 @@ def _write_settings_full(cfg):
     _ghi_nguyen_tu(json.dumps(out, ensure_ascii=False, indent=2))
 
 
-# ---- Account block edited outside Javis (owner incident 2026-11-09) ----
-# Someone with a shell on the VPS changed username, password and 2FA by editing settings.json. Every path in Javis that
+# ---- Account block edited outside TTTOS (owner incident 2026-11-09) ----
+# Someone with a shell on the VPS changed username, password and 2FA by editing settings.json. Every path in TTTOS that
 # changes a password also ends the other sessions, but an edit of the file ends nothing, so the owner stayed signed in
 # and noticed only by chance. Each write through write_settings records a fingerprint of the account block in
 # .auth_stamp.json; a file whose account block no longer matches was changed by something else (a shell, an editor, an
-# agent writing the file). Javis then ends every session, logs the event and tells the owner.
+# agent writing the file). TTTOS then ends every session, logs the event and tells the owner.
 # It detects, it does not prevent: whoever can write settings.json can also rewrite the stamp, if they know about it.
 _AUTH_CHECK = {"sig": None, "pending": 0.0}
 AUTH_GUARD_GRACE = 2.0
@@ -1150,11 +1150,11 @@ def _stamp_auth(raw_auth) -> None:
 
 
 def auth_guard_check(grace: float = None):
-    """Compare the account block on disk with the last one Javis wrote. Returns None when nothing is wrong, or
+    """Compare the account block on disk with the last one TTTOS wrote. Returns None when nothing is wrong, or
     {"changed": [parts]} once, the first time an outside change is confirmed (sessions already ended, event logged).
 
     Cheap on the hot path: nothing is read again while the file's (mtime, size) stays the same. A mismatch must last
-    `grace` seconds before it counts, so a write by another Javis process (stamp first, file a moment later) is
+    `grace` seconds before it counts, so a write by another TTTOS process (stamp first, file a moment later) is
     never taken for an attack. No stamp yet (first run of this version) = adopt the current block silently."""
     grace = AUTH_GUARD_GRACE if grace is None else grace
     with _SETTINGS_LOCK:
@@ -1206,7 +1206,7 @@ def auth_guard_check(grace: float = None):
             security_log.forget_networks()
         except Exception:  # noqa: BLE001
             pass
-        print(f"[auth] settings.json: the account block ({', '.join(changed)}) was changed OUTSIDE Javis. "
+        print(f"[auth] settings.json: the account block ({', '.join(changed)}) was changed OUTSIDE TTTOS. "
               f"All {n} sessions were ended.", file=__import__('sys').stderr)
         return {"changed": changed}
 
@@ -1275,7 +1275,7 @@ def apply_tool_env(cfg=None):
 
 
 def child_utf8_env(env=None, os_name=None) -> dict:
-    """Windows: every child process Javis starts (engine CLIs, and through them the shell commands and Python scripts a
+    """Windows: every child process TTTOS starts (engine CLIs, and through them the shell commands and Python scripts a
     Team member or a chat turn runs) prints UTF-8. Without it a Python child writing Vietnamese to a pipe uses the ANSI
     code page (cp1252) and dies with UnicodeEncodeError (customer report 0.270, codes 5 and 22). PYTHONUTF8 turns on UTF-8
     mode (3.7+); PYTHONIOENCODING also covers older or embedded interpreters. A value the user set is kept. Applied when
@@ -1305,12 +1305,12 @@ def auth_enabled(cfg=None):
 
 
 def require_login():
-    """Có BẮT BUỘC đăng nhập để dùng Javis không (kể cả khi CHƯA đặt mật khẩu → ép setup).
+    """Có BẮT BUỘC đăng nhập để dùng TTTOS không (kể cả khi CHƯA đặt mật khẩu → ép setup).
     - JAVIS_REQUIRE_LOGIN=1/0 ép bật/tắt tường minh.
     - Built-in remote access (Cloudflare Tunnel, remote_tunnel.py) is on → True.
     - Mặc định: BẬT khi server nghe public (JAVIS_HOST=0.0.0.0, vd Docker/Hostinger/VPS) -
       vì Claude chạy full quyền, không được để hở ai cũng vào được."""
-    # The built-in Cloudflare Tunnel (remote_tunnel.py) puts a localhost-only Javis on the Internet, which the bind
+    # The built-in Cloudflare Tunnel (remote_tunnel.py) puts a localhost-only TTTOS on the Internet, which the bind
     # address below cannot see. It wins over an explicit JAVIS_REQUIRE_LOGIN=0 for the same reason.
     try:
         if (read_settings().get("remote_tunnel") or {}).get("enabled"):
@@ -1561,7 +1561,7 @@ def valid_session(token):
     if not token:
         return False
     try:
-        auth_guard_check()   # an account block edited outside Javis ends every session (see auth_guard_check)
+        auth_guard_check()   # an account block edited outside TTTOS ends every session (see auth_guard_check)
     except Exception:  # noqa: BLE001
         pass
     if token not in SESSIONS:
@@ -1708,7 +1708,7 @@ def drop_session_by_id(sid: str) -> bool:
 _TOKENS_PATH = STATE_DIR / ".api_tokens.json"
 TOKEN_PREFIX = "jvs_"
 # Đường mà token scope `chat` được đi. Danh sách TRẮNG, khớp theo tiền tố: thiếu tên nào thì
-# token đó bị từ chối chứ không lọt - fail-closed, đúng nếp của mọi hàng rào khác trong Javis.
+# token đó bị từ chối chứ không lọt - fail-closed, đúng nếp của mọi hàng rào khác trong TTTOS.
 TOKEN_SCOPE_CHAT = ("/chat", "/version", "/health", "/sessions")
 
 

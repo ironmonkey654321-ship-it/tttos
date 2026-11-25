@@ -3,7 +3,7 @@
 Spec 9.2 and 16.1: the skill `description` is its own behaviour surface. A routing candidate changes
 only that value; the body, every other frontmatter key, name, enabled state and group stay byte-equal.
 
-The evaluator measures Javis's own lazy router (the deterministic `LazySkillSource._score` ranking
+The evaluator measures TTTOS's own lazy router (the deterministic `LazySkillSource._score` ranking
 used for API engines) over two metadata views: the current skills, and the same skills with the
 target's candidate description. Native CLI engines choose skills by model judgement; that routing is
 not measured here and reports must say so.

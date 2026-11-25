@@ -109,7 +109,7 @@ NGUON_DEFAULT = "agent"
 #   "suggest" - chỉ đọc. Không có tool nào cả (xem `main._bot_tra_loi`). MẶC ĐỊNH.
 #   "read_docs" - đọc tài liệu (0.80.0). Vẫn không ghi, không gọi nguồn dữ liệu nào, nhưng bot có
 #               ba tool chỉ-đọc để TỰ tìm và mở tài liệu trong brain của nó (`chatbot_doc_tools`),
-#               thay vì chỉ trông vào vài đoạn Javis khớp chữ sẵn. Riêng mức này không có tên bên
+#               thay vì chỉ trông vào vài đoạn TTTOS khớp chữ sẵn. Riêng mức này không có tên bên
 #               hub cũ: hub nhận đúng chữ này và trả ba tool đó, không gì khác. Không lấy đi thứ gì
 #               mà phần tra sẵn chưa lấy, nên KHÔNG đòi xác nhận rủi ro.
 #   "auto"    - đọc + GHI file trong brain của chính bot, gọi được MCP đã đấu ở mức đọc/ghi.
@@ -144,7 +144,7 @@ def nhan_muc(muc: str) -> str:
 #
 # Nhưng "nói đúng cái mất được" KHÔNG có nghĩa là kể tên việc của một ngành. Bản đầu viết
 # "tạo đơn, tiêu tiền quảng cáo, đăng bài" - đọc lọt tai với người bán hàng, và vô nghĩa với
-# người dùng Javis để quản lý dự án, chăm sức khoẻ hay dạy học. Tệ hơn: người đó đọc xong
+# người dùng TTTOS để quản lý dự án, chăm sức khoẻ hay dạy học. Tệ hơn: người đó đọc xong
 # tưởng cảnh báo không áp cho mình. Nên tả theo LOẠI THAO TÁC (gửi đi, thanh toán, đặt/huỷ,
 # xoá, công bố) - đúng cách `mcp_catalog` phân loại, và đúng cho mọi nguồn dữ liệu đấu vào.
 _CANH_BAO = {
@@ -153,7 +153,7 @@ _CANH_BAO = {
         "trong brain đổi thật, không có bước duyệt.",
         "Bot gọi được các nguồn dữ liệu (MCP) bạn đã đấu, ở mức đọc và ghi. Mọi thứ trong "
         "những nguồn đó nằm trong tầm với của người đang chat với bot.",
-        "Javis vẫn CHẶN cứng nhóm thao tác RA NGOÀI ở mức này: không gửi đi, không thanh toán, "
+        "TTTOS vẫn CHẶN cứng nhóm thao tác RA NGOÀI ở mức này: không gửi đi, không thanh toán, "
         "không đặt hay huỷ, không xoá, không công bố gì.",
         "Bot vẫn KHÔNG thấy brain khác, không chạy lệnh máy, không ra được ngoài máy.",
     ],
@@ -178,7 +178,7 @@ _CANH_BAO_EN = {
         "in the brain really changes, with no review step.",
         "The bot can call the data sources (MCP) you connected, for reading and writing. Everything in "
         "those sources is within reach of whoever is chatting with the bot.",
-        "Javis still hard-BLOCKS OUTSIDE actions at this level: nothing is sent, paid, "
+        "TTTOS still hard-BLOCKS OUTSIDE actions at this level: nothing is sent, paid, "
         "booked or cancelled, deleted or published.",
         "The bot still CANNOT see other brains, run machine commands or reach outside the machine.",
     ],

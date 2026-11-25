@@ -110,7 +110,7 @@ function stopCurrent() {
   syncActiveUI();
 }
 function handsFreeActive() { return typeof handsFree !== "undefined" && handsFree; }
-// 0.188.0 (Javis Core spec 9): one line in the chat saying the open chat belongs to another brain, with a button to
+// 0.188.0 (TTTOS Core spec 9): one line in the chat saying the open chat belongs to another brain, with a button to
 // switch the dashboard to it. TTTOS already answers on that chat's brain (server side); this makes it visible.
 function veNhanBrain(ten, uiVal) {
   try {
@@ -1345,7 +1345,7 @@ function handleMessage(data) {
     // Tin do việc chạy NỀN đẩy vào (việc Kanban / loop / nhắc hẹn xong), không thuộc lượt
     // hỏi-đáp nào. KHÔNG đụng turns[sid]: lượt đang chạy (nếu có) vẫn stream bình thường,
     // tin này chỉ chèn thêm một bong bóng. Server đã lưu vào kho phiên nên F5 vẫn còn.
-    // 0.204.0: a "call me" reminder rings whichever chat is open. Its message usually lands in the brain's Javis Core
+    // 0.204.0: a "call me" reminder rings whichever chat is open. Its message usually lands in the brain's TTTOS Core
     // chat (a reminder made without a chat id), so ringing only when that chat was the open one meant no call at all.
     const daGoi = goiDenTheoLich(data.content || "");
     if (isActive) {

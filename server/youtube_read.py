@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""youtube_read.py - Đọc NỘI DUNG một video YouTube (phụ đề/transcript) để Javis tóm tắt được.
+"""youtube_read.py - Đọc NỘI DUNG một video YouTube (phụ đề/transcript) để TTTOS tóm tắt được.
 
-Vì sao có file này: người dùng dán link YouTube vào khung chat và mong Javis tóm tắt. Trước đây
-Javis luôn báo "không đọc được", vì:
+Vì sao có file này: người dùng dán link YouTube vào khung chat và mong TTTOS tóm tắt. Trước đây
+TTTOS luôn báo "không đọc được", vì:
   - Sáu engine API (OpenRouter, OpenAI, Anthropic, Gemini, Groq, Ollama) KHÔNG có WebFetch,
     tức không mở được URL nào cả.
   - Ba engine CLI có WebFetch, nhưng trang YouTube là một khung React rỗng: tải HTML về chỉ
@@ -22,12 +22,12 @@ Hai đường lấy playerResponse, thử lần lượt vì không đường nà
 Không cần API key, không cần đăng nhập, không thêm thư viện (chỉ httpx đã có sẵn).
 
 GIỚI HẠN phải nói thẳng với người dùng khi gặp, đừng hứa suông:
-  - Video KHÔNG có phụ đề (kể cả phụ đề máy nghe) thì không có gì để đọc. Javis chỉ còn tiêu
+  - Video KHÔNG có phụ đề (kể cả phụ đề máy nghe) thì không có gì để đọc. TTTOS chỉ còn tiêu
     đề + mô tả, và phải nói rõ là chưa đọc được nội dung.
   - Video riêng tư, giới hạn tuổi, hoặc bị chặn theo vùng thì YouTube từ chối ngay từ bước
     playerResponse.
   - YouTube có thể chặn IP máy chủ (hay gặp trên VPS) bằng màn "xác nhận không phải robot".
-    Đó là chặn phía YouTube, không phải lỗi cấu hình của Javis.
+    Đó là chặn phía YouTube, không phải lỗi cấu hình của TTTOS.
 """
 from __future__ import annotations
 
@@ -64,11 +64,11 @@ def _proxy() -> str:
     dấu dải IP của các nhà cung cấp máy chủ (AWS, Google Cloud, Azure, VPS giá rẻ...), nên
     cùng một đoạn mã chạy ở nhà thì trôi chảy còn chạy trên VPS thì bị hỏi giấy. Đổi client
     giúp được một phần, nhưng khi cả dàn client lẫn yt-dlp đều bị chặn thì thứ duy nhất còn
-    lại là đứng ở CHỖ KHÁC trên Internet. Các trang tải phụ đề không có phép màu nào Javis
+    lại là đứng ở CHỖ KHÁC trên Internet. Các trang tải phụ đề không có phép màu nào TTTOS
     thiếu; phần lớn chỉ chạy từ IP dân cư hoặc proxy dân cư xoay vòng.
 
     Tách riêng khỏi HTTPS_PROXY của hệ thống có chủ ý: đặt HTTPS_PROXY là ĐẨY TOÀN BỘ lưu
-    lượng của Javis qua đó, gồm cả gọi model và MCP - vừa chậm vừa lộ dữ liệu cho bên thứ ba.
+    lượng của TTTOS qua đó, gồm cả gọi model và MCP - vừa chậm vừa lộ dữ liệu cho bên thứ ba.
     Biến này chỉ đổi đường cho đúng phần đi YouTube.
     """
     return str(os.getenv("JAVIS_YOUTUBE_PROXY", "") or "").strip()
@@ -233,7 +233,7 @@ _CLIENT_SPECS = [
 # Trang giả làm nơi nhúng video. PHẢI là một URL KHÔNG thuộc YouTube: ý nghĩa của client nhúng
 # là giả một trang BÊN NGOÀI đang nhúng video, nên khai embedUrl là youtube.com vừa vô nghĩa
 # vừa bị từ chối. yt-dlp dùng đúng giá trị này kèm chú thích "Can be any valid non-YouTube URL"
-# (vá cho issue #14826). Bản trước của Javis khai youtube.com, tức hai client nhúng hỏng sẵn.
+# (vá cho issue #14826). Bản trước của TTTOS khai youtube.com, tức hai client nhúng hỏng sẵn.
 _URL_NHUNG = "https://www.reddit.com/"
 
 
@@ -462,7 +462,7 @@ async def _player_response(client: httpx.AsyncClient, vid: str,
 # đã thua - video bình thường không phải trả cái giá đó.
 #
 # KHÔNG dùng cookie đăng nhập, có chủ ý: video thật sự riêng tư hay bắt đăng nhập theo tài
-# khoản thì vẫn bó tay, nhưng đổi lại Javis không phải giữ phiên YouTube của người dùng trên
+# khoản thì vẫn bó tay, nhưng đổi lại TTTOS không phải giữ phiên YouTube của người dùng trên
 # máy chủ - thứ mà lộ ra là mất luôn tài khoản.
 def _bo_fmt(url: str) -> str:
     """Bỏ tham số fmt= khỏi URL phụ đề: chỗ gọi tự thêm fmt=json3 rồi mới lui về XML."""
@@ -1416,7 +1416,7 @@ async def tu_kiem(url: str, client: Optional[httpx.AsyncClient] = None,
     p("=" * 72)
     if nguon_track:
         ket = "OK"
-        p("KET LUAN: LAY DUOC phu de. Neu Javis van bao loi thi van de nam o tang tren,")
+        p("KET LUAN: LAY DUOC phu de. Neu TTTOS van bao loi thi van de nam o tang tren,")
         p("          khong phai o duong mang.")
     elif da_ket_noi == 0:
         ket = "MANG_HONG"
@@ -1432,7 +1432,7 @@ async def tu_kiem(url: str, client: Optional[httpx.AsyncClient] = None,
         p("          Nhieu kha nang IP may chu bi YouTube danh dau. Doc cot reason o tren de chac.")
         p("")
         p("Cach dut diem: dat JAVIS_YOUTUBE_PROXY=http://user:pass@host:port (proxy dan cu)")
-        p("roi khoi dong lai Javis. Chi rieng luu luong YouTube di qua do.")
+        p("roi khoi dong lai TTTOS. Chi rieng luu luong YouTube di qua do.")
     p("")
     p(f"KET_LUAN={ket}")
     p("Gui NGUYEN KHOI bao cao nay cho nguoi sua loi.")

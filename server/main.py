@@ -1,8 +1,8 @@
 """
-Javis OS - Backend
+TTTOS - Backend
 Kiến trúc: Voice (browser) ⇄ FastAPI WebSocket ⇄ Claude Code CLI subprocess
 
-Javis KHÔNG gọi Anthropic API trực tiếp. Mọi reasoning + tool calling đi qua
+TTTOS KHÔNG gọi Anthropic API trực tiếp. Mọi reasoning + tool calling đi qua
 `claude` CLI đã cài trên máy → tự kế thừa MCP, skills, auth.
 """
 import brain_seed_i18n   # file hạt giống của brain mới theo ngôn ngữ người dùng
@@ -113,18 +113,18 @@ import security_log   # account security log: sign-ins, account changes, outside
 import image_gen      # tạo ảnh bằng gói ChatGPT (OAuth) - Codex Responses + tool image_generation
 import media_gc       # dọn vùng cache media (attachments/ + inbox/) theo hạn tuổi + trần dung lượng
 import inbox         # hòm thư: mọi kết quả chạy nền để lại một mẩu thư bền ở server
-import notify_policy  # 0.403.0: Javis Core decides which notices ring (groups, levels, modes, the owner's reactions)
+import notify_policy  # 0.403.0: TTTOS Core decides which notices ring (groups, levels, modes, the owner's reactions)
 import webpush       # thông báo đẩy trình duyệt (Web Push, tự mã hoá - không thêm thư viện)
 import stt            # nghe tin thoại (Whisper qua Groq) -> chữ, cho kênh Telegram/Zalo
 import luot_dang_chay # sổ lượt chat đang chạy theo brain: tool giao việc tự biết khung chat nào hỏi
 import tool_label     # một dòng mô tả lệnh gọi công cụ (lệnh nào, file nào) cho khối tiến trình
 import turn_plan     # the engine's task plan (TodoWrite, update_plan) for the plan card in the chat
-import nghe_sua       # sửa chữ nghe nhầm theo ngữ cảnh (David -> Javis) + hotwords cho Whisper
+import nghe_sua       # sửa chữ nghe nhầm theo ngữ cảnh (David -> TTTOS) + hotwords cho Whisper
 import transcript_fix  # rewrites what the mic heard at the end of a dictation: the main brain, with the chat as context
 import next_prompt  # suggests the owner's next message after a reply (ghost text, Tab fills it in)
 import auto_background  # picks the light and mid model an Automatic background model runs on
 import job_scorecard    # each background job finds the lightest model that gets it done
-import core_loop        # Javis Core's improvement loop: one loop, many knobs
+import core_loop        # TTTOS Core's improvement loop: one loop, many knobs
 import tool_pins        # the tools a brain calls most are shown directly (one knob of that loop)
 import job_tune         # the owner's side of that loop, from chat (tool javis_tune)
 import phien_am       # từ tiếng Anh -> cách đọc kiểu Việt (đọc loa + so âm câu nghe được)
@@ -143,7 +143,7 @@ import share_store    # link CHIA SẺ CÔNG KHAI của một file trong brain (
 import share_stats    # view counter of those public links
 import share_render   # dựng trang xem cho link chia sẻ (markdown -> html, khung trang)
 import local_open     # open a file outside the brain with the owner's own app (chat links)
-import usage_store   # đếm token/chi phí Javis tự đo (đa nhà cung cấp)
+import usage_store   # đếm token/chi phí TTTOS tự đo (đa nhà cung cấp)
 import usage_index   # dashboard token: index log thô Claude+Codex + query summary/insights
 import usage_parsers as up_parsers   # bảng giá + khớp model, dùng chung với indexer
 import usage_saving   # tiết kiệm đối chứng ngược, mốc sự kiện, dự báo, ngân sách
@@ -159,9 +159,9 @@ import readonly_path_runtime # Phase 6: exact-schema, two-round read-only canary
 import readonly_orchestrator # Phase 7: checkpointed multi-round read-only DAG
 import adaptive_context_runtime # Phase 8: state + sourced memory + lazy skill canaries
 import agent_runtime           # Phase 11: agent = workflow có quyền replan trong quyền đã cấp
-import resonance               # Javis Resonance MVP: một lượt engine chỉ chữ + receipt do host quan sát
-import resonance_store         # Javis Resonance MVP: kho mục tiêu SQLite có revision (M2)
-import resonance_api           # Javis Resonance MVP: API thẻ mục tiêu và phản hồi (M4)
+import resonance               # TTTOS Resonance MVP: một lượt engine chỉ chữ + receipt do host quan sát
+import resonance_store         # TTTOS Resonance MVP: kho mục tiêu SQLite có revision (M2)
+import resonance_api           # TTTOS Resonance MVP: API thẻ mục tiêu và phản hồi (M4)
 import agent_presence          # Auto registry in step with the assistant files (pack reinstall, 2026-11-11)
 import limit_learner          # học hạn mức từ chính lỗi nhà cung cấp trả về
 import limit_resume           # tự chạy lại lượt chat khi gói thuê bao mở lại hạn mức
@@ -195,7 +195,7 @@ import agent_tags   # tag của agent (0.100.0): nhiều tag, nhóm cũ thành m
 import cli_autoinstall   # trạng thái agy/grok do container Docker tự cài (0.85.1)
 import agent_assets      # tài liệu & link gắn vào MỘT trợ lý (lưu trong frontmatter agent)
 import workflow_chat     # persona_cua_phien: kênh agent:/workflow: đổi cách _do_turn chạy lượt
-import javis_core        # Javis Core (0.185.0): system assistant pinned in every brain
+import javis_core        # TTTOS Core (0.185.0): system assistant pinned in every brain
 import main_prompt_rendering  # pure shared prompt blocks; no live reads
 import main_attachment_rendering  # pure shared attachment templates; no live reads
 import memory_control    # 0.188.0: list/edit/forget memories, learning switch, person profile
@@ -213,7 +213,7 @@ import conversations     # Hộp thư hội thoại khách: kho khách -> hội 
 import customer_profile  # what a bot remembers about one customer, written by the background model (2026-11-12)
 import zalo_personal_channel   # Hộp thư hội thoại: đọc tin Zalo cá nhân từ MCP theo cursor
 import zalo_push               # javis-zalo wakes the read loop when a message arrives (no timer)
-import deploy_info              # Javis đang đứng ở đâu (docker/native) - xem _deploy_mode
+import deploy_info              # TTTOS đang đứng ở đâu (docker/native) - xem _deploy_mode
 import node_security            # News item when this machine's Node.js misses a security release
 import ollama_catalog           # danh mục model để gợi ý + tìm kiếm
 import ollama_local             # dò/tải/gỡ model trên máy chạy Ollama
@@ -241,9 +241,9 @@ import warm_pool  # 0.382.0: engine processes kept warm between the owner's chat
 import claude_warm  # 0.382.0: Claude Code chat turns on a warm process
 import codex_realtime  # ChatGPT Live: một Codex app-server sống lâu, realtime trên gói ChatGPT (0.65.17)
 import voice_persona  # a voice call from a partner's chat speaks as that partner
-import voice_call     # nút mic là gọi Javis: tự chọn ChatGPT Live / Live API / Cơ bản (0.65.18)
+import voice_call     # nút mic là gọi TTTOS: tự chọn ChatGPT Live / Live API / Cơ bản (0.65.18)
 
-app = FastAPI(title="Javis OS")
+app = FastAPI(title="TTTOS")
 _CHAT_RUNTIME = ChatRuntime()
 
 
@@ -278,7 +278,7 @@ _WRITE_PATH = None
 # Tham số write ĐÃ ĐƯỢC DUYỆT, giữ trong RAM theo invocation_id. Cố ý KHÔNG persist:
 # raw arguments không được vào runtime store (bất biến privacy từ Phase 0). Hệ quả có
 # chủ đích: khởi động lại tiến trình là mất phần duyệt, và lượt xác nhận fail-closed
-# thay vì chạy một hành động ghi mà Javis không còn đọc lại được tham số.
+# thay vì chạy một hành động ghi mà TTTOS không còn đọc lại được tham số.
 _WRITE_PENDING_ARGS: dict[str, dict] = {}
 _WRITE_PENDING_ARGS_MAX = 64
 _REGISTRY_SHADOW_TASKS = set()
@@ -347,7 +347,7 @@ _AUTH_PUBLIC_EXACT = ("/", "/favicon.ico", "/health", "/auth/status", "/auth/log
                       # app (OAuth v4); the unguessable `state` from an authenticated /zalo-oa/oauth/start is the check.
                       "/zalo-oa/oauth/callback",
                       # /wechat/webhook: WeChat calls it with no cookie. GET is the URL check, POST a follower's
-                      # message; both are checked in the route against the signature made with Javis's own token.
+                      # message; both are checked in the route against the signature made with TTTOS's own token.
                       "/wechat/webhook",
                       # /chatbot-api/v1/turn (0.459.0): a server of the owner asks one Chatbot. No cookie; the route
                       # checks the source address and the key of an internal API channel account itself
@@ -384,7 +384,7 @@ def duong_dan_router(request) -> str:
         -> router vẫn chạy                /agents (endpoint thật, cần đăng nhập)
 
     Đo thật trên chính app này ngày 16/09: request đó trả 200 kèm danh sách trợ lý thay vì
-    401, tức LÁCH HẲN cổng đăng nhập của mọi Javis mở ra Internet. scope["path"] là đường
+    401, tức LÁCH HẲN cổng đăng nhập của mọi TTTOS mở ra Internet. scope["path"] là đường
     dẫn router dùng, không dính header Host, nên hàng rào và endpoint đọc cùng một thứ.
     """
     return request.scope.get("path") or ""
@@ -557,7 +557,7 @@ class _NenTinh:
     Vì sao cần nén: dashboard nạp 42 file js/css. Đo trên repo này 1.631 KB không nén, gzip
     xuống 496 KB (giảm 69%). Mà `root()` đóng dấu `?v=<phiên bản>` lên MỌI file, nên mỗi bản
     cập nhật là 42 URL đổi một lượt, cache `immutable` trượt sạch, trình duyệt kéo lại trọn
-    1,6 MB. Đó đúng là câu "update Javis xong vào chậm" người dùng báo (06/09).
+    1,6 MB. Đó đúng là câu "update TTTOS xong vào chậm" người dùng báo (06/09).
 
     VÌ SAO KHÔNG `app.add_middleware(GZipMiddleware)` THẲNG - đây là phần dễ làm sai nhất:
     GZipMiddleware của Starlette NUỐT TRỌN response streaming rồi mới trả một cục. Đo thật
@@ -566,7 +566,7 @@ class _NenTinh:
         không nén : chunk về ở 0,01s / 0,31s / 0,61s / 0,91s / 1,21s
         có nén    : CẢ NĂM chunk cùng về ở 1,50s
 
-    Javis có 4 endpoint `text/event-stream` (chat, terminal, việc nền). Bật nén toàn cục là
+    TTTOS có 4 endpoint `text/event-stream` (chat, terminal, việc nền). Bật nén toàn cục là
     người dùng gõ câu hỏi rồi nhìn màn hình trống tới khi câu trả lời xong hẳn - đổi một lỗi
     chậm lấy một lỗi nặng hơn hẳn.
 
@@ -631,8 +631,8 @@ async def _ngon_ngu_thiet_bi(request: Request, call_next):
 
 @app.middleware("http")
 async def _server_timing(request: Request, call_next):
-    """Header `Server-Timing: app;dur=<ms>`: thời gian Javis xử lý một request, đo NGOÀI CÙNG (đặt sau mọi middleware
-    khác). Trình duyệt hiện nó trong tab Network (Timing), kể cả khi đi qua Cloudflare, nên tách được "Javis chậm"
+    """Header `Server-Timing: app;dur=<ms>`: thời gian TTTOS xử lý một request, đo NGOÀI CÙNG (đặt sau mọi middleware
+    khác). Trình duyệt hiện nó trong tab Network (Timing), kể cả khi đi qua Cloudflare, nên tách được "TTTOS chậm"
     với "đường proxy chậm" mà không cần vào máy chủ (audit tốc độ 08/10/2026: qua Cloudflare 5 giây, thẳng VPS 0,4
     giây). Chỉ là một con số thời gian, không lộ dữ liệu gì; không đụng WebSocket."""
     t0 = time.perf_counter()
@@ -677,16 +677,16 @@ PROMPT_KERNEL_MAX_CHARS = 29_200
 
 # Bộ nhớ dài hạn - lưu TRONG vault đang chọn để đi theo vault
 MEMORY_SEED = (
-    "# Bộ nhớ Javis - Index\n\n"
-    "> Chỉ mục bộ nhớ dài hạn của Javis. Mỗi dòng = 1 ký ức, trỏ tới file trong `facts/`.\n"
-    "> Nội dung file này được nạp vào đầu mỗi câu hỏi để Javis nhớ ngữ cảnh.\n\n"
-    "_(Chưa có ký ức nào. Javis sẽ học dần sau mỗi hội thoại.)_\n"
+    "# Bộ nhớ TTTOS - Index\n\n"
+    "> Chỉ mục bộ nhớ dài hạn của TTTOS. Mỗi dòng = 1 ký ức, trỏ tới file trong `facts/`.\n"
+    "> Nội dung file này được nạp vào đầu mỗi câu hỏi để TTTOS nhớ ngữ cảnh.\n\n"
+    "_(Chưa có ký ức nào. TTTOS sẽ học dần sau mỗi hội thoại.)_\n"
 )
 
 def _atomic_write_text(path, content: str, encoding: str = "utf-8"):
     """Ghi file nguyên tử: viết ra .tmp cùng thư mục → fsync → os.replace.
 
-    Mặc định write_text() ghi trực tiếp; nếu Javis crash hoặc mất điện
+    Mặc định write_text() ghi trực tiếp; nếu TTTOS crash hoặc mất điện
     giữa chừng, file (loop_config.json, automations.json, memory .md...)
     sẽ bị cắt cụt → JSON corrupt / frontmatter hỏng. Pattern port từ
     hermes-agent/utils.py:atomic_replace - bảo đảm reader luôn thấy bản
@@ -767,7 +767,7 @@ def _gop_memory_lac_chu_hoa(root: Path, mem: Path) -> None:
     VÌ SAO CÓ HÀM NÀY (vụ 06/09/2026)
     Linux phân biệt hoa thường, nên `Memory/` và `memory/` là HAI thư mục thật sự khác nhau -
     trên máy Mac thì không, nên lỗi này không bao giờ lộ ra lúc chạy thử. Tài liệu của chính
-    Javis lại dạy sai đường: CLAUDE.md và AGENTS.md seed vào mỗi brain đều viết `Memory/` hoa,
+    TTTOS lại dạy sai đường: CLAUDE.md và AGENTS.md seed vào mỗi brain đều viết `Memory/` hoa,
     trong khi MỌI đường đọc đều lấy `memory/` thường. Model làm theo tài liệu, ghi ký ức vào
     `Memory/`, và ký ức đó BIẾN MẤT: không vào chỉ mục nạp mỗi lượt, không vào memory_index,
     còn `/brain/migrate` thì từ chối gộp vì "memory đã tồn tại". Không một dòng lỗi nào.
@@ -878,10 +878,10 @@ def _project_block(project_id: str, chi_huong_dan: bool = False) -> str:
     ĐỒNG HÀNH XỬ ("luôn trả lời bằng tiếng Anh", "tránh màu xanh dương"), còn danh sách tài
     liệu là dữ liệu TRA CỨU. Bỏ dữ liệu tra cứu lúc siết ngân sách thì model cùng lắm phải hỏi
     lại; bỏ hợp đồng hành xử thì cùng một project, cùng một câu hỏi, lượt này tuân luật lượt
-    kia không - và người dùng không có cách nào biết vì sao, chỉ thấy Javis bướng.
+    kia không - và người dùng không có cách nào biết vì sao, chỉ thấy TTTOS bướng.
 
     GHIM FILE = NẠP NỘI DUNG. Spec ban đầu chỉ liệt kê tên và thêm chữ "(ghim)", tức là ghim
-    chỉ đổi thứ tự danh sách. Nhưng người dùng ghim bảng giá vào project thì họ nghĩ Javis đã
+    chỉ đổi thứ tự danh sách. Nhưng người dùng ghim bảng giá vào project thì họ nghĩ TTTOS đã
     BIẾT bảng giá, chứ không phải biết TÊN nó. Nạp nội dung mới làm cái nút ghim thành công
     tắc thật, và trần ở trên để chính họ cầm cán cân token.
     """
@@ -948,11 +948,11 @@ def _session_block(session_id: str) -> str:
 
     Song sinh với `_project_block`, và cố ý cùng trần token: project là "luôn dùng cho mọi
     cuộc trong nhóm", còn cái này là "chỉ cuộc này". Không có nó thì nút thêm file chỉ là một
-    danh sách để ngắm - người dùng gắn bảng giá vào cuộc rồi hỏi ngay, và Javis trả lời như
+    danh sách để ngắm - người dùng gắn bảng giá vào cuộc rồi hỏi ngay, và TTTOS trả lời như
     chưa hề thấy gì.
 
     Ghim thì NẠP NỘI DUNG, y như project: gắn tên vào cho biết chỗ mà tìm, ghim vào là bảo
-    Javis đọc sẵn.
+    TTTOS đọc sẵn.
     """
     if not session_id:
         return ""
@@ -1002,8 +1002,8 @@ def _agent_assets_block(brain: str, meta: dict) -> str:
 
 
 def _javis_core_block(session_id: str) -> str:
-    """Javis Core's role block when `session_id` is a Javis Core chat, else "" (0.185.0). It ends with the name and
-    style the person gave Javis Core in that chat's brain (owner, 04/11/2026)."""
+    """TTTOS Core's role block when `session_id` is a TTTOS Core chat, else "" (0.185.0). It ends with the name and
+    style the person gave TTTOS Core in that chat's brain (owner, 04/11/2026)."""
     try:
         row = get_store().get_session(session_id) if session_id else None
     except Exception:
@@ -1071,7 +1071,7 @@ def _turn_facts_header(brain: str, session_id: str, lang: str = "", first: bool 
         try:
             _t = usage_store.summary().get("today", {}).get("total", {})
             if _t.get("in") or _t.get("out"):
-                lines.append(f"[Mức dùng hôm nay (Javis tự đo, không phải hạn mức gói): "
+                lines.append(f"[Mức dùng hôm nay (TTTOS tự đo, không phải hạn mức gói): "
                              f"{_t.get('in', 0):,} token vào + {_t.get('out', 0):,} token ra qua "
                              f"{_t.get('turns', 0)} lượt. Chi tiết ở panel 'Mức dùng'.]")
         except Exception:  # noqa: BLE001
@@ -1083,7 +1083,7 @@ def build_system_prompt(brain: str = "brain", include_memory: bool = True,
                         include_skills: bool = True,
                         lang: "lang_mod.LangDecision | str | None" = None,
                         project_id: str = "", session_id: str = "", stable: bool = False) -> str:
-    """CLAUDE.md + nạp MEMORY.md của vault đang chọn → Javis luôn nhớ ngữ cảnh.
+    """CLAUDE.md + nạp MEMORY.md của vault đang chọn → TTTOS luôn nhớ ngữ cảnh.
 
     `stable` (0.445.0, issue #975): leave out what changes from turn to turn (the clock, today's
     usage, the latest workflow run) so the prompt is byte-identical across new chats of one brain.
@@ -1132,7 +1132,7 @@ def build_system_prompt(brain: str = "brain", include_memory: bool = True,
         except Exception:
             pass
         base += _javis_core_block(session_id)
-    # Đường dẫn lớp Agentic của vault đang làm việc (để Javis tạo agent/workflow/loop qua chat)
+    # Đường dẫn lớp Agentic của vault đang làm việc (để TTTOS tạo agent/workflow/loop qua chat)
     root = _brain_root(brain)
     system_sync.ensure_synced(root)   # brain nào cũng có đủ năng lực hệ thống (1 lần/process, rẻ)
     try:
@@ -1169,14 +1169,14 @@ def build_system_prompt(brain: str = "brain", include_memory: bool = True,
     # mỗi lần trên brain 30 skill. Lỗi thì để None và mỗi khối tự quét như cũ.
     # Quét LUÔN, kể cả khi bỏ khối router. Khối "NĂNG LỰC JAVIS HIỆN CÓ" chỉ ĐẾM skill và
     # liệt kê tên nhóm (vài chục ký tự), nên nó không phải chỗ tốn token; nhưng đưa cho nó một
-    # danh sách rỗng thì Javis sẽ tự khai là mình không có skill nào - một câu SAI, và sai theo
+    # danh sách rỗng thì TTTOS sẽ tự khai là mình không có skill nào - một câu SAI, và sai theo
     # hướng khiến nó đi tạo lại thứ đã có.
     try:
         _skills = skill_router.list_skills(root, _lma)
     except Exception:
         _skills = None
     try:
-        base += _javis_capability_summary(brain, _skills, with_last_run=not stable)   # chỉ mục năng lực LIVE (mọi engine biết Javis có gì)
+        base += _javis_capability_summary(brain, _skills, with_last_run=not stable)   # chỉ mục năng lực LIVE (mọi engine biết TTTOS có gì)
     except Exception:
         pass
     try:
@@ -1185,7 +1185,7 @@ def build_system_prompt(brain: str = "brain", include_memory: bool = True,
     except Exception:
         pass
     # Đồng hồ. Cùng một dòng với capsule của đường tiết kiệm (context_compiler.dong_ho), để
-    # bật hay tắt tiết kiệm thì Javis vẫn biết bây giờ mấy giờ y như nhau. Model không có
+    # bật hay tắt tiết kiệm thì TTTOS vẫn biết bây giờ mấy giờ y như nhau. Model không có
     # đồng hồ, và tool `javis_now` thì không phải đường nào cũng phát tool.
     # Khối NGÔN NGỮ + đồng hồ đi CÙNG NHAU và đi CUỐI, sát chỗ model bắt đầu trả lời.
     # Ngôn ngữ đặt ở cuối vì luật càng gần chỗ sinh chữ thì model càng ít trôi; đồng hồ
@@ -1196,7 +1196,7 @@ def build_system_prompt(brain: str = "brain", include_memory: bool = True,
     if stable:
         return base   # usage goes in _turn_facts_header
     try:
-        # 1 dòng MỨC DÙNG để Javis TRẢ LỜI được khi user hỏi "token tiêu bao nhiêu" (chi tiết ở panel).
+        # 1 dòng MỨC DÙNG để TTTOS TRẢ LỜI được khi user hỏi "token tiêu bao nhiêu" (chi tiết ở panel).
         _t = usage_store.summary().get("today", {}).get("total", {})
         base += main_prompt_rendering.render_usage_block(_t)
     except Exception:
@@ -1276,7 +1276,7 @@ def build_adaptive_source_prompt(brain: str = "brain", include_memory: bool = Fa
     loops = Path(root) / "Javis" / "loops"
     skills = _skills_dir(brain)
     parts = [
-        "# Javis adaptive source contract",
+        "# TTTOS adaptive source contract",
         f"Brain root: {root}",
         "MCP Hub và tool gateway là nguồn capability live. Chỉ gọi tool được cung cấp; "
         "không bịa tool, dữ liệu live hay kết quả hành động.",
@@ -1317,7 +1317,7 @@ from secret_redact import redact_secrets as _redact_secrets  # noqa: E402
 # Cap kích thước mỗi message khi ghi conversation log - port head/tail truncation
 # từ hermes-agent/agent/prompt_builder.py::_truncate_content. conversations/*.md là
 # "nguyên liệu để học" (rewire đọc lại) VÀ bị git commit; user paste 1 source dài
-# hoặc Javis trả báo cáo dài → log phình, rewire tốn token, repo nặng. Giữ đầu +
+# hoặc TTTOS trả báo cáo dài → log phình, rewire tốn token, repo nặng. Giữ đầu +
 # đuôi (đủ ngữ cảnh để học), bỏ giữa, ghi rõ đã cắt bao nhiêu ký tự.
 _LOG_MSG_MAX_CHARS = 4000
 _LOG_HEAD_CHARS = 2800
@@ -1341,13 +1341,13 @@ def log_conversation(brain: str, user_msg: str, javis_msg: str):
         f = conv / f"{now.strftime('%Y-%m-%d')}.md"
         u = _clip_for_log(_redact_secrets(user_msg))
         j = _clip_for_log(_redact_secrets(javis_msg))
-        entry = f"\n## {now.strftime('%H:%M')}\n**Bạn:** {u}\n\n**Javis:** {j}\n"
+        entry = f"\n## {now.strftime('%H:%M')}\n**Bạn:** {u}\n\n**TTTOS:** {j}\n"
         with open(f, "a", encoding="utf-8") as fh:
             fh.write(entry)
     except Exception as e:
         print(f"[memory log error] {e}", file=__import__('sys').stderr)
 
-# Working directory cho Claude CLI - mặc định là root project Javis OS
+# Working directory cho Claude CLI - mặc định là root project TTTOS
 # để Claude đọc được CLAUDE.md và truy cập MCPs cài globally
 CLAUDE_CWD = os.getenv("CLAUDE_CWD", str(Path(__file__).parent.parent))
 
@@ -1460,7 +1460,7 @@ async def root():
     # Trước đây mọi file mang `?v=<phiên bản app>`, nên bump VERSION là 42 URL đổi MỘT LƯỢT
     # dù phần lớn file không hề sửa. Cộng với `max-age=31536000, immutable` ở middleware trên,
     # mỗi bản cập nhật bắt trình duyệt tải lại trọn bộ tài sản tĩnh - đúng câu người dùng báo
-    # 06/09: "update Javis xong nó load vào chậm". Sửa một dòng lỗi chính tả trong console.js
+    # 06/09: "update TTTOS xong nó load vào chậm". Sửa một dòng lỗi chính tả trong console.js
     # không có lý do gì bắt tải lại cả graph.js lẫn lucide-icons.js.
     #
     # `fps` ngay dòng trên đã có sẵn crc32 từng file (dùng cho freshness.js), nên đổi khoá
@@ -1732,7 +1732,7 @@ def _doi_phien_that(request: Request):
 
 
 def _ten_hien_thi(cfg=None) -> str:
-    """Tên NGƯỜI để hiện trong app Authenticator, sau tên workspace: "Javis OS: Minh Quý".
+    """Tên NGƯỜI để hiện trong app Authenticator, sau tên workspace: "TTTOS: Minh Quý".
 
     Thứ tự ưu tiên có lý do: `USER_NAME` là tên người dùng tự đặt cho chính mình, còn
     `auth.username` là tên ĐĂNG NHẬP - thường là "admin", đúng về kỹ thuật nhưng vô nghĩa khi
@@ -1767,7 +1767,7 @@ async def auth_2fa_start(request: Request):
     _TOTP_CHO.clear()
     _TOTP_CHO.update(secret=secret, ts=time.time())
     uri = totp.otpauth_uri(secret, _ten_hien_thi(cfg),
-                           cfg.get("workspace_name") or "Javis OS")
+                           cfg.get("workspace_name") or "TTTOS")
     return {"ok": True, "secret": secret, "uri": uri, "qr_svg": totp.qr_svg(uri)}
 
 
@@ -1997,9 +1997,9 @@ async def auth_disable(request: Request, password: str = Form(""), code: str = F
     if cfgmod.require_login() or not _direct_local_request(request):
         return JSONResponse({"ok": False, "error": localefmt.chu(
             "Không tắt được đăng nhập trên máy mở ra ngoài (VPS, Docker, tunnel). Chỉ tắt được khi "
-            "mở dashboard ngay trên máy cá nhân chạy Javis.",
+            "mở dashboard ngay trên máy cá nhân chạy TTTOS.",
             "Login cannot be turned off on a server reachable from outside (VPS, Docker, tunnel). "
-            "It can only be turned off from the personal machine running Javis.")}, status_code=403)
+            "It can only be turned off from the personal machine running TTTOS.")}, status_code=403)
     ip = request.client.host if request.client else "?"
     if _login_locked(ip):
         return JSONResponse({"ok": False, "error": localefmt.chu("Quá nhiều lần sai - thử lại sau ít phút.", "Too many failed attempts - try again in a few minutes.")}, status_code=429)
@@ -2094,7 +2094,7 @@ async def auth_sessions_revoke(request: Request, id: str = Form(""), others: str
 
 
 # ============================================================
-# Providers - nhà cung cấp model. MỌI kind đều được cấp MCP Javis + tool file brain + skill;
+# Providers - nhà cung cấp model. MỌI kind đều được cấp MCP TTTOS + tool file brain + skill;
 # khác nhau ở ĐƯỜNG đi và ở việc chạy được lệnh máy hay không:
 #   kind=cli   (Claude Code, Gemini CLI) - MCP native + Bash, chạy lệnh máy
 #   kind=oauth (ChatGPT qua Codex) - MCP native + kho MCP gốc Codex, chạy lệnh máy
@@ -2150,7 +2150,7 @@ PROVIDER_DEFS = [   # thứ tự = thứ tự hiển thị card ở trang Models
     {"id": "deepseek",      "label": "DeepSeek (API)",          "kind": "api", "key_field": "deepseek_api_key",  "catalog_key": "deepseek",
      "default_models": ["deepseek-flash", "deepseek-v4-pro"]},
     # Ollama Cloud. CỐ Ý không đấu bản chạy trên máy nhà: bản đó đòi một ô địa chỉ riêng, tức
-    # một ca đặc biệt duy nhất xuyên suốt lớp này, trong khi phần đông người dùng Javis chạy
+    # một ca đặc biệt duy nhất xuyên suốt lớp này, trong khi phần đông người dùng TTTOS chạy
     # nó trên VPS - nơi "localhost" là chính cái container chứ không phải máy họ.
     # default_models RỖNG: danh sách model của Ollama đổi luôn, /provider/models nạp bản LIVE.
     {"id": "ollama",        "label": "Ollama Cloud",            "kind": "api", "key_field": "ollama_key",
@@ -2329,7 +2329,7 @@ def _providers_view(cfg):
             item["cai_lenh"] = grok_cli.lenh_cai()
             item["tu_cai"] = cli_autoinstall.state("grok")   # Docker tự cài lúc khởi động (0.85.1)
             item["dang_nhap"] = grok_cli.login_huong_dan()
-            # Phiên nằm trong `~/.grok/auth.json` do chính CLI giữ, Javis không sở hữu nó -
+            # Phiên nằm trong `~/.grok/auth.json` do chính CLI giữ, TTTOS không sở hữu nó -
             # nhưng `grok logout` thì gọi được, nên thẻ CÓ nút Ngắt (khác `agy`).
             item["auth_by_javis"] = False
         if p["id"] == "antigravity-cli":
@@ -2339,8 +2339,8 @@ def _providers_view(cfg):
             item["auth_error"] = _a.get("error", "")
             item["cai_lenh"] = antigravity_cli.lenh_cai()
             item["tu_cai"] = cli_autoinstall.state("agy")    # Docker tự cài lúc khởi động (0.85.1)
-            # The token lives in the OS keyring, which Javis does not hold. Since 05/11/2026 the card still has Disconnect:
-            # it runs the CLI's own sign-out when there is one, else switches the card off in Javis (`javis_off`).
+            # The token lives in the OS keyring, which TTTOS does not hold. Since 05/11/2026 the card still has Disconnect:
+            # it runs the CLI's own sign-out when there is one, else switches the card off in TTTOS (`javis_off`).
             item["auth_by_javis"] = False
             item["javis_off"] = bool(_a.get("javis_off"))
             # Đăng nhập làm trong TERMINAL, không phải trên dashboard - xem
@@ -2460,7 +2460,7 @@ def _aux_swap(cli, mode=None, tag=None):
 
 
 def _side_work_paused() -> str:
-    """A short reason while the work Javis starts on its own (self-learning, the next-message suggestion,
+    """A short reason while the work TTTOS starts on its own (self-learning, the next-message suggestion,
     auto-learning) must wait, "" otherwise. It waits when the plan that work would run on has used most of
     its 5-hour allowance (plan_limits.side_pause) and resumes by itself after the reset. Never raises."""
     try:
@@ -2469,8 +2469,8 @@ def _side_work_paused() -> str:
         return ""
     if not st.get("paused"):
         return ""
-    return localefmt.chu("hạn mức 5 giờ của gói đã dùng {pct}%, việc Javis tự làm nghỉ tới lúc hạn mức mở lại",
-                         "the plan's 5-hour allowance is {pct}% used, Javis's own background work waits for the reset",
+    return localefmt.chu("hạn mức 5 giờ của gói đã dùng {pct}%, việc TTTOS tự làm nghỉ tới lúc hạn mức mở lại",
+                         "the plan's 5-hour allowance is {pct}% used, TTTOS's own background work waits for the reset",
                          pct=st.get("pct") or 0)
 
 
@@ -2488,9 +2488,9 @@ def _scorecard_changed(ch: dict) -> None:
            "probe_failed": localefmt.chu("model nhẹ hơn không làm được việc này",
                                          "the lighter model could not do this job")}.get(ch.get("why"), "")
     text = localefmt.chu(
-        "Việc nền \"{ten}\" chuyển từ {cu} sang {moi}: {ly_do}. Muốn quay lại thì nhắn Javis \"hoàn lại thay đổi "
+        "Việc nền \"{ten}\" chuyển từ {cu} sang {moi}: {ly_do}. Muốn quay lại thì nhắn TTTOS \"hoàn lại thay đổi "
         "model số {ma}\".",
-        "Background job \"{ten}\" moved from {cu} to {moi}: {ly_do}. To go back, tell Javis \"undo model change "
+        "Background job \"{ten}\" moved from {cu} to {moi}: {ly_do}. To go back, tell TTTOS \"undo model change "
         "{ma}\".",
         ten=ch.get("label") or ch.get("job") or "", cu=ch.get("from_model") or "mặc định",
         moi=ch.get("to_model") or "mặc định", ly_do=why, ma=ch.get("id") or "")
@@ -2504,11 +2504,11 @@ def _scorecard_changed(ch: dict) -> None:
 
 job_scorecard.on_change = _scorecard_changed
 
-# ---- Javis Core keeps the lessons about HOW to learn (core_loop.py) ----------------------------------------------
-# They are ordinary lessons of Javis Core in the scoped lesson store (agent_lessons), tagged so the learner loads
+# ---- TTTOS Core keeps the lessons about HOW to learn (core_loop.py) ----------------------------------------------
+# They are ordinary lessons of TTTOS Core in the scoped lesson store (agent_lessons), tagged so the learner loads
 # only these and not Core's lessons about how to talk. The owner sees and revokes them like any assistant's lessons.
 LEARNING_LESSON_TAG = "learning"
-LEARNING_LESSON_HEAD = ("=== BÀI HỌC VỀ CÁCH HỌC (chủ dặn Javis Core hoặc Javis Core rút ra; áp dụng khi quyết định "
+LEARNING_LESSON_HEAD = ("=== BÀI HỌC VỀ CÁCH HỌC (chủ dặn TTTOS Core hoặc TTTOS Core rút ra; áp dụng khi quyết định "
                         "điều gì đáng ghi lại, luật này đứng trên các hướng dẫn bên dưới) ===")
 
 
@@ -2517,7 +2517,7 @@ def _core_lesson_key(brain, register=False):
 
 
 def _learning_lessons(brain) -> list:
-    """Active lessons about how to learn that Javis Core holds for this brain: [{id, text, source}]."""
+    """Active lessons about how to learn that TTTOS Core holds for this brain: [{id, text, source}]."""
     try:
         store = _pulse_store()
         key = _core_lesson_key(brain) if store is not None else None
@@ -2537,7 +2537,7 @@ def _learning_lessons_block(brain) -> str:
 
 
 def _teach_learning(root, text, source="owner") -> int:
-    """Store one lesson about how to learn on Javis Core of this brain. Returns its id."""
+    """Store one lesson about how to learn on TTTOS Core of this brain. Returns its id."""
     store = _resonance_store()
     key = _core_lesson_key(root, register=True)
     return agent_lessons.add(store, agent_key=key, scope="*", kind="method", text=text, source=source,
@@ -2545,7 +2545,7 @@ def _teach_learning(root, text, source="owner") -> int:
 
 
 def _memory_forgotten(mem_dir, info: dict) -> None:
-    """The owner removed a memory. When Javis had learned it on its own, that batch got it wrong: it counts
+    """The owner removed a memory. When TTTOS had learned it on its own, that batch got it wrong: it counts
     against the model that learns, so the next batch runs one rung up (job_scorecard)."""
     if info.get("learned"):
         job_scorecard.feedback("learn", False, note="chủ xoá ghi nhớ: " + str(info.get("title") or "")[:80])
@@ -2555,7 +2555,7 @@ memory_control.on_forget = _memory_forgotten
 
 
 def _improve_notice(text: str, dedup: str) -> None:
-    """One quiet notice from Javis Core's improvement loop, from the event loop or from its worker thread."""
+    """One quiet notice from TTTOS Core's improvement loop, from the event loop or from its worker thread."""
     coro = _notify_owner("", text, kind="system", source="models", level="info", group="cost", dedup=dedup)
     try:
         asyncio.get_running_loop().create_task(coro)
@@ -2570,13 +2570,13 @@ def _improve_notice(text: str, dedup: str) -> None:
 
 
 def _knob_changed(ch: dict) -> None:
-    """A knob of Javis Core's loop moved: one quiet notice, with the reason and the way back."""
+    """A knob of TTTOS Core's loop moved: one quiet notice, with the reason and the way back."""
     if ch.get("actor") == "owner":
         return                      # the owner just asked for it in chat: no need to tell them again
     text = localefmt.chu(
-        "Javis Core vừa chỉnh \"{ten}\" từ {cu} sang {moi}: {ly_do}. Muốn quay lại thì nhắn Javis \"hoàn lại thay "
+        "TTTOS Core vừa chỉnh \"{ten}\" từ {cu} sang {moi}: {ly_do}. Muốn quay lại thì nhắn TTTOS \"hoàn lại thay "
         "đổi {ma}\".",
-        "Javis Core changed \"{ten_en}\" from {cu} to {moi}: {ly_do}. To go back, tell Javis \"undo change {ma}\".",
+        "TTTOS Core changed \"{ten_en}\" from {cu} to {moi}: {ly_do}. To go back, tell TTTOS \"undo change {ma}\".",
         ten=ch.get("title_vi") or ch.get("knob") or "", ten_en=ch.get("title_en") or ch.get("knob") or "",
         cu=ch.get("old"), moi=ch.get("new"), ly_do=ch.get("why") or "", ma=ch.get("id") or "")
     _improve_notice(text, f"knob:{ch.get('id')}")
@@ -2592,17 +2592,17 @@ def _pins_changed(ch: dict) -> None:
     if not ch.get("added"):
         return
     text = localefmt.chu(
-        "Javis ghim sẵn công cụ hay dùng của brain {brain}{bot}: {tools}. Từ giờ các công cụ này được gọi thẳng, bớt "
-        "một vòng tìm mỗi lần dùng. Không muốn thì nhắn Javis \"đừng ghim công cụ nữa\".",
-        "Javis pinned the tools brain {brain}{bot_en} uses most: {tools}. They are now called directly, one search "
-        "round fewer each time. To stop, tell Javis \"stop pinning tools\".",
+        "TTTOS ghim sẵn công cụ hay dùng của brain {brain}{bot}: {tools}. Từ giờ các công cụ này được gọi thẳng, bớt "
+        "một vòng tìm mỗi lần dùng. Không muốn thì nhắn TTTOS \"đừng ghim công cụ nữa\".",
+        "TTTOS pinned the tools brain {brain}{bot_en} uses most: {tools}. They are now called directly, one search "
+        "round fewer each time. To stop, tell TTTOS \"stop pinning tools\".",
         brain=ch.get("brain") or "", bot=" (chatbot)" if ch.get("bot") else "",
         bot_en=" (chatbot)" if ch.get("bot") else "", tools=", ".join(ch.get("added") or []))
     _improve_notice(text, f"pins:{ch.get('key')}:{','.join(ch.get('added') or [])}")
 
 
 tool_pins.on_change = _pins_changed
-# How many tools one brain may pin is a knob of Javis Core's loop; which tools is decided by use (tool_pins.py).
+# How many tools one brain may pin is a knob of TTTOS Core's loop; which tools is decided by use (tool_pins.py).
 core_loop.register(core_loop.Knob(
     id="tools.pin_limit", title_vi="Số công cụ ghim sẵn tối đa mỗi brain", title_en="Tools one brain may pin",
     lo=tool_pins.LIMIT_LO, hi=tool_pins.LIMIT_HI, default=tool_pins.LIMIT_DEFAULT,
@@ -2610,7 +2610,7 @@ core_loop.register(core_loop.Knob(
 
 
 def _improve_tick() -> None:
-    """Javis Core's improvement loop, one pass, in a worker thread: pinned tools follow use, then every knob's
+    """TTTOS Core's improvement loop, one pass, in a worker thread: pinned tools follow use, then every knob's
     rule looks at its counters once. Plain code, no model."""
     tool_pins.tick()
     core_loop.tick()
@@ -2657,10 +2657,10 @@ def _auto_background_notice(provider: str, picks: dict, before: str) -> str:
     light = picks.get("light") or picks.get("mid") or ""
     mid = picks.get("mid") or before or ""
     return localefmt.chu(
-        "Model việc nền đang ở chế độ Tự động ({nha}). Việc Javis tự làm (tự học, gợi ý câu tiếp) chạy bằng "
+        "Model việc nền đang ở chế độ Tự động ({nha}). Việc TTTOS tự làm (tự học, gợi ý câu tiếp) chạy bằng "
         "{nhe}; việc bạn giao chạy nền (nhắc hẹn, loop, Kanban) chạy bằng {giua}. Mục đích là đỡ tốn hạn mức. "
         "Muốn dùng model khác thì đổi ở trang Models, khối Model việc nền.",
-        "The background model is on Automatic ({nha}). Javis's own work (self-learning, next-message suggestions) "
+        "The background model is on Automatic ({nha}). TTTOS's own work (self-learning, next-message suggestions) "
         "runs on {nhe}; the jobs you hand over (reminders, loops, Kanban) run on {giua}. This saves plan allowance. "
         "To use another model, change it on the Models page, Background model block.",
         nha=label, nhe=light or (before or label), giua=mid or label)
@@ -2949,7 +2949,7 @@ def _resonance_turn_agent(conv_sid, brain, get_session):
         session_row = get_session(conv_sid) or {}
         persona = workflow_chat.persona_cua_phien(session_row)
         if javis_core.is_core_channel(session_row.get("channel")):
-            # 2026-11-05: Javis Core has Auto always on, so its chats carry its Resonance identity like an agent's.
+            # 2026-11-05: TTTOS Core has Auto always on, so its chats carry its Resonance identity like an agent's.
             persona = ("agent", javis_core.SLUG)
             javis_core.ensure_file(_brain_root(brain))
             _core_auto_on(brain)
@@ -3067,8 +3067,8 @@ def _resonance_after_turn(conv_sid, brain, user_mid, t0, runtime_trace):
 _TURN_ENGINE: dict = {}
 
 # Sent in the same Claude Code thread when a chat turn ended cleanly with no text at all (0.332.0). Model prompt:
-# Vietnamese, like the other Javis notes to the model.
-EMPTY_ANSWER_NUDGE = ("[Javis] Lượt vừa rồi bạn kết thúc mà không viết chữ nào cho người dùng, nên họ chỉ thấy một "
+# Vietnamese, like the other TTTOS notes to the model.
+EMPTY_ANSWER_NUDGE = ("[TTTOS] Lượt vừa rồi bạn kết thúc mà không viết chữ nào cho người dùng, nên họ chỉ thấy một "
                       "bong bóng trống. Hãy trả lời tin nhắn cuối cùng của họ ngay bây giờ (kể cả khi chỉ là một câu "
                       "ngắn). Việc lượt trước đã làm bằng công cụ là ĐÃ xong, đừng làm lại.")
 
@@ -3145,9 +3145,9 @@ async def _resonance_push_card(conv_sid, brain_root, decision) -> bool:
     key = f"turn:{decision.message_ref}"
     if _resonance_reported(g, key):
         return False
-    text = (localefmt.chu("Javis đã lập mục tiêu từ việc này.", "Javis set a goal from this request.")
+    text = (localefmt.chu("TTTOS đã lập mục tiêu từ việc này.", "TTTOS set a goal from this request.")
             if decision.kind == "create_goal" else
-            localefmt.chu("Javis đã cập nhật cách hiểu mục tiêu.", "Javis updated its understanding of the goal."))
+            localefmt.chu("TTTOS đã cập nhật cách hiểu mục tiêu.", "TTTOS updated its understanding of the goal."))
     return await push_to_chat(conv_sid, text, card=resonance.goal_block(g.id, g.revision, report=key))
 
 
@@ -3199,8 +3199,8 @@ def _resonance_agents_meta(root):
 
 
 def _resonance_agents_meta_core(root):
-    """The Auto page's list: Javis Core first (Auto always on, owner 05/11/2026), then the brain's agents. Teams keep
-    `_resonance_agents_meta`, without Javis Core."""
+    """The Auto page's list: TTTOS Core first (Auto always on, owner 05/11/2026), then the brain's agents. Teams keep
+    `_resonance_agents_meta`, without TTTOS Core."""
     try:
         main_prov = _chat_provider(cfgmod.read_settings().get("model", {}) or {})[0]
     except Exception:  # noqa: BLE001
@@ -3304,7 +3304,7 @@ async def _resonance_tick():
     finally:
         _RESONANCE_TICK_BUSY[0] = False
 
-# Model đã GỠ khỏi Javis mà cài đặt cũ của người dùng có thể còn giữ. `chatgpt-web` (0.64.0 tới
+# Model đã GỠ khỏi TTTOS mà cài đặt cũ của người dùng có thể còn giữ. `chatgpt-web` (0.64.0 tới
 # 0.64.18) chạy bằng một trình duyệt lái trang chatgpt.com, và bị gỡ ở 0.64.20 vì trên máy chủ
 # thuê Cloudflare chặn IP. Ai đang chọn nó thì lượt chat kế tiếp rơi vào nhánh Codex, và nhánh
 # đó TỰ CHỮA: đổi sang model Codex thật, ghi lại cài đặt, báo một dòng. Để điều đó xảy ra thì
@@ -3325,7 +3325,7 @@ def _codex_safe_model(model: str) -> str:
     if m and m not in _MODEL_DA_GO and (m in cat or m.endswith("-codex")):
         return m
     # Catalog rỗng (cài mới/offline): không truyền -m để Codex tự chọn default
-    # hiện hành của chính nó, thay vì Javis đoán một model id rồi sớm lỗi thời.
+    # hiện hành của chính nó, thay vì TTTOS đoán một model id rồi sớm lỗi thời.
     return cat[0] if cat else ""
 
 def _is_codex_model(model: str) -> bool:
@@ -3614,9 +3614,9 @@ def _note_signin_lost(provider: str, account: str = None, now: float = None) -> 
     try:
         name = _route_name(prov)
         inbox.add(localefmt.chu(
-            f"{name} mất đăng nhập. Javis đang chạy bằng model khác đã kết nối (nếu có). "
+            f"{name} mất đăng nhập. TTTOS đang chạy bằng model khác đã kết nối (nếu có). "
             f"Vào trang Models đăng nhập lại {name} để dùng lại model này.",
-            f"{name} lost its sign-in. Javis is running on another connected model (if there is one). "
+            f"{name} lost its sign-in. TTTOS is running on another connected model (if there is one). "
             f"Sign in to {name} again on the Models page to use this model again."),
             kind="system", dedup=f"signed-out:{prov}:{time.strftime('%Y-%m-%d', time.localtime(now))}")
     except Exception as e:  # noqa: BLE001 - a missed notice never fails the turn
@@ -3650,7 +3650,7 @@ def _note_api_limit(mcfg, prov: str, key: str, raw: str = "", seconds: float = 0
 # 0.354.0 (spec 6.4): a chat turn that runs out of quota before writing a word or calling a tool runs again at once on
 # the next route: the next account of the same card, then the next card of the usage order. At most this many hops.
 REROUTE_MAX_HOPS = 3
-# Lines Javis itself writes into the step list; they are not tool calls of the model.
+# Lines TTTOS itself writes into the step list; they are not tool calls of the model.
 _REROUTE_QUIET_TOOLS = ("javis_nen_mach", "javis_autoshrink")
 _ROUTE_SHORT = {"anthropic-cli": "Claude Code", "openai-oauth": "ChatGPT", "grok-cli": "Grok Build",
                 "antigravity-cli": "Antigravity"}
@@ -3795,7 +3795,7 @@ def _chat_provider_for_session(mcfg, row):
     TRONG phiên đó. Ghim hỏng (provider không còn cấu hình) thì rơi về mặc định chung
     thay vì chết lượt chat.
 
-    0.402.0 (owner, 29/10/2026): every Javis Core chat runs on Javis Core's own pin (`_core_pin`), or on the main
+    0.402.0 (owner, 29/10/2026): every TTTOS Core chat runs on TTTOS Core's own pin (`_core_pin`), or on the main
     model while it has none; the pin of the single chat is ignored."""
     if javis_core.is_core_channel((row or {}).get("channel")):
         _cp = _core_pin(mcfg)
@@ -3825,7 +3825,7 @@ def _chat_provider_for_session(mcfg, row):
 
 
 def _chat_selected(mcfg, row) -> dict:
-    """{'provider','model'} the owner CHOSE for one chat, before any fallback: the chat's own pin (Javis Core's pin in
+    """{'provider','model'} the owner CHOSE for one chat, before any fallback: the chat's own pin (TTTOS Core's pin in
     a Core chat), else MAIN. `_chat_provider_for_session` says where the turn really runs; the two differ while the
     chosen card is out of quota or cannot run (owner, 05/11/2026: the composer chip shows both)."""
     row = row or {}
@@ -3877,7 +3877,7 @@ def _route_view(mcfg, row, run=None, now: float = None) -> dict:
            "selected_provider": sel["provider"], "selected_model": sel["model"],
            "selected_name": _route_name(sel["provider"]), "fallback": prov != sel["provider"],
            # Effort of the card running (owner, 05/11/2026: the Effort chip follows a fallback card too). An assistant's
-           # or Javis Core's chat thinks at its own level whatever the card; the composer shows that level there.
+           # or TTTOS Core's chat thinks at its own level whatever the card; the composer shows that level there.
            "reasoning": _chat_reasoning(mcfg or {}, prov) if prov else "off"}
     limited, signed_out = {}, []
     for p in _uniq_ids([sel["provider"], *model_routing.order(mcfg or {})]):
@@ -3916,8 +3916,8 @@ def _uniq_ids(ids) -> list:
 
 
 def _core_pin(mcfg) -> dict:
-    """{'provider','model'} Javis Core is pinned to, or {} when it follows the main model (0.402.0). Set from the model
-    bar of any Javis Core chat (`POST /sessions/{id}/model`); "Follow the main model" clears it."""
+    """{'provider','model'} TTTOS Core is pinned to, or {} when it follows the main model (0.402.0). Set from the model
+    bar of any TTTOS Core chat (`POST /sessions/{id}/model`); "Follow the main model" clears it."""
     prov = str((mcfg or {}).get("core_provider") or "").strip()
     return {"provider": prov, "model": str((mcfg or {}).get("core_model") or "").strip()} if prov else {}
 
@@ -3925,7 +3925,7 @@ def _core_pin(mcfg) -> dict:
 def _pin_health(mcfg, prov: str) -> tuple:
     """(usable, limited_until) of a model pin on `prov`, judged the way `_chat_provider_for_session` routes it: the
     provider must exist, an API provider needs its key, and a plan out of quota runs the main model for now (0.285.0).
-    Shared by the chat model bar (`/sessions/{id}/meta`) and the Javis Core card (`/javis-core/model`, 0.461.0)."""
+    Shared by the chat model bar (`/sessions/{id}/meta`) and the TTTOS Core card (`/javis-core/model`, 0.461.0)."""
     d = _provider_def(prov)
     # Same key reading as routing (`_provider_key`): a home Ollama with no key must not read as a broken pin.
     ok = bool(d) and (d.get("kind") != "api" or bool(_provider_key(mcfg, d)))
@@ -3938,8 +3938,8 @@ def _pin_health(mcfg, prov: str) -> tuple:
 
 
 async def _set_core_pin(provider: str, model: str) -> dict:
-    """Pin Javis Core as a whole (empty provider = follow the main model). The one writer of `model.core_provider` /
-    `core_model`, used by the model bar of a Core chat and by the Javis Core card on the Agents page (0.461.0)."""
+    """Pin TTTOS Core as a whole (empty provider = follow the main model). The one writer of `model.core_provider` /
+    `core_model`, used by the model bar of a Core chat and by the TTTOS Core card on the Agents page (0.461.0)."""
     prov = (provider or "").strip()
     mdl = (model or "").strip() if prov else ""
     await asyncio.to_thread(cfgmod.update_settings, {"model": {"core_provider": prov, "core_model": mdl}})
@@ -3947,7 +3947,7 @@ async def _set_core_pin(provider: str, model: str) -> dict:
 
 
 def _core_model_view(mcfg) -> dict:
-    """What the Javis Core card shows (0.461.0): the pin (or none), whether it can run, the main model it otherwise
+    """What the TTTOS Core card shows (0.461.0): the pin (or none), whether it can run, the main model it otherwise
     follows, and the provider/model the next Core turn really runs on (`run_*`, after every fallback)."""
     pin = _core_pin(mcfg)
     em = _effective_main({"model": mcfg})
@@ -3998,7 +3998,7 @@ def _ear_brain_provider(cfg, row=None, agent=None) -> str:
 
     Owner: "the ear follows the model in use", and for agents "the agent's own model's vendor, not the main one's".
       - `agent` {brain, slug} (a dedicated bot, a voice message to an agent): the model that agent file chose;
-      - `row` (the dashboard chat being dictated into): its pinned model (Javis Core's pin in a Core chat), else, in a
+      - `row` (the dashboard chat being dictated into): its pinned model (TTTOS Core's pin in a Core chat), else, in a
         partner's chat, that partner's model;
       - otherwise, or when the agent stays on "Default": the main model.
     Never raises: a missing agent file or session only means the main model's ear."""
@@ -4203,7 +4203,7 @@ def _claude_sub_stream(model, messages, reasoning="off", *, brain=None, tag="cha
 
     Đường cũ tự đọc `~/.claude/.credentials.json` rồi gửi `Authorization: Bearer <token>` tới
     api.anthropic.com. Anthropic cấm đúng việc đó (xem claude_auth.py), và cách họ bắt là soi
-    dấu vân tay request - thứ mà request Javis tự dựng chắc chắn không có. Nay lượt này chạy
+    dấu vân tay request - thứ mà request TTTOS tự dựng chắc chắn không có. Nay lượt này chạy
     qua chính binary `claude`, nên ai đăng nhập và ai trả tiền là chuyện của Claude Code.
 
     `tiet_kiem=True` cho đường Siêu tiết kiệm: gửi system prompt TRẦN thay vì preset
@@ -4302,7 +4302,7 @@ async def _cli_sub_doc(g, prompt, model):
 
 # Tool NATIVE của Claude Code mà bot chuyên trách TUYỆT ĐỐI không được chạm, ở mọi mức quyền.
 # Bot phục vụ người lạ nhắn tới, nên "chạy được lệnh máy" là một hạng rủi ro khác hẳn phần còn
-# lại của Javis. Allowlist bên dưới đã đủ chặn (mọi tool ngoài list bị `can_use_tool` từ chối
+# lại của TTTOS. Allowlist bên dưới đã đủ chặn (mọi tool ngoài list bị `can_use_tool` từ chối
 # per-call); danh sách này là lớp thứ hai, để một hôm nào đó allowlist bị nới thì đây vẫn giữ.
 BOT_CAM_NATIVE = ["Bash", "BashOutput", "KillShell", "WebFetch", "WebSearch", "Task",
                   "Write", "Edit", "NotebookEdit", "Read", "Glob", "Grep"]
@@ -4449,7 +4449,7 @@ def _coding_ctx_luot(row, brain=None, sid="", chat_id=""):
 
 async def _api_stream_mcp(prov, key, model, messages, reasoning="off", brain=None,
                           force_lazy=False, mode="full", coding_row=None, owner_sid="", owner_chat=""):
-    """Model API/OAuth dùng MCP của Javis qua HUB: đa tài khoản + quyền + audit + builtin tools
+    """Model API/OAuth dùng MCP của TTTOS qua HUB: đa tài khoản + quyền + audit + builtin tools
     (file vault, use_skill) → engine API cũng là agent thực thụ. anthropic-api giờ CÓ tool loop.
     ChatGPT OAuth ở các kênh tương tác đi qua Codex CLI native MCP, không dùng fallback này.
 
@@ -4659,7 +4659,7 @@ async def _execute_write_proposal(plan, provider: str, api_key: str, model: str,
         _CONTEXT_RUNTIME.revoke_capability_lease(
             runtime_trace, lease.lease_id, planned.get("error_code") or "planner_failed")
         text = ("Model không lập được tham số đúng hợp đồng cho hành động ghi này. "
-                "Javis đã dừng an toàn, chưa gọi tool và chưa thay đổi gì.")
+                "TTTOS đã dừng an toàn, chưa gọi tool và chưa thay đổi gì.")
         _CONTEXT_RUNTIME.record_runtime_event(runtime_trace, "write_path.failed", {
             "stage": "argument_planner", "error_code": planned.get("error_code") or "unknown",
             "model_rounds": 1, "tool_calls": 0,
@@ -4676,7 +4676,7 @@ async def _execute_write_proposal(plan, provider: str, api_key: str, model: str,
     if not valid:
         _CONTEXT_RUNTIME.revoke_capability_lease(runtime_trace, lease.lease_id, error_code)
         text = ("Tham số model đề xuất không đạt JSON Schema của capability. "
-                "Javis chưa gọi tool và chưa thay đổi gì.")
+                "TTTOS chưa gọi tool và chưa thay đổi gì.")
         _CONTEXT_RUNTIME.record_runtime_event(runtime_trace, "write_path.failed", {
             "stage": "argument_validation", "error_code": error_code,
             "model_rounds": 1, "tool_calls": 0,
@@ -4692,19 +4692,19 @@ async def _execute_write_proposal(plan, provider: str, api_key: str, model: str,
         runtime_trace, plan, args, session_id)
     status = registered.get("status")
     if status == "duplicate":
-        text = ("Hành động này đã được ghi nhận trước đó nên Javis KHÔNG chạy lại. "
+        text = ("Hành động này đã được ghi nhận trước đó nên TTTOS KHÔNG chạy lại. "
                 f"Trạng thái hiện tại: {registered.get('invocation_status')}.")
     elif status == "locked":
         text = ("Đang có một hành động ghi khác trên cùng tài nguyên chưa kết thúc. "
-                "Javis dừng để tránh ghi chồng; bạn xử lý xong việc kia rồi nhắn lại.")
+                "TTTOS dừng để tránh ghi chồng; bạn xử lý xong việc kia rồi nhắn lại.")
     elif status != "prepared":
-        text = ("Không ghi được ý định vào sổ nên Javis dừng trước khi gọi tool. "
+        text = ("Không ghi được ý định vào sổ nên TTTOS dừng trước khi gọi tool. "
                 "Chưa có gì thay đổi.")
     elif not str(registered.get("confirmation_code") or "").strip():
         # Không có mã thì KHÔNG có cách nào duyệt: nút bấm sẽ chết và câu gõ tay cũng
         # vô nghĩa. Nói thẳng là hỏng còn hơn bày ra một lời đề xuất không duyệt được.
         status = "no_confirmation_code"
-        text = ("Javis không tạo được mã duyệt cho hành động ghi này nên đã dừng. "
+        text = ("TTTOS không tạo được mã duyệt cho hành động ghi này nên đã dừng. "
                 "Chưa có gì thay đổi.")
     else:
         code = str(registered.get("confirmation_code")).strip()
@@ -4723,9 +4723,9 @@ async def _execute_write_proposal(plan, provider: str, api_key: str, model: str,
             ],
         }, ensure_ascii=False)
         text = (
-            f"Javis chuẩn bị chạy hành động ghi: {lease.capability_name}.\n"
+            f"TTTOS chuẩn bị chạy hành động ghi: {lease.capability_name}.\n"
             f"Tham số: {summary}\n\n"
-            f"Việc này thay đổi dữ liệu thật và không tự hoàn tác được, nên Javis "
+            f"Việc này thay đổi dữ liệu thật và không tự hoàn tác được, nên TTTOS "
             f"CHƯA chạy. Bạn bấm nút duyệt bên dưới, hoặc nhắn lại đúng câu: "
             f"XAC NHAN {code}\n"
             f"Không muốn nữa thì nhắn: huỷ\n"
@@ -4771,7 +4771,7 @@ async def _execute_write_confirmation(plan, ws, session_id: str, runtime_trace,
             runtime_trace, str(invocation.get("id") or ""),
             str(invocation.get("lease_id") or ""), "FAILED_VALIDATION",
             error_code="capability_changed_since_proposal")
-        text = ("Capability đã thay đổi kể từ lúc Javis đề xuất, nên hành động ghi bị "
+        text = ("Capability đã thay đổi kể từ lúc TTTOS đề xuất, nên hành động ghi bị "
                 "huỷ để không chạy nhầm phiên bản cũ. Chưa có gì thay đổi.")
         await ws.send_text(json.dumps({
             "type": "response", "content": text, "engine": "javis-gateway",
@@ -4788,8 +4788,8 @@ async def _execute_write_confirmation(plan, ws, session_id: str, runtime_trace,
             runtime_trace, str(invocation.get("id") or ""),
             str(invocation.get("lease_id") or ""), "FAILED_FINAL",
             error_code="approved_arguments_unavailable")
-        text = ("Javis không còn giữ tham số đã được duyệt (tiến trình đã khởi động lại), "
-                "nên không chạy hành động ghi này. Bạn nhắn lại yêu cầu để Javis đề xuất mới.")
+        text = ("TTTOS không còn giữ tham số đã được duyệt (tiến trình đã khởi động lại), "
+                "nên không chạy hành động ghi này. Bạn nhắn lại yêu cầu để TTTOS đề xuất mới.")
         await ws.send_text(json.dumps({
             "type": "response", "content": text, "engine": "javis-gateway",
             "model": model, "session_id": session_id,
@@ -4810,7 +4810,7 @@ async def _execute_write_confirmation(plan, ws, session_id: str, runtime_trace,
             runtime_trace, str(invocation.get("id") or ""),
             str(invocation.get("lease_id") or ""), "FAILED_FINAL",
             error_code="write_route_unavailable")
-        text = "Không còn đường gọi tool ghi này, Javis dừng an toàn. Chưa có gì thay đổi."
+        text = "Không còn đường gọi tool ghi này, TTTOS dừng an toàn. Chưa có gì thay đổi."
         await ws.send_text(json.dumps({
             "type": "response", "content": text, "engine": "javis-gateway",
             "model": model, "session_id": session_id,
@@ -4832,14 +4832,14 @@ async def _execute_write_confirmation(plan, ws, session_id: str, runtime_trace,
         reconciled = await canary.reconcile_unknown(
             runtime_trace, invocation, _brain_root(brain), profile)
         if reconciled.get("status") == "SUCCEEDED":
-            text = ("Kết nối bị gián đoạn giữa chừng nên Javis đã kiểm chứng lại bằng một "
-                    "lệnh đọc: hành động ĐÃ được thực hiện. Javis không chạy lại.")
+            text = ("Kết nối bị gián đoạn giữa chừng nên TTTOS đã kiểm chứng lại bằng một "
+                    "lệnh đọc: hành động ĐÃ được thực hiện. TTTOS không chạy lại.")
         elif reconciled.get("status") == "FAILED_FINAL":
-            text = ("Kết nối bị gián đoạn, Javis kiểm chứng lại bằng lệnh đọc và thấy hành "
-                    "động CHƯA được thực hiện. Bạn nhắn lại nếu muốn Javis làm lại.")
+            text = ("Kết nối bị gián đoạn, TTTOS kiểm chứng lại bằng lệnh đọc và thấy hành "
+                    "động CHƯA được thực hiện. Bạn nhắn lại nếu muốn TTTOS làm lại.")
         else:
-            text = ("Kết nối bị gián đoạn và Javis KHÔNG kiểm chứng được là hành động đã "
-                    "chạy hay chưa. Javis tuyệt đối không chạy lại để tránh làm hai lần. "
+            text = ("Kết nối bị gián đoạn và TTTOS KHÔNG kiểm chứng được là hành động đã "
+                    "chạy hay chưa. TTTOS tuyệt đối không chạy lại để tránh làm hai lần. "
                     "Bạn kiểm tra trực tiếp bên hệ thống đích rồi báo lại giúp mình.")
     elif status == "SUCCEEDED":
         evidence = outcome.get("evidence")
@@ -4850,7 +4850,7 @@ async def _execute_write_confirmation(plan, ws, session_id: str, runtime_trace,
         text = ("Tool báo lỗi rõ ràng nên hành động KHÔNG được thực hiện. "
                 f"Mã lỗi: {outcome.get('error_code')}.")
     else:
-        text = ("Javis dừng trước khi gọi tool vì ý định ghi không còn hợp lệ. "
+        text = ("TTTOS dừng trước khi gọi tool vì ý định ghi không còn hợp lệ. "
                 f"Mã: {outcome.get('error_code')}.")
     _CONTEXT_RUNTIME.record_runtime_event(runtime_trace, "write_path.completed", {
         "status": status, "model_rounds": 0, "tool_calls": 1 if status != "REJECTED" else 0,
@@ -5187,7 +5187,7 @@ async def _execute_readonly_path(plan, provider: str, api_key: str, model: str,
         )
         final_text = (
             "Model không tạo được arguments đúng contract cho capability read-only. "
-            "Javis đã dừng an toàn, chưa gọi tool và không tự chuyển sang vòng agent cũ."
+            "TTTOS đã dừng an toàn, chưa gọi tool và không tự chuyển sang vòng agent cũ."
         )
         _CONTEXT_RUNTIME.record_runtime_event(runtime_trace, "readonly_path.failed", {
             "stage": "argument_planner", "error_code": planned.get("error_code") or "unknown",
@@ -5423,7 +5423,7 @@ def _step_reasoning_kw(agent_sysprompt, slug) -> dict:
 
 
 def _core_reasoning(mcfg) -> str:
-    """Javis Core's reasoning level, `model.core_reasoning` in settings. Owner rule (22/10/2026, 0.285.0): Javis Core
+    """TTTOS Core's reasoning level, `model.core_reasoning` in settings. Owner rule (22/10/2026, 0.285.0): TTTOS Core
     follows the main chat until the owner picks a level for it in its own chat; from then on that level sticks."""
     r = str((mcfg or {}).get("core_reasoning") or "").strip()
     return r if r in engine.REASONING_LEVELS else _reasoning_level(mcfg)
@@ -5435,8 +5435,8 @@ def _core_reasoning(mcfg) -> str:
 _CLI_THINK_KW = {"low": "think", "medium": "think hard", "high": "think harder",
                  "xhigh": "ultrathink", "ultra": "ultrathink"}
 
-# Mức của Javis -> mức của Claude Code (`claude --effort`, cùng thang trong claude-agent-sdk).
-# Trùng khít bốn mức đầu; "ultra" là tên Javis của mức trên cùng, Claude Code gọi là "max".
+# Mức của TTTOS -> mức của Claude Code (`claude --effort`, cùng thang trong claude-agent-sdk).
+# Trùng khít bốn mức đầu; "ultra" là tên TTTOS của mức trên cùng, Claude Code gọi là "max".
 _CLI_EFFORT = {"low": "low", "medium": "medium", "high": "high", "xhigh": "xhigh", "ultra": "max"}
 
 
@@ -5471,7 +5471,7 @@ def _cli_do_sau(cli, reasoning, message):
     một mức khác mức người dùng chọn.
 
     - CLI có `--effort` (bản mới): đặt `cli.effort`, prompt giữ NGUYÊN VĂN. Đây là đường đúng -
-      thang của Claude Code trùng khít thang của Javis nên "Rất cao" và "Tối đa" khác nhau
+      thang của Claude Code trùng khít thang của TTTOS nên "Rất cao" và "Tối đa" khác nhau
       thật, và tin nhắn người dùng không bị dính thêm một câu tiếng Việt ở cuối.
     - CLI cũ: rơi về từ khoá trong prompt như trước, không mất tính năng.
     """
@@ -5589,7 +5589,7 @@ _CODEX_COMMON_EFFORTS = ("low", "medium", "high")
 
 
 def _codex_effort(model, reasoning) -> str:
-    """Javis level -> the Codex effort to pass for this model, "" = pass nothing. From the model's own ladder when it
+    """TTTOS level -> the Codex effort to pass for this model, "" = pass nothing. From the model's own ladder when it
     is known; one of the three common levels when no ladder has been read yet."""
     model, reasoning = str(model or ""), str(reasoning or "")
     try:
@@ -5608,7 +5608,7 @@ def _codex_effort(model, reasoning) -> str:
 def _codex_do_sau(cli, reasoning, message):
     """Độ sâu suy nghĩ cho Codex CLI: `-c model_reasoning_effort=<mức>`.
 
-    Mức KHÔNG do Javis chọn theo một bảng chép tay mà lấy từ thang chính Codex khai cho đúng
+    Mức KHÔNG do TTTOS chọn theo một bảng chép tay mà lấy từ thang chính Codex khai cho đúng
     model đang chạy (`model/list` -> `supported_reasoning_efforts`), nên không bao giờ gửi một
     giá trị model không hiểu. Chưa hỏi được danh sách model lần nào thì ba nấc phổ thông vẫn
     được truyền (`_codex_effort`); nấc khác thì lượt chạy bằng mặc định của Codex, kèm câu nhắc
@@ -5628,12 +5628,12 @@ def _toml_str(s):
 
 
 def _write_codex_profile():
-    """Ghi ~/.codex/<profile>.config.toml → `codex exec -p <profile>` thấy MCP của Javis.
+    """Ghi ~/.codex/<profile>.config.toml → `codex exec -p <profile>` thấy MCP của TTTOS.
     Hub bật (mặc định): 1 entry hub - Codex dùng được MỌI transport (cả stdio/internal) + đa tài
     khoản + quyền. Hub tắt: per-server http như cũ. Trả tên profile nếu có server, None nếu rỗng.
 
     Tên profile lấy từ `mcp_hub.codex_profile_name()` (gắn cổng khi cổng khác mặc định) để nhiều
-    bản Javis chạy chung một $HOME không ghi đè profile của nhau - xem chú thích ở hàm đó."""
+    bản TTTOS chạy chung một $HOME không ghi đè profile của nhau - xem chú thích ở hàm đó."""
     if _hub_enabled():
         return mcp_hub.codex_profile("full")
     path = mcp_hub.codex_profile_path()
@@ -5666,10 +5666,10 @@ def _write_codex_profile():
 
 
 def _apply_grok_hub(cli, vault_root=None, mode="full"):
-    """Gắn MCP hub của Javis vào tiến trình `grok`, khoá theo đúng brain đang mở.
+    """Gắn MCP hub của TTTOS vào tiến trình `grok`, khoá theo đúng brain đang mở.
 
     Cùng khuôn `_apply_gemini_hub` ngay trên, và cùng lý do: Grok đọc `[mcp_servers.*]` từ
-    `config.toml` của THƯ MỤC LÀM VIỆC, mà Javis luôn chạy nó với cwd = gốc brain - nên ghi
+    `config.toml` của THƯ MỤC LÀM VIỆC, mà TTTOS luôn chạy nó với cwd = gốc brain - nên ghi
     file ngay trong brain vừa đúng chỗ vừa cô lập sẵn từng brain. Không đụng
     `~/.grok/config.toml`: đó là cấu hình cá nhân người dùng dùng cho mọi thứ chạy bằng `grok`.
 
@@ -5696,11 +5696,11 @@ def _apply_grok_hub(cli, vault_root=None, mode="full"):
 
 
 def _apply_antigravity_hub(cli, vault_root=None, mode="full"):
-    """Gắn MCP hub của Javis vào tiến trình `agy`.
+    """Gắn MCP hub của TTTOS vào tiến trình `agy`.
 
     Header y hệt ba engine kia (`Bearer hub_token` + X-Javis-Mode + X-Javis-Vault) nên hub áp
     đúng một bộ luật quyền cho cả bốn. Hai chỗ KHÁC hẳn `_apply_gemini_hub`, và cả hai là lý do
-    bộ não này chạy suốt mấy bản mà không có lấy một tool nào của Javis:
+    bộ não này chạy suốt mấy bản mà không có lấy một tool nào của TTTOS:
 
     - **Hình dạng entry** dựng bằng `antigravity_cli.hub_entry()` chứ không viết tay ở đây.
       `agy` đọc khoá `serverUrl`; `httpUrl` (khoá của Gemini CLI) bị nó bỏ qua không một tiếng
@@ -5744,7 +5744,7 @@ def _apply_codex_hub(cli, vault_root=None):
 
 
 def _apply_mcp(cli, mode="full", brain=None):
-    """Gắn MCP do Javis quản lý vào 1 engine Claude (registry rỗng → không đổi gì, dùng MCP sẵn của máy).
+    """Gắn MCP do TTTOS quản lý vào 1 engine Claude (registry rỗng → không đổi gì, dùng MCP sẵn của máy).
     Hub bật: config 1 entry trỏ hub kèm X-Javis-Mode - deny/perm/audit chặn TẠI hub (lớp cứng),
     không cần --disallowedTools. Hub tắt: per-server + --disallowedTools như cũ."""
     try:
@@ -5755,9 +5755,9 @@ def _apply_mcp(cli, mode="full", brain=None):
         cli.javis_vault = _brain_root(brain) if brain else None
         if _hub_enabled():
             cli.mcp_config = mcp_hub.claude_config_path(mode)
-            # `strict` = chỉ dùng MCP của Javis, bỏ qua config MCP sẵn có của máy. Ở mức FULL
+            # `strict` = chỉ dùng MCP của TTTOS, bỏ qua config MCP sẵn có của máy. Ở mức FULL
             # thì cờ này bị bỏ qua, cố ý: connector ambient của tài khoản Claude (Gmail, Google
-            # Drive, Lịch) nằm ngoài registry của Javis và chỉ gọi được bằng tool native, nên
+            # Drive, Lịch) nằm ngoài registry của TTTOS và chỉ gọi được bằng tool native, nên
             # strict ở mức full là mở allowlist ra rồi lại khoá cửa sau. Người bật strict muốn
             # siết mấy mức DƯỚI; ai đã chủ động chọn Toàn quyền cho một việc thì việc đó phải
             # thật sự toàn quyền, không thì "Toàn quyền" là một cái nhãn nói dối.
@@ -5964,7 +5964,7 @@ async def _routing_migrate_on_start():
 async def _tu_cap_nhat_claude():
     """Mỗi giờ xem đã tới hạn chưa; tới hạn (24 giờ) thì chạy `claude update` một lần.
 
-    Không có vòng này thì máy chỉ dùng Claude qua Javis kẹt ở bản CLI cũ mãi, và model mới
+    Không có vòng này thì máy chỉ dùng Claude qua TTTOS kẹt ở bản CLI cũ mãi, và model mới
     (Sonnet 5.5, 29/09/2026) không bao giờ hiện trong trình chọn. Chờ 2 phút sau khi khởi
     động cho server nhẹ tay đã.
     """
@@ -6047,7 +6047,7 @@ async def antigravity_check(brain: str = "brain"):
     cá nhân. Nút này phải trả lời được câu "chat được chưa", nên chạy thật một lượt.
 
     Phần `mcp` thêm vào (0.43.0) canh đúng hạng lỗi đã ba lần lọt lưới: cấu hình ghi thành công
-    nhưng SAI CHỖ hoặc SAI KHOÁ, `agy` chạy trơn tru mà không có lấy một tool nào của Javis, và
+    nhưng SAI CHỖ hoặc SAI KHOÁ, `agy` chạy trơn tru mà không có lấy một tool nào của TTTOS, và
     không ở đâu có một câu lỗi để lần ra. Ghi lại cấu hình rồi ĐỌC LẠI chính file đó.
     """
     root = _brain_root(brain)
@@ -6086,7 +6086,7 @@ def grok_status():
 
 # ---- Extra accounts on a subscription plan card (plan_accounts, 0.353.0) ----
 # Account 1 keeps its own card controls above. An extra account signs in into its own folder: ChatGPT through
-# Javis's device-code flow (tokens written to that folder's auth.json), Grok through `grok login --device-auth`,
+# TTTOS's device-code flow (tokens written to that folder's auth.json), Grok through `grok login --device-auth`,
 # Claude Code through `claude auth login` (a link, then a code pasted back). One sign-in runs at a time.
 _PLAN_LOGIN: dict = {}
 
@@ -6146,8 +6146,8 @@ async def plan_account_login_start(request: Request):
     _PLAN_LOGIN[aid] = {"provider": prov, "label": str(body.get("label") or "")[:60], "ts": time.time()}
     kind = plan_accounts.KIND[prov]
     if kind == "agy":
-        # agy signs in on a keyboard screen in a terminal, so the page gives the command to paste into Javis's
-        # Terminal page (same user as Javis): agy with this account's HOME and file storage.
+        # agy signs in on a keyboard screen in a terminal, so the page gives the command to paste into TTTOS's
+        # Terminal page (same user as TTTOS): agy with this account's HOME and file storage.
         import shlex
         cli = antigravity_cli.find_antigravity_cli() or "agy"
         cmd = " ".join(f"{k}={shlex.quote(v)}" for k, v in plan_accounts.env_for(prov, folder).items()) + " " + shlex.quote(cli)
@@ -6253,7 +6253,7 @@ async def grok_login_start():
     """Bước 1: mở vòng device code, trả link + mã để người dùng mở trên máy của họ.
 
     Chỉ có MỘT bước, không có `login-code` đối xứng như Gemini: `grok login --device-auth` tự
-    đứng hỏi máy chủ tới khi người dùng bấm xong trên web, nên Javis không nhận lại mã nào cả.
+    đứng hỏi máy chủ tới khi người dùng bấm xong trên web, nên TTTOS không nhận lại mã nào cả.
     Giao diện gọi tiếp `/grok/login-poll` để biết đã xong chưa.
     """
     global _GROK_MAIN_LOGIN_PENDING
@@ -6316,8 +6316,8 @@ def _drop_card(provider: str) -> None:
 async def antigravity_logout():
     """Disconnect the Antigravity card (owner 05/11/2026: "the Antigravity card has no Disconnect button").
 
-    The Google session sits in the OS keyring, out of Javis's reach, so this does what it honestly can: run the CLI's
-    own sign-out when the binary lists one, and in any case switch the card off in Javis, so no chat, background job
+    The Google session sits in the OS keyring, out of TTTOS's reach, so this does what it honestly can: run the CLI's
+    own sign-out when the binary lists one, and in any case switch the card off in TTTOS, so no chat, background job
     or fallback runs on it until the owner taps "Connect again"."""
     out = await asyncio.to_thread(antigravity_cli.logout)
     try:
@@ -6367,7 +6367,7 @@ async def grok_check(brain: str = "brain"):
 
     Phần `mcp` ghi lại cấu hình rồi ĐỌC LẠI chính file đó, canh hạng lỗi đã ba lần lọt lưới với
     `agy`: ghi thành công nhưng sai chỗ hoặc sai khoá thì CLI chạy trơn tru mà không có lấy một
-    tool nào của Javis, và không ở đâu có một câu lỗi để lần ra.
+    tool nào của TTTOS, và không ở đâu có một câu lỗi để lần ra.
     """
     root = _brain_root(brain)
     try:
@@ -6452,7 +6452,7 @@ def claude_logout():
     return d
 
 
-# ---- MCP do Javis quản lý (engine Claude Code) ----
+# ---- MCP do TTTOS quản lý (engine Claude Code) ----
 @app.get("/mcp/list")
 async def mcp_list():
     return {"servers": mcp_store.list_servers(),
@@ -6613,7 +6613,7 @@ packs_routes.register(app, packs_routes.PacksDeps(
     agents_changed=lambda root: _pack_agents_changed(root),
 ))
 
-# Công cụ TUỲ CHỌN (trình duyệt cho Javis tự kiểm thử giao diện). Đăng ký NGAY SAU trang Gói vì
+# Công cụ TUỲ CHỌN (trình duyệt cho TTTOS tự kiểm thử giao diện). Đăng ký NGAY SAU trang Gói vì
 # cùng một họ: cả hai đều mang thứ mới về máy, nên dùng chung đúng một luật xác thực.
 import routes.tools as tools_routes   # noqa: E402
 
@@ -6625,7 +6625,7 @@ tools_routes.register(app, tools_routes.ToolsDeps(
 # ---- Đường HTTP của plugin (0.64.26) ----
 #
 # Lõi chỉ CHUYỂN request; luật nằm ở plugins_host (ai được mở đường, đường nào công khai, đường
-# nào không cookie). Sinh ra để "Javis trong ChatGPT" (nay là Javis Gate) rời lõi thành một gói trong kho, nhưng cố
+# nào không cookie). Sinh ra để "TTTOS trong ChatGPT" (nay là TTTOS Gate) rời lõi thành một gói trong kho, nhưng cố
 # ý làm chung: webhook của dịch vụ ngoài là cùng một nhu cầu.
 _EXT_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"]
 
@@ -6680,7 +6680,7 @@ async def plugin_well_known(request: Request, rest: str):
 
 @app.post("/connect/core-toggle")
 async def connect_core_toggle(request: Request):
-    """Gỡ hoặc cài lại một connector CÓ SẴN của Javis.
+    """Gỡ hoặc cài lại một connector CÓ SẴN của TTTOS.
 
     "Gỡ" ở đây KHÔNG xoá file trong `system/`: cây code là read-only trên Docker và bị ghi đè
     bởi `git pull` trên bản native, nên lựa chọn phải sống ở STATE_DIR mới qua được một lần cập
@@ -6732,29 +6732,29 @@ async def connect_add(request: Request):
             request.headers.get("x-forwarded-host", ""))
         if not web_security.host_kieu_local(host_thay):
             return {"ok": False, "can_force": True, "error": localefmt.chu(
-                    "Kết nối này chạy OAuth trên CHÍNH MÁY cài Javis (Google sẽ chuyển về "
-                    "localhost:8000), mà bạn đang mở Javis qua domain public - đăng nhập Google "
+                    "Kết nối này chạy OAuth trên CHÍNH MÁY cài TTTOS (Google sẽ chuyển về "
+                    "localhost:8000), mà bạn đang mở TTTOS qua domain public - đăng nhập Google "
                     "sẽ đứt giữa chừng với lỗi không kết nối được. Trên VPS hãy dùng thẻ Lịch "
                     "và Gmail riêng (hai thẻ đó đăng nhập ngay trong dashboard). Nếu máy chạy "
-                    "Javis có màn hình và bạn sẽ bấm đồng ý trên đó, bấm Kết nối lần nữa.",
-                    "This connection runs OAuth on the SAME MACHINE Javis is installed on (Google "
-                    "redirects back to localhost:8000), but you are opening Javis through a public "
+                    "TTTOS có màn hình và bạn sẽ bấm đồng ý trên đó, bấm Kết nối lần nữa.",
+                    "This connection runs OAuth on the SAME MACHINE TTTOS is installed on (Google "
+                    "redirects back to localhost:8000), but you are opening TTTOS through a public "
                     "domain, so the Google sign-in will break halfway with a connection error. On a "
                     "VPS, use the separate Calendar and Gmail cards (those two sign in right inside "
-                    "the dashboard). If the machine running Javis has a screen and you will click "
+                    "the dashboard). If the machine running TTTOS has a screen and you will click "
                     "Allow there, click Connect again.")}
         if _deploy_mode() == "docker":
-            # Issue #855: Javis in Docker on the same computer. Google sends the browser back to localhost:8000 on that
+            # Issue #855: TTTOS in Docker on the same computer. Google sends the browser back to localhost:8000 on that
             # computer, which reaches the sign-in listener only when the container publishes port 8000
-            # (docker-compose.google.yml). Javis cannot see the host's port mapping from inside, so it says it once.
+            # (docker-compose.google.yml). TTTOS cannot see the host's port mapping from inside, so it says it once.
             return {"ok": False, "can_force": True, "error": localefmt.chu(
-                    "Javis đang chạy trong Docker. Sau khi bấm đồng ý, Google chuyển trình duyệt về "
+                    "TTTOS đang chạy trong Docker. Sau khi bấm đồng ý, Google chuyển trình duyệt về "
                     "localhost:8000 trên máy bạn, nên container phải mở cổng 8000 (chỉ cho chính máy này). "
-                    "Làm một lần trong thư mục Javis: docker compose -f docker-compose.yml -f "
+                    "Làm một lần trong thư mục TTTOS: docker compose -f docker-compose.yml -f "
                     "docker-compose.google.yml up -d. Đã làm rồi thì bấm Kết nối lần nữa.",
-                    "Javis is running in Docker. After you click Allow, Google sends the browser back to "
+                    "TTTOS is running in Docker. After you click Allow, Google sends the browser back to "
                     "localhost:8000 on your computer, so the container must publish port 8000 (to this "
-                    "computer only). Do it once in the Javis folder: docker compose -f docker-compose.yml -f "
+                    "computer only). Do it once in the TTTOS folder: docker compose -f docker-compose.yml -f "
                     "docker-compose.google.yml up -d. If you already did, click Connect again.")}
     # Dùng lại key OAuth client của connection khác (vd Gmail dùng lại key đã tạo cho
     # Calendar) - copy server-side, secrets không bao giờ về browser.
@@ -6816,7 +6816,7 @@ async def connect_substack_resolve_uid(q: str = Query("")):
     """Tra User ID (+ gợi ý Publication URL) của một tài khoản Substack từ handle hoặc URL trang
     Hồ sơ. Substack đã đổi URL Hồ sơ sang dạng substack.com/@handle (không còn dãy số), nên trợ lý
     lấy nhanh ở trang Docs gọi endpoint này - server hỏi API CÔNG KHAI của Substack (không cần đăng
-    nhập Substack, không đụng secret) rồi trả về id. Endpoint vẫn sau auth guard (cần session Javis)."""
+    nhập Substack, không đụng secret) rồi trả về id. Endpoint vẫn sau auth guard (cần session TTTOS)."""
     import re
     raw = (q or "").strip()
     m = re.search(r"/profile/(\d{3,})", raw)   # URL /profile/<id>-name kiểu cũ: số chính là user_id
@@ -6917,7 +6917,7 @@ async def connect_delete(request: Request):
 
 @app.post("/connect/relogin")
 async def connect_relogin(request: Request):
-    """Vứt token mà connector tự cache ngoài Javis (workspace-mcp) mà GIỮ nguyên kết nối.
+    """Vứt token mà connector tự cache ngoài TTTOS (workspace-mcp) mà GIỮ nguyên kết nối.
 
     Vì sao cần một nút riêng: với connector loại này, nút Kết nối lại chỉ lưu lại Client ID/Secret
     chứ không đụng được token - server con đã có credential trên đĩa nên không bao giờ mở lại màn
@@ -6933,10 +6933,10 @@ async def connect_relogin(request: Request):
     connect_health.forget(cid)
     return {"ok": True, "cleared": done,
             "message": (localefmt.chu(
-                "Đã xoá đăng nhập Google cũ. Nhờ Javis làm một việc bất kỳ với nguồn này, "
-                "trình duyệt trên máy chạy Javis sẽ mở để bạn cấp lại quyền.",
-                "The old Google sign-in was removed. Ask Javis to do anything with this source and "
-                "the browser on the machine running Javis will open so you can grant access again.")
+                "Đã xoá đăng nhập Google cũ. Nhờ TTTOS làm một việc bất kỳ với nguồn này, "
+                "trình duyệt trên máy chạy TTTOS sẽ mở để bạn cấp lại quyền.",
+                "The old Google sign-in was removed. Ask TTTOS to do anything with this source and "
+                "the browser on the machine running TTTOS will open so you can grant access again.")
                         if done else
                         localefmt.chu("Kết nối này không tự giữ token riêng, hoặc chưa từng đăng nhập.",
                                       "This connection keeps no token of its own, or was never signed in."))}
@@ -6981,7 +6981,7 @@ async def connect_zalo_cancel(request: Request):
     return zalo_login.cancel(data.get("sid"))
 
 
-# ---- OAuth chuẩn MCP: Javis tự giữ token, không cần terminal ----
+# ---- OAuth chuẩn MCP: TTTOS tự giữ token, không cần terminal ----
 @app.post("/connect/oauth/start")
 async def connect_oauth_start(request: Request):
     data = await request.json()
@@ -7073,8 +7073,8 @@ async def connect_oauth_callback(state: str = Query(""), code: str = Query(""), 
         except Exception as e:
             print(f"[oauth label] {e}")
         html = ("<html><body style='font-family:sans-serif;background:#111;color:#eee;text-align:center;padding-top:80px'>"
-                + localefmt.chu("<h2>✓ Đã kết nối thành công</h2><p>Đóng tab này và quay lại Javis, bấm Làm mới ở trang Kết nối.</p>",
-                                "<h2>✓ Connected successfully</h2><p>Close this tab, go back to Javis and click Refresh on the Connections page.</p>")
+                + localefmt.chu("<h2>✓ Đã kết nối thành công</h2><p>Đóng tab này và quay lại TTTOS, bấm Làm mới ở trang Kết nối.</p>",
+                                "<h2>✓ Connected successfully</h2><p>Close this tab, go back to TTTOS and click Refresh on the Connections page.</p>")
                 + "</body></html>")
     else:
         html = (f"<html><body style='font-family:sans-serif;background:#111;color:#eee;text-align:center;padding-top:80px'>"
@@ -7203,7 +7203,7 @@ def _routing_view(mcfg, providers) -> dict:
             limited[p] = int(until)
     background = model_routing.background_spec(mcfg)
     if background.get("auto"):
-        # Automatic: the page names both models, the one for Javis's own work and the one for handed-over jobs.
+        # Automatic: the page names both models, the one for TTTOS's own work and the one for handed-over jobs.
         background["light"] = model_routing.background_spec(mcfg, "light")["model"]
     return {"order": o, "profiles": {p: model_routing.profile(mcfg, p) for p in o}, "limited": limited,
             "background": background, "chat_in_use": chat, "bg_in_use": bg,
@@ -7242,7 +7242,7 @@ async def settings_set(section: str = Form(...), data: str = Form("{}")):
             name = localefmt.valid_tz(raw) if raw else "Asia/Ho_Chi_Minh"
             if not name:
                 # Refuse instead of storing it: localefmt would fall back to UTC+7 without a word, and the picker would
-                # keep showing a timezone Javis is not using.
+                # keep showing a timezone TTTOS is not using.
                 return JSONResponse({"ok": False, "error": localefmt.chu(
                     "Máy chủ không nhận ra múi giờ \"{tz}\"", "The server does not recognise the timezone \"{tz}\"",
                     tz=raw[:64])}, status_code=400)
@@ -7258,7 +7258,7 @@ async def settings_set(section: str = Form(...), data: str = Form("{}")):
             cfg.setdefault("chat", {})["plan_tool"] = bool(patch["plan_tool"])
     elif section == "general":
         if "workspace_name" in patch:
-            cfg["workspace_name"] = patch["workspace_name"] or "Javis OS"
+            cfg["workspace_name"] = patch["workspace_name"] or "TTTOS"
         if "setup_done" in patch:
             cfg["setup_done"] = bool(patch["setup_done"])
     elif section == "model":
@@ -7508,7 +7508,7 @@ async def settings_set(section: str = Form(...), data: str = Form("{}")):
                     pet["image"] = ""
                 elif avatar_upload.hop_le(v):
                     pet["image"] = v
-            # Use that picture as the browser tab icon too, so several Javis tabs tell apart at a glance.
+            # Use that picture as the browser tab icon too, so several TTTOS tabs tell apart at a glance.
             if "favicon" in pet_moi:
                 pet["favicon"] = bool(pet_moi["favicon"])
             cfg["dashboard"]["pet"] = pet
@@ -7558,7 +7558,7 @@ async def settings_set(section: str = Form(...), data: str = Form("{}")):
             v["call_engine"] = patch["call_engine"]
         if patch.get("live_provider") in voice_live.PROVIDERS:
             v["live_provider"] = patch["live_provider"]
-        # Live over an API key (0.220.0): ignore speech not meant for Javis, and the reply pace.
+        # Live over an API key (0.220.0): ignore speech not meant for TTTOS, and the reply pace.
         if "live_proactive" in patch:
             v["live_proactive"] = bool(patch["live_proactive"])
         if patch.get("live_turn") in voice_live.TURN_PRESETS:
@@ -7965,7 +7965,7 @@ async def _fetch_provider_models(provider, m):
         #      credential của ai, và tự mới theo mỗi lần cập nhật Claude Code.
         # Đường 2 là thứ thay cho việc mượn token OAuth đã gỡ ở 0.26.17: từ đó tới nay gói
         # thuê bao không có nguồn live nào, nên máy nào lỡ nhớ một catalog cũ là kẹt ở đó
-        # vĩnh viễn - nâng cấp Javis cũng không thấy dòng model mới (Fable 5.1).
+        # vĩnh viễn - nâng cấp TTTOS cũng không thấy dòng model mới (Fable 5.1).
         ids = await claude_models.fetch_models(m.get("anthropic_api_key") or "")
         if ids:
             return ids
@@ -7973,7 +7973,7 @@ async def _fetch_provider_models(provider, m):
         ids = await asyncio.to_thread(claude_cli.list_models)
         if not ids:
             return None
-        # The binary's catalog is only as new as the installed Claude Code. Union it with the models this Javis
+        # The binary's catalog is only as new as the installed Claude Code. Union it with the models this TTTOS
         # release ships, so a new model reaches a machine whose CLI has not updated yet (Fable 5.2, 2026-11-10).
         return claude_cli.merge_models(ids, (_provider_def(provider) or {}).get("default_models"))
     return None
@@ -8019,7 +8019,7 @@ def _vi_sao_khong_co_model(provider: str, m: dict) -> str:
     Hầu hết đường lấy model hỏng theo kiểu IM LẶNG: hàm trả None chứ không ném lỗi, nên phía
     trên chỉ còn một danh sách rỗng và giao diện đành nói "không có model" - đúng nhưng vô
     dụng. ChatGPT là ca nặng nhất vì nó KHÔNG có catalog dự phòng (danh sách model do Codex
-    quyết, Javis cố ý không ghim version), nên hỏng là thẻ hiện đúng "0 model" ngay sau khi
+    quyết, TTTOS cố ý không ghim version), nên hỏng là thẻ hiện đúng "0 model" ngay sau khi
     người dùng vừa đăng nhập xong - trông y như đăng nhập hỏng.
     """
     d = _provider_def(provider) or {}
@@ -8083,7 +8083,7 @@ async def provider_models_index(provider: str, refresh: bool = False) -> dict:
     d = _provider_def(provider) or {}
     cat = m.get("catalog", {}) or {}
     # HỢP hai danh sách chứ không phải "cái nhớ được ĐÈ cái mặc định". Đây là gốc của lỗi
-    # "nâng cấp Javis rồi vẫn không có model mới": `_remember_catalog` ghi danh sách live vào
+    # "nâng cấp TTTOS rồi vẫn không có model mới": `_remember_catalog` ghi danh sách live vào
     # settings.json, mà `config._deep_merge` thì THAY danh sách chứ không nối - nên từ lần ghi
     # đó trở đi, bản mặc định mới trong config.py không bao giờ tới được người dùng nữa. Một
     # model đã ngừng bán mà còn nằm trong danh sách chỉ phiền lúc chọn nhầm; một model MỚI
@@ -8556,19 +8556,19 @@ async def ingest_upload(
                 "folder": os.path.basename(sources)}
     return {"ok": False, "error": localefmt.chu("Không tạo được .md", "Could not create the .md file"), "raw": final[:200]}
 
-# Cấu trúc chuẩn Javis - kiểm tra khi mở vault
+# Cấu trúc chuẩn TTTOS - kiểm tra khi mở vault
 # detect: regex khớp tên folder top-level (linh hoạt "06 - Sources" / "Sources")
 STANDARD_STRUCTURE = [
     # Nội dung người dùng đưa vào - nguồn lưu trữ (source of truth)
     {"key": "sources", "label": "sources", "kind": "dir", "detect": r"^(\d+\s*[-_.]\s*)?sources$", "create": "sources", "essential": True},
-    # Lớp vận hành Javis (alt = vị trí cũ chưa migrate → không báo thiếu nhầm)
+    # Lớp vận hành TTTOS (alt = vị trí cũ chưa migrate → không báo thiếu nhầm)
     {"key": "agents", "label": "agents", "kind": "dir", "detect": r"^agents$", "alt": "Javis/agents", "create": "agents", "essential": True},
     {"key": "workflows", "label": "workflows", "kind": "dir", "detect": r"^workflows$", "alt": "Javis/workflows", "create": "workflows", "essential": True},
     {"key": "memory", "label": "memory", "kind": "dir", "detect": r"^memory$", "alt": "Memory", "create": "memory", "essential": True},
     # Skill: canonical phẳng skills/<slug>/SKILL.md (mirror sang .claude/skills cho Claude native),
     # chia nhóm bằng field `group` trong frontmatter. alt = .claude/skills (vị trí cũ chưa migrate).
     {"key": "skills", "label": "skills", "kind": "dir", "detect": r"^skills$", "alt": ".claude/skills", "create": "skills", "essential": False},
-    # Tuỳ chọn - Javis chưng cất source → wiki (nuôi graph); đính kèm ảnh/file
+    # Tuỳ chọn - TTTOS chưng cất source → wiki (nuôi graph); đính kèm ảnh/file
     {"key": "wiki", "label": "wiki", "kind": "dir", "detect": r"^(\d+\s*[-_.]\s*)?wiki$", "create": "wiki", "essential": False},
     {"key": "attachments", "label": "attachments", "kind": "dir", "detect": r"^(\d+\s*[-_.]\s*)?attachments$", "create": "attachments", "essential": False},
     # Bộ sổ bullet journal - nơi ghi chép + task hằng ngày, dataview kéo từ đây.
@@ -8613,7 +8613,7 @@ def _check_structure(root: Path):
     return items
 
 JAVIS_README = (
-    "# Javis\n\nLớp điều phối của Javis OS trong vault này.\n\n"
+    "# TTTOS\n\nLớp điều phối của TTTOS trong vault này.\n\n"
     "- `agents/` - các Agent (vai trò + skills + bộ nhớ riêng)\n"
     "- `workflows/` - quy trình nhiều agent (status active/off)\n"
     "- Skills dùng chung ở `skills/` (tự mirror sang `.claude/skills` cho Claude Code native)\n"
@@ -8638,12 +8638,12 @@ TASKINBOX_SEED = (
     "Việc thêm nhanh từ dashboard - kéo về đúng sổ khi rảnh.\n"
 )
 SCHEMA_SEED = (
-    "# AGENTS.md - Vault Schema (Javis)\n\n"
-    "> Vault này hoạt động với Javis OS. Cấu trúc:\n\n"
+    "# AGENTS.md - Vault Schema (TTTOS)\n\n"
+    "> Vault này hoạt động với TTTOS. Cấu trúc:\n\n"
     "- `01 - Daily Log/` → `04 - Future Log/` - bộ sổ bullet journal (nhật ký ngày/tuần/tháng/tương lai, chứa task `- [ ]`; khối dataview kéo việc từ đây)\n"
     "- `06 - Sources/` - ghi chú thô (source of truth)\n"
     "- `07 - Wiki/` - tri thức đã chưng cất, có `[[wikilink]]`\n"
-    "- `memory/` - bộ nhớ dài hạn của Javis (facts + conversations)\n"
+    "- `memory/` - bộ nhớ dài hạn của TTTOS (facts + conversations)\n"
     "- `Javis/` - agents + workflows\n\n"
     "Nguyên lý: Sources → (ingest) → Wiki. Tri thức tích luỹ, không tái phát hiện.\n"
 )
@@ -8670,7 +8670,7 @@ def _ensure_brain_scaffold(root):
         jr.write_text(brain_seed_i18n.chon(JAVIS_README), encoding="utf-8")
     try:
         # Seed trang Dashboard trong thư mục dashboard (create-if-missing, user sửa gì giữ
-        # nấy). Khối ```tasks trong seed chạy thật trên dashboard Javis.
+        # nấy). Khối ```tasks trong seed chạy thật trên dashboard TTTOS.
         #
         # KHÔNG seed "Task Inbox.md" nữa: nút "+ Việc" tự tạo nó ở lần thêm việc đầu tiên
         # (xem `files_taskadd`), nên rải sẵn chỉ để lại một file rỗng trong cây thư mục của
@@ -8708,7 +8708,7 @@ def _ensure_brain_scaffold(root):
 
 def _ensure_default_brain():
     """Seed brain mặc định (<BRAINS_DIR>/Brain Default) lúc khởi động → deploy mới có ngay 'bộ não
-    Javis khởi đầu', không hiện banner 'cấu trúc chưa chuẩn'."""
+    TTTOS khởi đầu', không hiện banner 'cấu trúc chưa chuẩn'."""
     try:
         _ensure_brain_scaffold(_default_brain_dir())
     except Exception as e:
@@ -8788,7 +8788,7 @@ def vault_check(brain: str = Query("brain")):
 
 @app.post("/vault/init")
 async def vault_init(brain: str = Form("brain")):
-    """Tạo các mục cấu trúc còn thiếu để vault chạy với Javis. Dùng CHUNG scaffold với brain
+    """Tạo các mục cấu trúc còn thiếu để vault chạy với TTTOS. Dùng CHUNG scaffold với brain
     mới tạo (đủ bộ: cấu trúc + memory seed + schema/wiki nav + năng lực HỆ THỐNG + index) →
     vault ngoài chọn qua path: cũng có đầy đủ chức năng mặc định, không còn bản seed thiếu."""
     root = Path(_brain_root(brain))
@@ -9193,7 +9193,7 @@ async def brain_ties(brain: str = Query(...)):
 # ---- a whole brain as one .zip file, out and back in (2026-11-09, server/brain_export.py) ----
 
 def _managed_brain_dir(brain: str):
-    """The folder of a brain Javis manages ("brain", "path:<folder>" or a folder name), or None. Only brains inside
+    """The folder of a brain TTTOS manages ("brain", "path:<folder>" or a folder name), or None. Only brains inside
     BRAINS_DIR are exported: an external folder may be anything on the disk."""
     b = (brain or "").strip()
     if b == "brain" or not b:
@@ -9228,7 +9228,7 @@ async def brain_export_start(brain: str = Form("brain")):
     (brain_export.kept_out); the disk must keep brain_export.KEEP_FREE free."""
     root = _managed_brain_dir(brain)
     if root is None:
-        return JSONResponse({"ok": False, "error": localefmt.chu("Chỉ xuất được bộ não Javis quản lý", "Only brains Javis manages can be exported")},
+        return JSONResponse({"ok": False, "error": localefmt.chu("Chỉ xuất được bộ não TTTOS quản lý", "Only brains TTTOS manages can be exported")},
                             status_code=404)
     job = await asyncio.to_thread(brain_export.export_start, root, _brain_io_dir("brain-export"),
                                   _brain_zip_name(root), _app_version())
@@ -9433,7 +9433,7 @@ def _agents_dir(brain):
     return _brain_sub(_brain_root(brain), "agents", "Javis/agents")
 def _workflows_dir(brain):
     return _brain_sub(_brain_root(brain), "workflows", "Javis/workflows")
-javis_core.AGENTS_DIR = _agents_dir   # Javis Core's own agent file lives where the brain keeps its agents
+javis_core.AGENTS_DIR = _agents_dir   # TTTOS Core's own agent file lives where the brain keeps its agents
 
 def _agent_memory(brain, slug):
     f = _brain_memory_dir(brain) / "agents" / slug / "MEMORY.md"
@@ -9498,7 +9498,7 @@ def _ghi_luat_chu(brain, slug, rules):
     _ghi_muc_bo_nho_agent(brain, slug, agent_rules.OWNER_RULES_HEADER, rules, None)
 
 def _agent_run_task_text(task) -> str:
-    """The owner's own request, without the blocks Javis put in front of it (#934).
+    """The owner's own request, without the blocks TTTOS put in front of it (#934).
 
     A chat turn reaches the agent with a recall block ([NHỚ LẠI TỪ CÁC CUỘC TRÒ CHUYỆN TRƯỚC: ...]) and the dashboard's
     context blocks ([NGỮ CẢNH GIAO DIỆN: ...], open file, attachments) in front. Logged as they were, old chat excerpts
@@ -9586,13 +9586,13 @@ def list_agents(brain: str = Query("brain"), prompt: int = Query(1), system: int
     đây để đổ vào ô sửa, và trả về rỗng cho nó là bấm Lưu một cái mất trắng prompt.
     """
     ds = agents_index(brain, kem_prompt=bool(prompt))
-    # `system=1` (the Partners page, 0.185.0): Javis Core first. Pickers that need a brain agent FILE (team members,
+    # `system=1` (the Partners page, 0.185.0): TTTOS Core first. Pickers that need a brain agent FILE (team members,
     # chatbots, the "/" menu) do not ask for it, so they never offer the system assistant.
     return {"agents": ([_javis_core_entry(brain)] if system else []) + ds}
 
 
 def _javis_core_entry(brain: str) -> dict:
-    """Javis Core's row for GET /agents: always first, with the system flags (0.185.0)."""
+    """TTTOS Core's row for GET /agents: always first, with the system flags (0.185.0)."""
     try:
         moc = get_store().moc_cap_nhat_theo_kenh(_brain_keys(brain), "agent:")
     except Exception:
@@ -9602,7 +9602,7 @@ def _javis_core_entry(brain: str) -> dict:
     meta = javis_core.read_core(root)[0]
     e["role"] = javis_core.role_text(meta, localefmt.chu)
     e["avatar"] = agent_avatar.for_agent(meta, javis_core.SLUG)   # the face picked on its card, else the stable one
-    # 2026-11-05: the agent editor shows Javis Core's model (its pin, empty = the main model) and its own level.
+    # 2026-11-05: the agent editor shows TTTOS Core's model (its pin, empty = the main model) and its own level.
     mcfg = cfgmod.read_settings().get("model", {})
     pin = _core_pin(mcfg)
     e["model"], e["model_provider"] = pin.get("model") or "", pin.get("provider") or ""
@@ -9615,8 +9615,8 @@ _CORE_AUTO_DONE: set = set()
 
 
 def _core_auto_on(brain: str) -> None:
-    """Auto (Resonance) is always on for Javis Core (owner, 05/11/2026): register it and switch it on, once per brain
-    per process. A missing entry needs nothing from the owner: the brain's Javis Core file is made right here."""
+    """Auto (Resonance) is always on for TTTOS Core (owner, 05/11/2026): register it and switch it on, once per brain
+    per process. A missing entry needs nothing from the owner: the brain's TTTOS Core file is made right here."""
     try:
         bkey = _brain_key(brain)
         if not bkey or bkey in _CORE_AUTO_DONE:
@@ -9635,30 +9635,30 @@ def _core_auto_on(brain: str) -> None:
 
 
 def _core_refusal() -> JSONResponse:
-    """The one answer to deleting, unpinning or re-tagging Javis Core, or creating a new agent on its slug. Everything
+    """The one answer to deleting, unpinning or re-tagging TTTOS Core, or creating a new agent on its slug. Everything
     else (picture, name, role, instructions, documents, skills, model) is edited like any agent (owner, 05/11/2026)."""
     return JSONResponse({"ok": False, "code": "system_assistant", "error": localefmt.chu(
-        "Javis Core là trợ lý hệ thống: không xoá hay bỏ ghim được. Mọi thứ khác sửa như một trợ lý thường.",
-        "Javis Core is the system assistant: it cannot be deleted or unpinned. Everything else is edited like any "
+        "TTTOS Core là trợ lý hệ thống: không xoá hay bỏ ghim được. Mọi thứ khác sửa như một trợ lý thường.",
+        "TTTOS Core is the system assistant: it cannot be deleted or unpinned. Everything else is edited like any "
         "other assistant.")}, status_code=403)
 
 
 @app.post("/javis-core/session")
 def javis_core_session(brain: str = Form("brain")):
-    """This brain's default Javis Core chat, made when missing (deleted or archived ones are not revived)."""
+    """This brain's default TTTOS Core chat, made when missing (deleted or archived ones are not revived)."""
     sid = javis_core.default_session(get_store(), _brain_key(brain), same_brain=_cung_brain)
     return {"id": sid, "channel": javis_core.CHANNEL}
 
 
 @app.get("/javis-core/model")
 def javis_core_model_get():
-    """The Javis Core card's model row (0.461.0): its pin, or the main model it follows, and what really runs."""
+    """The TTTOS Core card's model row (0.461.0): its pin, or the main model it follows, and what really runs."""
     return _core_model_view(cfgmod.read_settings().get("model", {}))
 
 
 @app.post("/javis-core/model")
 async def javis_core_model_set(provider: str = Form(""), model: str = Form("")):
-    """Pin Javis Core to a model from the Agents page (empty provider = follow the main model). Same pin as the model
+    """Pin TTTOS Core to a model from the Agents page (empty provider = follow the main model). Same pin as the model
     bar of a Core chat, so the two places can never disagree."""
     prov = (provider or "").strip()
     if prov and not _provider_def(prov):
@@ -9722,7 +9722,7 @@ async def save_agent(name: str = Form(...), role: str = Form(""), skills: str = 
                      avatar_eye: str = Form(None), avatar_eye_color: str = Form(None),
                      avatar_eye_size: str = Form(None), avatar_image: str = Form(None), tags: str = Form(None),
                      reasoning: str = Form(None), chatgpt_voice: str = Form(None)):
-    # Trợ lý MỚI đặt tên file không dấu ("Bống Work" -> bong-work.md), đúng quy ước slug của Javis. Trước
+    # Trợ lý MỚI đặt tên file không dấu ("Bống Work" -> bong-work.md), đúng quy ước slug của TTTOS. Trước
     # 0.88.1 tên giữ nguyên dấu; các file đó vẫn đọc, sửa, xoá được nhờ skill_router.valid_file_slug.
     # TẠO MỚI = form không gửi slug. Nhóm chat team (spec 2026-10-13 mục 5.1): tạo mới mà slug suy từ tên đã có file thì
     # KHÔNG ghi đè agent cũ (trước đây ghi đè âm thầm tên, vai, lời nhắc của người khác); trả 409 kèm gợi ý slug trống.
@@ -9732,8 +9732,8 @@ async def save_agent(name: str = Form(...), role: str = Form(""), skills: str = 
     if core and creating:
         return _core_refusal()   # a new agent can never take the system assistant's slug
     if core:
-        # 2026-11-05 (owner): Javis Core is edited with the same form as any agent. Its file is made first, its model
-        # is Javis Core's pin (the same one as the model chip of its chat) and its level is its own, both in settings.
+        # 2026-11-05 (owner): TTTOS Core is edited with the same form as any agent. Its file is made first, its model
+        # is TTTOS Core's pin (the same one as the model chip of its chat) and its level is its own, both in settings.
         javis_core.ensure_file(_brain_root(brain))
         mp_core = (model_provider or "").strip()
         await _set_core_pin(mp_core if (mp_core and (model or "").strip() and _provider_def(mp_core)) else "", model)
@@ -9877,7 +9877,7 @@ def _agent_file(brain: str, slug: str):
     dạng tách dấu (NFD), còn slug tới từ trình duyệt là dạng dựng sẵn (NFC), hai chuỗi trông y hệt mà
     so khác nhau."""
     import unicodedata
-    # Javis Core (2026-11-05): a real file in every brain, made from the platform definition when missing.
+    # TTTOS Core (2026-11-05): a real file in every brain, made from the platform definition when missing.
     if javis_core.is_core_slug(slug):
         return javis_core.ensure_file(_brain_root(brain))
     d = _agents_dir(brain)
@@ -10143,10 +10143,10 @@ async def save_skill(name: str = Form(...), description: str = Form(""), group: 
 async def delete_skill(slug: str = Form(...), brain: str = Form("brain")):
     if system_sync.is_system_skill(slug):
         return JSONResponse({"error": localefmt.chu(
-            "Skill hệ thống của Javis OS - không xoá được (đi theo "
+            "Skill hệ thống của TTTOS - không xoá được (đi theo "
             "phiên bản app, xoá cũng tự cài lại khi cập nhật). Muốn ngừng dùng "
             "thì TẮT skill (bỏ tích).",
-            "This is a Javis OS system skill and cannot be deleted (it ships with "
+            "This is a TTTOS system skill and cannot be deleted (it ships with "
             "the app version and would reinstall itself on update). To stop using it, "
             "turn the skill OFF (untick it).")}, status_code=400)
     if not skill_router.valid_slug(slug):
@@ -10925,7 +10925,7 @@ _LOCAL_OPEN_MSG = {
 
 
 def _local_open_here(request: Request) -> bool:
-    """The browser sits on the machine that runs Javis: no tunnel, no proxy, not inside Docker."""
+    """The browser sits on the machine that runs TTTOS: no tunnel, no proxy, not inside Docker."""
     return _direct_local_request(request) and not os.path.exists("/.dockerenv")
 
 
@@ -10939,7 +10939,7 @@ async def files_open_local_available(request: Request):
 
 @app.post("/files/open-local")
 async def files_open_local(request: Request, path: str = Form(...), brain: str = Form("brain")):
-    """Open a file OUTSIDE the brain (a full path Javis wrote in chat) with the owner's own app.
+    """Open a file OUTSIDE the brain (a full path TTTOS wrote in chat) with the owner's own app.
 
     Asks the OS to open it, like a double click in Finder; nothing is served over HTTP, so it is
     only offered to a browser on this very machine: through a tunnel or proxy, or inside Docker, the
@@ -10947,8 +10947,8 @@ async def files_open_local(request: Request, path: str = Form(...), brain: str =
     live in local_open.py."""
     if not _local_open_here(request):
         return JSONResponse({"error": localefmt.chu(
-            "Link này chỉ mở được khi bạn dùng Javis ngay trên máy đang chạy nó.",
-            "This link only opens when you use Javis on the computer that runs it.")}, status_code=403)
+            "Link này chỉ mở được khi bạn dùng TTTOS ngay trên máy đang chạy nó.",
+            "This link only opens when you use TTTOS on the computer that runs it.")}, status_code=403)
     roots = [Path.home()]
     try:
         roots.append(Path(_brain_root(brain)))
@@ -10981,9 +10981,9 @@ async def files_open_local(request: Request, path: str = Form(...), brain: str =
 def _share_chan(ban) -> str:
     """Dòng chân trang: nói rõ đây là file được chia sẻ, để người xem biết mình đang xem gì."""
     if share_store.is_conversation(ban):
-        return localefmt.chu("Đoạn hội thoại được chia sẻ từ Javis OS", "A conversation shared from Javis OS")
+        return localefmt.chu("Đoạn hội thoại được chia sẻ từ TTTOS", "A conversation shared from TTTOS")
     ten = os.path.basename(str(ban.get("path") or "")) or "file"
-    return share_render.esc(ten) + localefmt.chu(" · được chia sẻ từ Javis OS", " · shared from Javis OS")
+    return share_render.esc(ten) + localefmt.chu(" · được chia sẻ từ TTTOS", " · shared from TTTOS")
 
 
 def _share_file(ban):
@@ -11007,7 +11007,7 @@ def _ung_vien_tai_nguyen(duong_dan_file: str, p: str):
          theo GỐC BRAIN, nên note nằm trong thư mục con mà viết ![](anh.jpg) là ảnh không bao
          giờ hiện (chủ dự án báo 18/09).
       2. THEO GỐC BRAIN - hành vi cũ, giữ để note đang trỏ kiểu đó vẫn chạy.
-      3. attachments/<tên file> - nơi Javis tự cất ảnh nó sinh ra.
+      3. attachments/<tên file> - nơi TTTOS tự cất ảnh nó sinh ra.
 
     Hàng rào phạm vi KHÔNG đổi: mỗi ứng viên vẫn phải qua đủ hai cổng của _share_asset, nên
     thêm ứng viên ở đây không mở rộng thêm thứ gì đọc được.
@@ -11049,7 +11049,7 @@ def _share_asset(ban, p: str):
     HAI hàng rào cùng lúc, và cần cả hai:
 
     1. VỊ TRÍ: trong thư mục chứa file được chia sẻ (kể cả thư mục con), hoặc trong
-       `attachments` của brain - nơi Javis cất ảnh theo quy ước.
+       `attachments` của brain - nơi TTTOS cất ảnh theo quy ước.
     2. LOẠI FILE: phải nằm trong `DUOI_TAI_NGUYEN`, tức chỉ ảnh, css, js, phông, âm thanh,
        phim. Không tài liệu.
 
@@ -11116,7 +11116,7 @@ def _share_trang_hoi_thoai(ban, addr: str = ""):
     meta = localefmt.chu(f"{len(tin)} tin nhắn", f"{len(tin)} messages")
     trang = share_render.trang_hoi_thoai(
         ten, tin, "/s/" + (addr or ban["token"]) + "/asset", meta, _share_chan(ban),
-        nhan_nguoi=localefmt.chu("Người hỏi", "Question"), nhan_javis="Javis")
+        nhan_nguoi=localefmt.chu("Người hỏi", "Question"), nhan_javis="TTTOS")
     return HTMLResponse(trang, headers={"Content-Security-Policy": share_render.CSP_TINH,
                                         "X-Content-Type-Options": "nosniff",
                                         "Referrer-Policy": "no-referrer"})
@@ -11124,7 +11124,7 @@ def _share_trang_hoi_thoai(ban, addr: str = ""):
 
 def _share_anh_hoi_thoai(ban, p: str):
     """Ảnh trong một hội thoại được chia sẻ: CHỈ ảnh và tài nguyên trình bày nằm trong `attachments`
-    của brain - nơi Javis cất ảnh nó tạo ra. Không ghi chú, không file nào khác của brain."""
+    của brain - nơi TTTOS cất ảnh nó tạo ra. Không ghi chú, không file nào khác của brain."""
     brain = str(ban.get("brain") or "brain")
     dinh_kem = Path(_brain_root(brain)).resolve() / "attachments"
     raw = (p or "").replace("\\", "/").strip().lstrip("/")
@@ -12104,7 +12104,7 @@ async def import_capability(file: UploadFile = File(...), brain: str = Form("bra
 
 @app.get("/usage")
 async def usage_stats():
-    """Token/chi phí Javis TỰ ĐO theo nhà cung cấp (hôm nay + tổng). Kèm số dư THẬT của OpenRouter
+    """Token/chi phí TTTOS TỰ ĐO theo nhà cung cấp (hôm nay + tổng). Kèm số dư THẬT của OpenRouter
     nếu có key (provider duy nhất lộ số dư qua API); các provider còn lại API không cho lấy hạn mức."""
     out = usage_store.summary()
     out["daily"] = usage_store.daily(14)   # chuỗi 14 ngày cho đồ thị trang Mức dùng
@@ -12470,7 +12470,7 @@ async def usage_tong_quan(period: str = "this_month", brain: str = "brain", refr
 async def usage_ngan_sach(gia_goi_thang_usd: str = Form(""), ngan_sach_thang_usd: str = Form(""),
                           tran_5h: str = Form(""), tu_phanh: str = Form(""),
                           bao_cao_tuan: str = Form("")):
-    """Bốn con số Javis KHÔNG tự biết được: giá gói, trần tiền tháng, trần cửa sổ 5h, tự phanh.
+    """Bốn con số TTTOS KHÔNG tự biết được: giá gói, trần tiền tháng, trần cửa sổ 5h, tự phanh.
 
     Trường bỏ trống = giữ nguyên. Gửi "0" mới là xoá. Phân biệt hai cái đó quan trọng: giao
     diện chỉ gửi ô người dùng vừa sửa, gửi thiếu mà bị hiểu là 0 thì bấm lưu một ô là mất ba
@@ -12510,7 +12510,7 @@ async def usage_ngan_sach(gia_goi_thang_usd: str = Form(""), ngan_sach_thang_usd
 
     # ĐỦ ĐIỀU KIỆN MỚI HẸN LỊCH. Hai thứ vừa bật đều hẹn giờ báo về cho người dùng: cảnh báo
     # ngân sách và báo cáo tuần. Chưa đấu kênh nào thì tới giờ chúng chạy xong rồi rơi vào hư
-    # không, và người dùng tưởng Javis quên. Không chặn (họ có thể sắp đấu), nhưng phải NÓI.
+    # không, và người dùng tưởng TTTOS quên. Không chặn (họ có thể sắp đấu), nhưng phải NÓI.
     canh_bao = []
     co_ngoai, ly_do = _kenh_con_thieu()
     if not co_ngoai and (m.get("bao_cao_tuan") or m["ngan_sach_thang_usd"] > 0):
@@ -12523,8 +12523,8 @@ async def usage_ngan_sach(gia_goi_thang_usd: str = Form(""), ngan_sach_thang_usd
             "and cannot reach your phone."))
     if m["ngan_sach_thang_usd"] > 0 and not m.get("tu_phanh"):
         canh_bao.append(localefmt.chu(
-            "Tự phanh đang tắt, nên chạm trần Javis chỉ nhắc chứ không dừng tiêu tiền.",
-            "Auto-brake is off, so when the cap is hit Javis only reminds you and does not stop spending."))
+            "Tự phanh đang tắt, nên chạm trần TTTOS chỉ nhắc chứ không dừng tiêu tiền.",
+            "Auto-brake is off, so when the cap is hit TTTOS only reminds you and does not stop spending."))
 
     await _kiem_ngan_sach(nhac=False)     # đặt lại phanh ngay, đừng đợi vòng lặp nền
     return {"ok": True, "gia_goi_thang_usd": m["gia_goi_thang_usd"],
@@ -12577,14 +12577,14 @@ async def _kiem_ngan_sach(nhac: bool = True) -> dict:
             usage_saving.ghi_moc("ngan_sach", khoa, "", f"Nhắc ngân sách: {khoa}")
             if ns["muc_do"] == "het":
                 tin = (f"Ngân sách API tháng này đã hết: tiêu ${da:.2f} trên trần ${tran:.2f}.\n"
-                       + ("Javis đã tự chuyển việc nền sang đường không tốn tiền."
+                       + ("TTTOS đã tự chuyển việc nền sang đường không tốn tiền."
                           if bat_phanh else
                           "Tự phanh đang tắt nên việc nền vẫn tiêu tiền như thường."))
             else:
                 tin = (f"Ngân sách API tháng này đã dùng {ns['ty_le'] * 100:.0f}%: "
                        f"${da:.2f} trên trần ${tran:.2f}. Còn ${ns['con']:.2f}.")
             try:
-                # kind="system": Javis TỰ nói, không phải trả lời câu ai hỏi. Đúng nhãn mà
+                # kind="system": TTTOS TỰ nói, không phải trả lời câu ai hỏi. Đúng nhãn mà
                 # inbox.py đặt tên sẵn cho ca này ("cảnh báo hết hạn mức"), và nhãn đó là thứ
                 # người dùng đọc trên thẻ thư để biết tin này từ đâu ra.
                 await _notify_owner("", tin, kind="system", source="cost",
@@ -12602,7 +12602,7 @@ async def _bao_cao_tuan_neu_toi_gio() -> bool:
 
     Vì sao đẩy chứ không đợi người ta mở trang: trang Mức dùng chỉ hữu ích khi có người nhớ
     mở nó ra, mà thứ người ta cần biết ("tuần rồi tiêu gấp đôi vì một cái loop") lại đúng là
-    thứ không ai nghĩ tới việc đi kiểm. Javis đã có sẵn đường nhắn chủ động, dùng nó.
+    thứ không ai nghĩ tới việc đi kiểm. TTTOS đã có sẵn đường nhắn chủ động, dùng nó.
 
     Dấu đã-gửi lưu trong nhật ký mốc theo tuần ISO, nên máy khởi động lại giữa sáng thứ Hai
     cũng không gửi hai lần.
@@ -12962,7 +12962,7 @@ def _workflow_agent_helpers(brain, tools, mode=None):
         if prov == "openai-oauth" and tools is not None and not signed_out:
             # Gated background step of an agent set to ChatGPT (owner decision 2026-11-12, from PR #1333): run it on
             # Codex instead of silently on Claude Code. The safety rail moves with it: read-only sandbox, no native
-            # shell, web, sub-agent or app tools, and the Javis hub answers only the step's own tool list at the
+            # shell, web, sub-agent or app tools, and the TTTOS hub answers only the step's own tool list at the
             # run's level (`workflow_codex`). Checked on Codex CLI 0.167.2: with these overrides the request carries
             # no exec, web or multi-agent tool.
             # When that environment cannot be built (no Codex CLI, no hub profile, a tool the list cannot express)
@@ -13018,9 +13018,9 @@ def _workflow_agent_helpers(brain, tools, mode=None):
             # workflow quét dữ liệu thật cũng có thể chạy quá 300s như việc lịch/Kanban.
             c.max_wall_s = aux_engine.bg_max_wall_s()
         else:
-            # #1252: an ungated step (a workflow run from chat, or a Kanban `wf:` job at `full`) gets the Javis hub at
+            # #1252: an ungated step (a workflow run from chat, or a Kanban `wf:` job at `full`) gets the TTTOS hub at
             # the run's level, like the Codex branch above (_apply_codex_hub) and like route `auto`. Before, only
-            # javis_vault was set: in-process plugins worked, every MCP registered in Javis did not, so the agent
+            # javis_vault was set: in-process plugins worked, every MCP registered in TTTOS did not, so the agent
             # reported "missing tool" and the job stopped at its acceptance check.
             _apply_mcp(c, mode=ungated_mode, brain=vault_root)
             c.javis_vault = vault_root
@@ -13065,13 +13065,13 @@ def _workflow_agent_helpers(brain, tools, mode=None):
             + "\n# Tự bồi đắp lúc dùng: nếu cuối nhiệm vụ rút ra được bài học TÁI DÙNG cho vai này "
               "(cách làm tốt hơn, lỗi cần tránh, ngữ cảnh riêng đã học được), KẾT THÚC câu trả lời "
               "bằng tối đa 2 dòng riêng, mỗi dòng đúng dạng `JAVIS_LESSON: <bài học một câu>`. "
-              "Javis tự ghi vào mục `## Bài học (tự học)` của file bộ nhớ trên (tự loại trùng, giữ "
+              "TTTOS tự ghi vào mục `## Bài học (tự học)` của file bộ nhớ trên (tự loại trùng, giữ "
               f"{_BAI_HOC_TRAN} dòng mới nhất). KHÔNG tự sửa file bộ nhớ trực tiếp - phần ngoài mục "
               "đó là của chủ. Lượt chạy không có gì đáng nhớ thì ĐỪNG phát JAVIS_LESSON, và đừng "
               "lặp lại bài học đã có trong bộ nhớ.\n"
             + "\n# Luật chủ dặn: khi CHỦ nói rõ một luật lâu dài cho vai này (\"từ giờ\", \"luôn\", "
               "\"đừng bao giờ\", vd \"nhắn Zalo thì không dùng markdown\"), làm theo ngay VÀ kết thúc "
-              "câu trả lời bằng một dòng riêng `JAVIS_RULE: <luật một câu, giữ nguyên ý chủ>`. Javis ghi "
+              "câu trả lời bằng một dòng riêng `JAVIS_RULE: <luật một câu, giữ nguyên ý chủ>`. TTTOS ghi "
               f"vào mục `{agent_rules.OWNER_RULES_HEADER}` của file bộ nhớ trên, mục này không bao giờ "
               "bị tự xoá. CHỈ dùng cho lời chủ dặn; bài học bạn tự rút ra thì vẫn là JAVIS_LESSON. "
               "Luật đã có trong mục đó thì đừng phát lại.\n"
@@ -13118,11 +13118,11 @@ def _workflow_agent_helpers(brain, tools, mode=None):
 # tập viên", bảo chủ "tự copy lệnh sang agent Đăng tải"; khi chủ nới prompt thì nó BỊA rằng đã
 # "bàn giao cho chuyên viên dang_tai" (không có agent nào tên vậy, không gọi tool nào) và hẹn
 # "có kết quả em báo lại ngay". Vai chuyên môn chỉ là CÁCH LÀM, không phải hàng rào công cụ:
-# agent chạy trên cùng hub tool với Javis. Ba luật dưới chốt đúng ba lỗi đó.
+# agent chạy trên cùng hub tool với TTTOS. Ba luật dưới chốt đúng ba lỗi đó.
 _AGENT_TOOLKIT_BLOCK = (
     "\n# Công cụ và giới hạn thật của bạn\n"
     "- Vai trò ở trên là CHUYÊN MÔN CHÍNH, không phải hàng rào. Bạn có TOÀN BỘ bộ công cụ của "
-    "Javis qua hub: đọc/ghi file trong brain (`javis_read_file`, `javis_write_file`, "
+    "TTTOS qua hub: đọc/ghi file trong brain (`javis_read_file`, `javis_write_file`, "
     "`javis_list_dir`), gọi các kết nối ngoài đã nối như Google Drive, Composio, POS, Zalo... "
     "(`javis_connections` để xem đang nối gì, `javis_search_tools` rồi `javis_run_tool` để gọi), "
     "chạy skill (`javis_use_skill`), giao việc nền Kanban (`javis_task`), đặt nhắc hẹn "
@@ -13147,7 +13147,7 @@ _AGENT_HAI_LOI = ("Chỉ hai lối đúng: làm xong ngay trong lượt và tr�
                   "nói rõ đã giao gì, kết quả về đâu. Không làm được cả hai thì nói thẳng là chưa làm.")
 _AGENT_BA_LOI = ("Ba lối đúng: làm xong ngay trong lượt và trả kết quả thật; giao việc nền / nhắc hẹn rồi nói rõ đã "
                  "giao gì, kết quả về đâu; hoặc, khi chủ giao trách nhiệm theo đuổi tới khi đạt, lập mục tiêu bằng "
-                 "javis_goal rồi nói rõ Javis làm tiếp ở nền trong hạn mức và kết quả tự về khung chat này. Không "
+                 "javis_goal rồi nói rõ TTTOS làm tiếp ở nền trong hạn mức và kết quả tự về khung chat này. Không "
                  "làm được lối nào thì nói thẳng là chưa làm.")
 
 
@@ -13157,7 +13157,7 @@ def _agent_chat_prompt(brain, slug, channel="dashboard", conv_sid="", skill_serv
     Là ĐÚNG prompt mà workflow dùng cho trợ lý đó (vai, thân file, kỹ năng, bộ nhớ riêng, luật
     JAVIS_LESSON), cộng một câu nói rõ đây là trò chuyện chứ không phải một bước quy trình.
     Cố ý KHÔNG nối CLAUDE.md, bộ nhớ của chủ hay khối kênh: người dùng đang muốn nói chuyện với
-    "Người viết", không phải với Javis đội mũ Người viết.
+    "Người viết", không phải với TTTOS đội mũ Người viết.
 
     `channel`: "dashboard" (the Partners page), "cli" (POST /chat with `agent`), "telegram" (the
     owner's bot, `@<agent>` or /agent) or "voice" (a voice call from the partner's chat,
@@ -13177,13 +13177,13 @@ def _agent_chat_prompt(brain, slug, channel="dashboard", conv_sid="", skill_serv
     if _resonance_turn_enabled(brain):
         sysprompt = (sysprompt.replace(_AGENT_HAI_LOI, _AGENT_BA_LOI)
                      + "\n# Cộng hưởng (đang bật cho bạn)\n- " + _RESONANCE_GOAL_HINT + "\n")
-    where = ("qua Javis CLI (terminal hoặc HTTP /chat)" if channel == "cli"
+    where = ("qua TTTOS CLI (terminal hoặc HTTP /chat)" if channel == "cli"
              else "qua Telegram" if channel == "telegram"
-             else "trong một cuộc gọi thoại trên dashboard Javis (khung chat của bạn ở trang Cộng sự); câu bạn "
+             else "trong một cuộc gọi thoại trên dashboard TTTOS (khung chat của bạn ở trang Cộng sự); câu bạn "
                   "viết ra được đọc lại thành tiếng, nên viết gọn, không bảng" if channel == "voice"
-             else "trên dashboard Javis (trang Cộng sự)")
+             else "trên dashboard TTTOS (trang Cộng sự)")
     # the dashboard chat id, so a chat_id/owner_chat the model passes names this chat. An agent DM never had
-    # the channel block or the `[Phiên chat: ...]` header, so its jobs used to report to Javis Core.
+    # the channel block or the `[Phiên chat: ...]` header, so its jobs used to report to TTTOS Core.
     # A voice call runs in that same dashboard chat, so its jobs report there too.
     phien = (f" Phiên chat này là `web:{conv_sid}`: việc nền (`javis_task`) và nhắc hẹn, việc định kỳ "
              "(`javis_schedule`) giao từ đây tự báo kết quả về đúng khung chat này; nhắc hẹn và việc định kỳ "
@@ -13196,16 +13196,16 @@ def _agent_chat_prompt(brain, slug, channel="dashboard", conv_sid="", skill_serv
 
 
 def _agent_identity_block(name) -> str:
-    """Who the assistant is in a chat with the owner: a partner inside Javis, not a bare model.
+    """Who the assistant is in a chat with the owner: a partner inside TTTOS, not a bare model.
 
     The assistant prompt opens with its name and role but never said where it lives. On Codex an assistant asked
     "who are you" answered that it was ChatGPT (owner report 2026-11-05), and an API engine's own "you run on model
     X" fact pulled the same way. Answering with the engine stays right when the owner asks which MODEL it runs on."""
     return (
         "\n# Bạn là ai\n"
-        f"- Bạn là {name}, một cộng sự (trợ lý chuyên trách) trong Javis OS, hệ trợ lý AI cá nhân của chủ. Javis là "
+        f"- Bạn là {name}, một cộng sự (trợ lý chuyên trách) trong TTTOS, hệ trợ lý AI cá nhân của chủ. TTTOS là "
         "hệ thống bạn chạy bên trong: cùng brain, cùng kết nối và công cụ, nhưng vai, giọng và bộ nhớ là của bạn.\n"
-        f"- Hỏi bạn là ai thì trả lời bạn là {name}, cộng sự trong Javis của chủ, kèm vai của mình. KHÔNG tự nhận là "
+        f"- Hỏi bạn là ai thì trả lời bạn là {name}, cộng sự trong TTTOS của chủ, kèm vai của mình. KHÔNG tự nhận là "
         "ChatGPT, Claude, Gemini, Grok hay một trợ lý AI chung chung. Chỉ khi chủ hỏi rõ đang chạy model hay engine "
         "nào mới nói đúng tên model đó.\n"
     )
@@ -13213,9 +13213,9 @@ def _agent_identity_block(name) -> str:
 
 def _background_agent_prompt(brain, slug) -> str:
     """system prompt of a reminder or loop made in a partner chat, so it does its job AS that assistant (role,
-    file body, assets, memory, owner rules) instead of as plain Javis. No procedure overlay: that belongs to a surface
+    file body, assets, memory, owner rules) instead of as plain TTTOS. No procedure overlay: that belongs to a surface
     the host knows (dm, team, workflow). Raises FileNotFoundError when the assistant file is gone; the caller then
-    runs the job as Javis."""
+    runs the job as TTTOS."""
     if not (_agents_dir(brain) / f"{slug}.md").is_file():
         raise FileNotFoundError(slug)
     _mk, _agent_sysprompt, _log, _learn = _workflow_agent_helpers(brain, None)
@@ -14078,11 +14078,11 @@ import self_improve
 
 
 _SECURITY_ALERT_TEXT = {
-    "login_new_network": ("Đăng nhập Javis từ một mạng mới", "Javis sign-in from a new network"),
-    "login_recovery_code": ("Có người đăng nhập Javis bằng MÃ KHÔI PHỤC 2FA", "Someone signed in to Javis with a 2FA RECOVERY CODE"),
-    "setup": ("Tài khoản quản trị Javis vừa được tạo", "The Javis admin account was just created"),
-    "username_changed": ("Tên đăng nhập Javis vừa bị đổi", "The Javis username was just changed"),
-    "password_changed": ("Mật khẩu Javis vừa bị đổi", "The Javis password was just changed"),
+    "login_new_network": ("Đăng nhập TTTOS từ một mạng mới", "TTTOS sign-in from a new network"),
+    "login_recovery_code": ("Có người đăng nhập TTTOS bằng MÃ KHÔI PHỤC 2FA", "Someone signed in to TTTOS with a 2FA RECOVERY CODE"),
+    "setup": ("Tài khoản quản trị TTTOS vừa được tạo", "The TTTOS admin account was just created"),
+    "username_changed": ("Tên đăng nhập TTTOS vừa bị đổi", "The TTTOS username was just changed"),
+    "password_changed": ("Mật khẩu TTTOS vừa bị đổi", "The TTTOS password was just changed"),
     "2fa_enabled": ("Xác thực 2 lớp vừa được BẬT", "Two-factor authentication was just turned ON"),
     "2fa_disabled": ("Xác thực 2 lớp vừa bị TẮT", "Two-factor authentication was just turned OFF"),
     "2fa_recovery_regenerated": ("Bộ mã khôi phục 2FA vừa được tạo lại", "The 2FA recovery codes were just regenerated"),
@@ -14091,8 +14091,8 @@ _SECURITY_ALERT_TEXT = {
     "env_account_created": ("Tài khoản admin được tạo từ biến môi trường", "Admin account created from the environment"),
     "env_account_reset": ("Tài khoản admin được đặt lại từ biến môi trường (Redeploy)", "Admin account reset from the environment (redeploy)"),
     "env_2fa_reset": ("2FA được gỡ bằng JAVIS_RESET_2FA", "2FA removed with JAVIS_RESET_2FA"),
-    "auth_changed_outside": ("CẢNH BÁO: file cài đặt bị sửa tài khoản từ BÊN NGOÀI Javis. Mọi phiên đã bị đăng xuất.",
-                             "WARNING: the account in the settings file was changed OUTSIDE Javis. Every session was signed out."),
+    "auth_changed_outside": ("CẢNH BÁO: file cài đặt bị sửa tài khoản từ BÊN NGOÀI TTTOS. Mọi phiên đã bị đăng xuất.",
+                             "WARNING: the account in the settings file was changed OUTSIDE TTTOS. Every session was signed out."),
 }
 
 
@@ -14128,7 +14128,7 @@ async def _loop_notify(text: str, source: str = "loop", level: str = "important"
 
     It used to go to EVERY Telegram id on the allow-list. It is the owner's business only, so it now lands in the
     bell (kind system) and on the owner's own Telegram when that is known (`_owner_telegram_id`).
-    0.403.0: `source` and `level` place it for Javis Core's rules (a loop pausing itself: job, important)."""
+    0.403.0: `source` and `level` place it for TTTOS Core's rules (a loop pausing itself: job, important)."""
     try:
         await _notify_owner("", text, kind="system", source=source, level=level)
     except Exception as e:
@@ -14208,7 +14208,7 @@ def _resonance_card(card) -> tuple:
 
 
 async def push_to_chat(session_id, text, viec=None, card="", nho="") -> bool:
-    """Đẩy MỘT tin của Javis vào đúng phiên chat web, ngoài luồng hỏi-đáp thường.
+    """Đẩy MỘT tin của TTTOS vào đúng phiên chat web, ngoài luồng hỏi-đáp thường.
 
     Vì sao cần: việc Kanban / loop / nhắc hẹn chạy nền xong thì lượt chat đã kết thúc từ lâu,
     không còn chỗ nào để trả lời. Trước 0.9.289 kết quả CHỈ đi Telegram, nên người dùng ngồi
@@ -14441,10 +14441,10 @@ async def _bo_vao_hom_thu(owner_chat, text, *, kind="answer", label="", source="
         # người dùng lại phải tự đi tìm - đúng cái phiền mà hòm thư sinh ra để bỏ.
         url = f"/?mo_thu={item['id']}"
         # 0.187.0: "hide content" in the bell's settings shows only that something arrived; the text is read after
-        # opening Javis, where login is checked again.
+        # opening TTTOS, where login is checked again.
         title, body = item["title"], item["body"][:200]
         if (cfgmod.read_settings().get("push") or {}).get("preview") == "hidden":
-            title, body = "Javis", localefmt.chu("Bạn có tin mới trong Javis.", "You have a new message in Javis.")
+            title, body = "TTTOS", localefmt.chu("Bạn có tin mới trong TTTOS.", "You have a new message in TTTOS.")
         # KHÔNG await: mỗi đăng ký chết là một request chờ tới 15 giây, mà việc rung chuông
         # không được phép giữ chân cái đã xong. Hòm thư đã ghi rồi - push chỉ là chuông cửa.
         # Giữ tham chiếu tới task, không thì bộ dọn rác có thể nuốt nó giữa chừng.
@@ -14459,7 +14459,7 @@ async def _bo_vao_hom_thu(owner_chat, text, *, kind="answer", label="", source="
 
 
 def _notify_decide(text, *, kind="answer", source="", quiet=False, level="", group="", viec=None, dedup="") -> dict:
-    """Javis Core's verdict on one notice (0.403.0, `notify_policy.decide`). Never raises: a broken rule store rings."""
+    """TTTOS Core's verdict on one notice (0.403.0, `notify_policy.decide`). Never raises: a broken rule store rings."""
     try:
         g = notify_policy.group_of(source=source, kind=kind, viec=viec, dedup=dedup, group=group)
         lv = notify_policy.level_of(level=level, quiet=quiet, group=g)
@@ -14475,7 +14475,7 @@ def _owner_telegram_id() -> str:
 
     Explicit link first: `telegram.owner_chat_id`, set on the Telegram settings card, and only while it is still on
     the allow-list. Without it, a single allowed id is the owner's beyond doubt. Several ids and no link: nobody;
-    Javis no longer sends to "the first id", which may be a colleague who shares the bot.
+    TTTOS no longer sends to "the first id", which may be a colleague who shares the bot.
     """
     tg = cfgmod.read_settings().get("telegram", {}) or {}
     ids = tg_parse_ids(tg.get("chat_id"))
@@ -14486,19 +14486,19 @@ def _owner_telegram_id() -> str:
 
 
 def _report_route(owner_chat, brain, kind, quiet=False, filtered=False) -> dict:
-    """Where one report goes (0.186.0, Javis Core spec section 6). Pure decision, no sending.
+    """Where one report goes (0.186.0, TTTOS Core spec section 6). Pure decision, no sending.
 
-    - `web:<sid>` of a chat that still exists: that chat, nothing copied to Javis Core.
-    - `web:<sid>` of a deleted chat: the source brain's Javis Core when the brain is known, else a routing error.
-    - an outside channel (Telegram id, `zalo:`, `slack:`...): that channel, plus the source brain's Javis Core so the
+    - `web:<sid>` of a chat that still exists: that chat, nothing copied to TTTOS Core.
+    - `web:<sid>` of a deleted chat: the source brain's TTTOS Core when the brain is known, else a routing error.
+    - an outside channel (Telegram id, `zalo:`, `slack:`...): that channel, plus the source brain's TTTOS Core so the
       report can be read and discussed on the dashboard too.
-    - empty: the source brain's Javis Core and the owner's own Telegram (see `_owner_telegram_id`). A system notice
+    - empty: the source brain's TTTOS Core and the owner's own Telegram (see `_owner_telegram_id`). A system notice
       has no brain and goes to the bell and the owner's Telegram. A report with neither target nor brain is not
       guessed: it stays in the bell marked `no_target`.
     The brain is the one the WORK belongs to, passed by the producer, never the brain open on screen.
 
-    0.403.0: a notice Javis Core filtered (`filtered`) with no chat of its own stays in the bell only: not copied into
-    Javis Core's chat, not sent to the owner's Telegram. A chat or channel that asked for the work still gets it.
+    0.403.0: a notice TTTOS Core filtered (`filtered`) with no chat of its own stays in the bell only: not copied into
+    TTTOS Core's chat, not sent to the owner's Telegram. A chat or channel that asked for the work still gets it.
     """
     cid = str(owner_chat or "").strip()
     bk = ""
@@ -14523,8 +14523,8 @@ def _report_route(owner_chat, brain, kind, quiet=False, filtered=False) -> dict:
             return {"chat": core(), "external": "", "brain": bk, "lost_origin": True}
         return {"chat": "", "external": "", "brain": "", "routing": "lost_origin"}
     own = _owner_telegram_id()
-    # 0.188.0: Javis Core is a place to work, not a log. A run that went fine (`quiet`) stays in the bell, where
-    # "Ask Javis Core" can still bring it in; only what needs the owner lands in the chat. A report for an outside
+    # 0.188.0: TTTOS Core is a place to work, not a log. A run that went fine (`quiet`) stays in the bell, where
+    # "Ask TTTOS Core" can still bring it in; only what needs the owner lands in the chat. A report for an outside
     # channel is copied in only when that channel is the owner's own, never someone else's who shares the bot.
     if cid:
         mine = bool(own) and cid == own
@@ -14541,11 +14541,11 @@ def _report_route(owner_chat, brain, kind, quiet=False, filtered=False) -> dict:
 async def _notify_owner(owner_chat, text, *, kind="answer", label="", source="",
                         quiet=False, ngan="", viec=None, web="", card="", brain="", dedup="",
                         level="", group="") -> tuple:
-    """Báo cáo cho NGƯỜI YÊU CẦU loop/task (mặc định của Javis). Quy tắc:
+    """Báo cáo cho NGƯỜI YÊU CẦU loop/task (mặc định của TTTOS). Quy tắc:
       - owner_chat dạng "web:<sid>" → đẩy thẳng vào ĐÚNG khung chat web đã giao việc.
       - owner_chat dạng "zalo:<id>" → gửi qua bot Zalo cho ĐÚNG người đó.
       - owner_chat là chat_id Telegram trong whitelist → gửi ĐÚNG người đó.
-      - owner_chat rỗng (không rõ ai giao) → Javis Core của brain nguồn (`brain`) và Telegram của CHÍNH chủ
+      - owner_chat rỗng (không rõ ai giao) → TTTOS Core của brain nguồn (`brain`) và Telegram của CHÍNH chủ
         (`_owner_telegram_id`); không có brain thì chỉ giữ trong hòm thư, không đoán (0.186.0, `_report_route`).
 
     Vì sao có nhánh web: người ngồi dashboard giao việc xong thì lượt chat đã đóng, mà kênh
@@ -14572,7 +14572,7 @@ async def _notify_owner(owner_chat, text, *, kind="answer", label="", source="",
     Trả (ok, error). `ok` là ĐÃ TỚI ĐƯỢC NGƯỜI DÙNG, và hòm thư tính là tới: nó nằm ở
     server, còn sau F5, thấy được từ máy khác. Nhờ vậy một cái nhắc hẹn trên máy chưa đấu
     Telegram không còn bị ghi là "failed" trong khi nội dung đang nằm sẵn trong hòm."""
-    # 0.403.0: Javis Core's verdict first, so a filtered notice is neither copied to its chat nor sent to Telegram.
+    # 0.403.0: TTTOS Core's verdict first, so a filtered notice is neither copied to its chat nor sent to Telegram.
     dec = _notify_decide(text, kind=kind, source=source, quiet=quiet, level=level, group=group, viec=viec, dedup=dedup)
     filtered = dec.get("verdict") != "loud"
     route = _report_route(owner_chat, brain, kind, quiet=quiet or filtered, filtered=filtered)
@@ -14591,7 +14591,7 @@ async def _notify_owner(owner_chat, text, *, kind="answer", label="", source="",
         return bool(vao_hom), ("" if vao_hom else "no_target")
     ok, err = False, ""
     if chat:
-        # 0.403.0: in Javis Core's chat the notice carries the bell item's marker, so an emoji on it there is feedback
+        # 0.403.0: in TTTOS Core's chat the notice carries the bell item's marker, so an emoji on it there is feedback
         # on this notice (`_notice_feedback_from_chat`). Only the chat copy: the bell and other channels stay clean.
         mark = ""
         try:
@@ -14630,7 +14630,7 @@ def _cat_cho_tg(text: str) -> str:
     t = str(text or "")
     if len(t) <= _TRAN_TIN_TG:
         return t
-    return t[:_TRAN_TIN_TG].rstrip() + "\n\n… (còn nữa - xem đầy đủ trong hòm thư của Javis)"
+    return t[:_TRAN_TIN_TG].rstrip() + "\n\n… (còn nữa - xem đầy đủ trong hòm thư của TTTOS)"
 
 
 async def _gui_qua_kenh(owner_chat, text, *, ngan="", viec=None, web="", card="") -> tuple:
@@ -14712,7 +14712,7 @@ loop_feature = self_improve.register(app, self_improve.LoopDeps(
     safe_tools=SAFE_FILE_TOOLS,
     readonly_tools=READONLY_TOOLS,
     notify=_loop_notify,
-    report=_notify_owner,               # báo NGƯỜI YÊU CẦU loop mỗi vòng (rỗng → Javis Core của brain loop)
+    report=_notify_owner,               # báo NGƯỜI YÊU CẦU loop mỗi vòng (rỗng → TTTOS Core của brain loop)
     apply_mcp=_apply_mcp,               # loop ĐỌC được dữ liệu thật qua MCP Javis-quản-lý
     mcp_allow_patterns=_loop_mcp_allow,
     build_agent_prompt=_background_agent_prompt,          # made in a partner chat -> runs as that assistant
@@ -14758,7 +14758,7 @@ learn_feature = learn_mod.register(app, learn_mod.LearnDeps(
     learning_lessons=lambda brain: _learning_lessons_block(brain),
 ))
 
-# The first knob of Javis Core's loop that is not a model: how many turns worth learning must be queued before an
+# The first knob of TTTOS Core's loop that is not a model: how many turns worth learning must be queued before an
 # automatic batch. Moved by plain code from how many recent batches learned nothing (learn.min_turns_rule).
 core_loop.register(core_loop.Knob(
     id="learn.min_turns", title_vi="Số lượt tối thiểu trước một mẻ tự học",
@@ -14827,7 +14827,7 @@ tasks_feature = tasks_mod.register(app, tasks_mod.TasksDeps(
     scheduler_brains=_background_brains,
     apply_mcp=_apply_mcp,
     mcp_allow_patterns=_loop_mcp_allow,
-    report=_notify_owner,               # báo NGƯỜI YÊU CẦU task khi chạy xong (rỗng → Javis Core của brain việc)
+    report=_notify_owner,               # báo NGƯỜI YÊU CẦU task khi chạy xong (rỗng → TTTOS Core của brain việc)
 ))
 
 # Nối learn → Kanban: engine học đề xuất việc nền → enqueue vào backlog.
@@ -14835,14 +14835,14 @@ tasks_feature = tasks_mod.register(app, tasks_mod.TasksDeps(
 learn_feature.deps.enqueue_task = tasks_feature.enqueue
 
 # Nối ngược Kanban → learn: việc nền chạy xong (hoặc vướng) thì xếp vào hàng đợi tự học.
-# Không có nhánh này thì Javis chỉ học được từ những gì NÓI trong chat, còn những gì nó TỰ LÀM
+# Không có nhánh này thì TTTOS chỉ học được từ những gì NÓI trong chat, còn những gì nó TỰ LÀM
 # trong nền - phần kinh nghiệm thực chiến - trôi qua không để lại bài học nào.
 tasks_feature.deps.learn_hook = learn_feature.enqueue_job
 
 
 # ============================================================
 # NHẮC HẸN TỪ CHAT (reminders.py) - "30 phút nữa nhắc anh...", "8h30 sáng mai...".
-# Javis tự đặt qua POST /reminders (localhost), scheduler nền đánh thức đúng giờ → bắn Telegram.
+# TTTOS tự đặt qua POST /reminders (localhost), scheduler nền đánh thức đúng giờ → bắn Telegram.
 # mode notify = nhắn lại · mode task = chạy engine (đọc MCP, ghi nháp) rồi báo. KHÔNG tiền/đơn.
 # ============================================================
 import reminders as reminders_mod
@@ -14857,9 +14857,9 @@ import cache_keepwarm
 
 
 def _notify_ready() -> tuple:
-    """(sẵn_sàng, lý_do): Javis có đường BÁO kết quả cho người dùng hay chưa. Nhắc hẹn và việc
+    """(sẵn_sàng, lý_do): TTTOS có đường BÁO kết quả cho người dùng hay chưa. Nhắc hẹn và việc
     nền chỉ có giá trị khi tới giờ nó nói được với ai đó - chưa đấu kênh nào thì việc chạy xong
-    rồi kết quả rơi vào hư không, người dùng tưởng Javis quên. Dùng để chặn ngay lúc TẠO.
+    rồi kết quả rơi vào hư không, người dùng tưởng TTTOS quên. Dùng để chặn ngay lúc TẠO.
 
     ĐỦ MỘT kênh là đủ. Từ 0.26.8 Zalo cũng tính: người dùng chỉ đấu Zalo mà bị chặn tạo nhắc
     hẹn với lý do "bot Telegram chưa bật" là một câu vừa sai vừa không sửa được, và nó đẩy họ
@@ -14976,7 +14976,7 @@ async def _habit_coach_ask(prompt: str) -> str:
     """Habit coach (0.427.0): one text-only turn on the background model, like the page watch summary."""
     if os.environ.get("JAVIS_NO_REAL_JUDGE_ENGINE") == "1":
         raise RuntimeError("JAVIS_NO_REAL_JUDGE_ENGINE")
-    cli = _reply_policy_sandbox_engine("You write short, warm habit lines as Javis's star mascot. Answer with JSON only.",
+    cli = _reply_policy_sandbox_engine("You write short, warm habit lines as TTTOS's star mascot. Answer with JSON only.",
                                        "habit-coach", cwd_name="habit_coach_cwd")
     base = cli
     cli = aux_engine.strip_tools(_aux_swap(cli, mode="suggest", tag="habit-coach"), base)
@@ -15006,9 +15006,9 @@ async def _scout_run(vault_root: str, prompt: str, tag: str, wall_s: int) -> dic
     """Run ONE read-only scout on the background model (scout.py) and return its report.
 
     Built exactly like a reminder at the `suggest` level, the one background path that is already read-only by
-    construction: an allowlist of read tools plus the Javis hub, the hub enforcing `suggest` (no write, no outside
+    construction: an allowlist of read tools plus the TTTOS hub, the hub enforcing `suggest` (no write, no outside
     action, whatever the prompt says), then the engine the owner chose for background work. The scout gets its own
-    short system prompt instead of the brain's full one: it needs to know how to read, not who Javis is."""
+    short system prompt instead of the brain's full one: it needs to know how to read, not who TTTOS is."""
     import scout as scout_mod
     tools = list(READONLY_TOOLS)
     try:
@@ -15184,7 +15184,7 @@ watch_feature = web_watch.register(app, web_watch.WebWatchDeps(
     channels=_kenh_con_thieu,
 ))
 
-# 0.428.0: stats for both tabs of the Tasks page (task_stats.py): what Javis did next to what the owner did.
+# 0.428.0: stats for both tabs of the Tasks page (task_stats.py): what TTTOS did next to what the owner did.
 import task_stats  # noqa: E402
 
 
@@ -15218,7 +15218,7 @@ login_vault.register(app, login_vault.LoginVaultDeps(
 
 
 # ============================================================
-# 0.199.0: a broken background run reaches Javis Core (incident_desk.py), plus the read-only health scan
+# 0.199.0: a broken background run reaches TTTOS Core (incident_desk.py), plus the read-only health scan
 # (sentinel.py). Idea from OpenMausBot's team incidents and Sentinel.
 # ============================================================
 async def _incident_ask(prompt: str) -> str:
@@ -15242,9 +15242,9 @@ async def _incident_ask(prompt: str) -> str:
 
 
 async def _incident_post(brain: str, text: str, chat: str = "") -> None:
-    # Empty chat id: the brain's Javis Core chat, the inbox and the owner's Telegram (_report_route, 0.186.0).
+    # Empty chat id: the brain's TTTOS Core chat, the inbox and the owner's Telegram (_report_route, 0.186.0).
     # `chat` is the chat the broken job came from (a partner chat, a Telegram id): the notice goes there, and a
-    # deleted chat falls back to Javis Core (_report_route, lost_origin).
+    # deleted chat falls back to TTTOS Core (_report_route, lost_origin).
     await _notify_owner(chat, text, kind="report", source="incident", brain=brain,
                         level="important" if text.startswith("⚠") else "info",
                         viec={"kind": "incident", "status": "failed" if text.startswith("⚠") else "done",
@@ -15252,7 +15252,7 @@ async def _incident_post(brain: str, text: str, chat: str = "") -> None:
 
 
 async def _incident_retry_kanban(inc: dict) -> tuple:
-    ok = tasks_feature.store.move(str(inc.get("ref") or ""), "ready", "incident retry by Javis Core")
+    ok = tasks_feature.store.move(str(inc.get("ref") or ""), "ready", "incident retry by TTTOS Core")
     return bool(ok), "moved back to ready" if ok else "could not move the job"
 
 
@@ -15342,7 +15342,7 @@ async def cache_keepwarm_set(payload: dict = Body(None)):
 def schedules_run_here() -> bool:
     """False when the owner switched scheduled work off on THIS machine. The flag lives in settings.json, which
     never syncs, while reminders and loops sync to every machine through the brain repo: without it, a reminder
-    fires once on each machine running Javis."""
+    fires once on each machine running TTTOS."""
     return not cfgmod.read_settings().get("schedules_off_here")
 
 
@@ -15598,7 +15598,7 @@ async def _khi_tien_trinh_xong(v: dict) -> None:
     if trang == "huy":
         dau, st = f"Đã dừng việc chạy nền sau {tl}.", "cancelled"
     elif trang == "bo_theo_doi":
-        dau, st = (f"Việc chạy nền vẫn chưa xong sau {tl}, Javis ngừng theo dõi để khỏi treo mãi. "
+        dau, st = (f"Việc chạy nền vẫn chưa xong sau {tl}, TTTOS ngừng theo dõi để khỏi treo mãi. "
                    "Nó vẫn đang chạy trên máy."), "timeout"
     else:
         dau, st = f"Việc chạy nền đã xong sau {tl}.", "done"
@@ -15671,7 +15671,7 @@ async def _bao_luot_dai_xong(conv_sid: str, brain, turn_tag: str, user_message: 
 
 async def _canh_bao_hua_suong(brain: str, chat_id: str, final_text: str,
                               runtime_trace=None) -> str:
-    """Dòng sự thật khi Javis hứa "xong em báo" mà lượt đó KHÔNG có việc nền nào.
+    """Dòng sự thật khi TTTOS hứa "xong em báo" mà lượt đó KHÔNG có việc nền nào.
 
     Trả về chuỗi cảnh báo (rỗng = không cần cảnh báo). Người gọi quyết định dán vào đâu:
     dashboard đẩy thành một bong bóng riêng (câu trả lời đã stream xong từ lâu), Telegram nối
@@ -15986,7 +15986,7 @@ async def lint(brain: str = Query("brain")):
 
 # ============================================================
 # JAVIS INDEX - chỉ mục tầng vận hành (agents/skills/workflows/loops/plugins).
-# Song song wiki/index.md: để MỌI engine (Claude/Codex/OpenRouter) đọc 1 chỗ là hiểu Javis
+# Song song wiki/index.md: để MỌI engine (Claude/Codex/OpenRouter) đọc 1 chỗ là hiểu TTTOS
 # có năng lực gì. SINH TỪ FILE (không sửa tay) → không bao giờ lệch. Ghi Javis/index.md CHỈ KHI
 # nội dung đổi (change-gated → không churn git). Bản LIVE gọn được chèn vào system prompt.
 # ============================================================
@@ -16051,9 +16051,9 @@ def _render_javis_index(caps: dict) -> str:
     n_on_wf = sum(1 for w in caps["workflows"] if w["status"] == "active")
     plugins = caps.get("plugins", [])
     n_on_plugins = sum(1 for p in plugins if p.get("loaded"))
-    L = ["# Javis Index (tầng vận hành)", "",
-         "> Tự sinh từ file - ĐỪNG sửa tay. Chỉ mục mọi năng lực của Javis trong brain này để bất kỳ "
-         "AI/engine đọc 1 chỗ là hiểu Javis làm được gì. Song song `wiki/index.md` (tri thức).", "",
+    L = ["# TTTOS Index (tầng vận hành)", "",
+         "> Tự sinh từ file - ĐỪNG sửa tay. Chỉ mục mọi năng lực của TTTOS trong brain này để bất kỳ "
+         "AI/engine đọc 1 chỗ là hiểu TTTOS làm được gì. Song song `wiki/index.md` (tri thức).", "",
          f"**Tổng quan:** {len(caps['agents'])} agents · {len(caps['skills'])} skills · "
          f"{len(caps['workflows'])} workflows ({n_on_wf} bật) · {len(caps['loops'])} loops ({n_on_loops} bật) · "
          f"{len(plugins)} plugins ({n_on_plugins} chạy)", ""]
@@ -16219,7 +16219,7 @@ def _ops_index_sweep() -> list:
 
 def _dong_lan_chay_gan_nhat(brain) -> str:
     """Một dòng cho system prompt: lần chạy quy trình gần nhất của brain, rỗng nếu chưa có.
-    Nhờ dòng này, hỏi "quy trình chạy gần nhất ra sao" ở khung chat chính là Javis biết ngay
+    Nhờ dòng này, hỏi "quy trình chạy gần nhất ra sao" ở khung chat chính là TTTOS biết ngay
     có gì để tra và tra bằng tool nào."""
     try:
         import workflow_runs
@@ -16415,7 +16415,7 @@ async def _start_scheduler():
     except Exception as e:
         print(f"[connect health start] {e}", file=_sys.stderr)
     try:
-        # Account block edited while Javis was stopped: caught here, before the env reset below re-stamps the file.
+        # Account block edited while TTTOS was stopped: caught here, before the env reset below re-stamps the file.
         cfgmod.auth_guard_check(grace=0)
     except Exception as e:
         print(f"[auth guard] {e}", file=_sys.stderr)
@@ -16516,7 +16516,7 @@ async def _start_scheduler():
                 try:
                     if time.time() - _NGAN_SACH_LAST[0] >= 600:
                         _NGAN_SACH_LAST[0] = time.time()
-                        # Javis Core's improvement loop: every knob's rule looks at its counters once. Plain code, in
+                        # TTTOS Core's improvement loop: every knob's rule looks at its counters once. Plain code, in
                         # a worker thread; a rule moves its knob at most once a day.
                         _MAIN_LOOP[0] = asyncio.get_running_loop()
                         await asyncio.to_thread(_improve_tick)
@@ -16533,7 +16533,7 @@ async def _start_scheduler():
                             await asyncio.to_thread(_do_backup)   # 1 lần: toàn bộ thư mục brains, 2 chiều
                 except Exception as be:
                     print(f"[backup tick] {type(be).__name__}: {be}", file=__import__('sys').stderr)
-                # 5) Javis index: every brain, but only the ones whose agents/skills/workflows/loops/plugins
+                # 5) TTTOS index: every brain, but only the ones whose agents/skills/workflows/loops/plugins
                 #    changed on disk (stat-only signature, see ops_index_watch), a few per tick.
                 try:
                     await asyncio.to_thread(_ops_index_sweep)
@@ -16876,7 +16876,7 @@ async def path_exists(path: str = Query("", description="Đường dẫn tuyệt
 async def config():
     s = cfgmod.read_settings()
     return {
-        "workspace_name": s.get("workspace_name") or os.getenv("WORKSPACE_NAME", "Javis OS"),
+        "workspace_name": s.get("workspace_name") or os.getenv("WORKSPACE_NAME", "TTTOS"),
         "user_name": os.getenv("USER_NAME", localefmt.chu("Bạn", "You")),
         "tts_voice": os.getenv("TTS_VOICE", "en-US-EmmaMultilingualNeural"),
         "tts_rate": os.getenv("TTS_RATE", "+5%"),
@@ -16963,7 +16963,7 @@ async def _watchtower_ly_do() -> str:
     Từ 0.55.56 Watchtower BẬT SẴN trong cả hai file compose (VPS lẫn Hostinger), nên hai mã
     dưới đây đổi NGHĨA - đọc kỹ trước khi sửa câu chữ ở dashboard theo:
 
-    - no_token: WATCHTOWER_TOKEN không được set, mà mọi file compose của Javis đều đặt sẵn
+    - no_token: WATCHTOWER_TOKEN không được set, mà mọi file compose của TTTOS đều đặt sẵn
       biến này. Nghĩa là stack đang chạy được deploy từ một file compose CŨ (hoặc một file tự
       viết). Cách ra: lấy compose mới rồi deploy lại - Hostinger bấm Redeploy, VPS chạy
       `docker compose up -d --pull always`.
@@ -17222,11 +17222,11 @@ async def do_update():
             _write_update_state({"phase": "idle"})   # nhả claim
             return JSONResponse({"ok": False, "self_built": True, "current": cur, "latest": latest,
                 "error": localefmt.chu(
-                    f"Javis này chạy bằng image tự đóng gói, không phải image chính thức, nên kéo lại hay Redeploy "
+                    f"TTTOS này chạy bằng image tự đóng gói, không phải image chính thức, nên kéo lại hay Redeploy "
                     f"vẫn ra đúng bản cũ. Đổi sang image chính thức một lần (dữ liệu, brain và đăng nhập giữ nguyên): "
                     f"trong file compose, sửa dòng image: thành {deploy_info.OFFICIAL_IMAGE}:latest rồi chạy lệnh dưới. "
                     f"Từ đó nút cập nhật dùng được. Tự build từ mã nguồn thì cập nhật bằng ./update.sh. Hướng dẫn đầy đủ: DEPLOY.md, mục Cập nhật.",
-                    f"This Javis runs a self-built image, not the official one, so pulling or Redeploying brings back "
+                    f"This TTTOS runs a self-built image, not the official one, so pulling or Redeploying brings back "
                     f"the same old version. Switch to the official image once (data, brains and logins are kept): in "
                     f"the compose file, change the image: line to {deploy_info.OFFICIAL_IMAGE}:latest, then run the "
                     f"command below. After that the Update button works. Building from source? Update with ./update.sh. "
@@ -17392,7 +17392,7 @@ def _autostart_status() -> dict:
     """Trạng thái ĐẦY ĐỦ của autostart, đủ để nói vì sao nó không chạy.
 
     `enabled` một mình không trả lời được câu hỏi thật của người dùng ("sao mở máy lên không
-    thấy Javis"): Run key còn nguyên vẫn có ba đường chết lặng khác nhau, và cả ba đều được
+    thấy TTTOS"): Run key còn nguyên vẫn có ba đường chết lặng khác nhau, và cả ba đều được
     kiểm ở đây - Windows chặn, đường dẫn cũ, hoặc file đã mất.
     """
     if os.name != "nt":
@@ -17795,7 +17795,7 @@ async def notifications_info():
 
 async def _notifications_data():
     """The News feed itself (releases + announcements), shared by the route and by code that needs the items
-    (marking all read, asking Javis Core about one). Route handlers are not called as plain functions."""
+    (marking all read, asking TTTOS Core about one). Route handlers are not called as plain functions."""
     now = time.monotonic()
     ngon_ngu = localefmt.ngon_ngu_giao_dien()
     cached = _NOTIFICATION_CACHE.get("data")
@@ -17831,9 +17831,9 @@ async def _notifications_data():
         releases.append({
             "id": f"release:{rel.get('version')}",
             "kind": "update",
-            "title": f"Javis OS v{rel.get('version')}",
-            "summary": bullets[0] if bullets else localefmt.chu("Bản cập nhật Javis OS mới.",
-                                                                "A new Javis OS update."),
+            "title": f"TTTOS v{rel.get('version')}",
+            "summary": bullets[0] if bullets else localefmt.chu("Bản cập nhật TTTOS mới.",
+                                                                "A new TTTOS update."),
             "body": "\n".join(f"• {item}" for item in bullets[1:5]),
             "published_at": rel.get("date") or "",
             "priority": "high" if (is_current or (is_new and is_latest)) else "normal",
@@ -17890,9 +17890,9 @@ async def notifications_read_post(payload: dict = Body(None)):
 
 
 def _cite_text(src: str, item: dict, brain: str) -> str:
-    """A notice or report put into Javis Core so the person can ask about it (0.187.0, spec 7.3 and 15).
+    """A notice or report put into TTTOS Core so the person can ask about it (0.187.0, spec 7.3 and 15).
 
-    Written as data with its source and time, and said to be a snapshot: Javis must check live state with tools
+    Written as data with its source and time, and said to be a snapshot: TTTOS must check live state with tools
     before talking about "now". The marker lets a second click reuse it instead of posting it twice."""
     ts = item.get("ts") or 0
     when = item.get("published_at") or (localefmt.format_ts(ts, "%d/%m/%Y %H:%M") if ts else "")
@@ -17918,10 +17918,10 @@ def _cite_text(src: str, item: dict, brain: str) -> str:
 
 @app.post("/javis-core/cite")
 async def javis_core_cite(payload: dict = Body(None)):
-    """Open a notice or report in this brain's Javis Core to ask about it (0.187.0).
+    """Open a notice or report in this brain's TTTOS Core to ask about it (0.187.0).
 
     `source`: "inbox" (an item of the bell) or "news" (a release or announcement); `id`; `brain`: the brain open now,
-    used only for news and for an inbox item that has no source brain. The text goes into the person's own Javis Core
+    used only for news and for an inbox item that has no source brain. The text goes into the person's own TTTOS Core
     chat, never back into the shared notice. Asking twice reuses the first copy."""
     p = payload or {}
     src = "news" if p.get("source") == "news" else "inbox"
@@ -17988,22 +17988,22 @@ async def inbox_delete(payload: dict = Body(None)):
     return {"ok": ok, "unread": inbox.so_chua_doc()}
 
 
-# ── 0.403.0: Javis Core, the notification commander (docs/dev/2026-10-javis-core-chi-huy-thong-bao.md) ────────────
+# ── 0.403.0: TTTOS Core, the notification commander (docs/dev/2026-10-javis-core-chi-huy-thong-bao.md) ────────────
 async def _core_say(brain: str, text: str) -> None:
-    """One short line from Javis Core in its own chat (what its judge just changed). Never raises."""
+    """One short line from TTTOS Core in its own chat (what its judge just changed). Never raises."""
     try:
         bk = _brain_key(brain or "brain")
         sid = javis_core.default_session(get_store(), bk, same_brain=_cung_brain)
         if sid:
             await _gui_qua_kenh(f"{WEB_CHAT_PREFIX}{sid}", text)
     except Exception as e:  # noqa: BLE001
-        print(f"[notify policy] Javis Core could not say it: {type(e).__name__}: {e}", file=sys.stderr)
+        print(f"[notify policy] TTTOS Core could not say it: {type(e).__name__}: {e}", file=sys.stderr)
 
 
 @app.post("/inbox/react")
 async def inbox_react(payload: dict = Body(None)):
     """The owner's feedback on one bell item: a Resonance emoji (`value`) and/or "needed" / "not_needed" (`axis`).
-    Javis Core's judge learns from it (`notify_policy.react`) and says in its chat what it changed."""
+    TTTOS Core's judge learns from it (`notify_policy.react`) and says in its chat what it changed."""
     p = payload or {}
     iid = str(p.get("id") or "")
     value = str(p.get("value") or "").strip()
@@ -18112,9 +18112,9 @@ async def push_test():
     """Gửi thử một thông báo. Không có nút này thì người dùng bật quyền xong vẫn không biết
     nó có chạy thật hay không, mà lần "thật" đầu tiên có khi phải đợi tới sáng hôm sau."""
     ok, don, chi_tiet = await webpush.gui_het(
-        "Javis", localefmt.chu("Thông báo đẩy đã chạy. Từ giờ có kết quả là Javis báo ngay cả khi bạn "
+        "TTTOS", localefmt.chu("Thông báo đẩy đã chạy. Từ giờ có kết quả là TTTOS báo ngay cả khi bạn "
                                "không mở dashboard.",
-                               "Push notifications work. From now on Javis tells you as soon as there "
+                               "Push notifications work. From now on TTTOS tells you as soon as there "
                                "is a result, even when the dashboard is closed."),
         "/?mo_thu=test", tag="javis-test")
     # Trả CHI TIẾT theo từng thiết bị, không chỉ một con số. Bản đầu trả ok=true khi có BẤT KỲ
@@ -18226,7 +18226,7 @@ _ICON_MEDIA = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
 def _pet_icon_file():
     """The mascot's own uploaded picture when the owner uses it as the tab icon, else None.
 
-    Lets someone with several Javis open (shop, family, a VPS for a client) tell the tabs apart. On by default once
+    Lets someone with several TTTOS open (shop, family, a VPS for a client) tell the tabs apart. On by default once
     a picture is uploaded; `favicon: false` keeps the logo on the tab. The name goes through avatar_upload, so a
     hand-edited settings.json cannot point this at any other file."""
     pet = (cfgmod.read_settings().get("dashboard") or {}).get("pet") or {}
@@ -18549,7 +18549,7 @@ def chat_plan_state():
 
 @app.post("/chat/suggest")
 async def chat_suggest(request: Request):
-    """The owner's likely next message once Javis has answered (2026-11-07), see next_prompt.py.
+    """The owner's likely next message once TTTOS has answered (2026-11-07), see next_prompt.py.
 
     Body {"context": [{"role": "user"|"assistant", "text": "..."}, ...]}, the last messages on screen, oldest first.
     Never an error: any trouble gives an empty suggestion, and the chat box keeps its usual placeholder."""
@@ -18731,7 +18731,7 @@ async def voice_options(brains: int = 1):
         ],
         "chatgpt_voice": v.get("chatgpt_voice") or voice_live.PROVIDERS["chatgpt"]["default_voice"],
         "voice_brains_active": voice_brain.active_count(),
-        # Thẻ gọn (0.65.19): dòng "Đang dùng", ô Giọng Javis đổi theo đường gọi, ô Đường gọi.
+        # Thẻ gọn (0.65.19): dòng "Đang dùng", ô Giọng TTTOS đổi theo đường gọi, ô Đường gọi.
         "call": voice_call.select_call_engine(cfg),
         # Bộ não giọng của đường Cơ bản (đã chọn từ bản cũ, hoặc máy tự chọn trên gói), "" = bộ não chính.
         "voice_brain": {"id": _vb, "label": (voice_brain.BRAIN_PROVIDERS.get(_vb) or {}).get("label", "")},
@@ -18773,9 +18773,9 @@ def _voice_agent(conv_sid: str, brain: str):
     runs in a partner's chat (Partners page, session channel `agent:<slug>`), else None.
 
     The Partners page shares the chat frame of the main chat, so a call started there carries that partner's session
-    id. Until this was fixed the call ignored it: the call model spoke as plain Javis and the work it handed off ran
-    as plain Javis too, so asked who it was, it answered that it was ChatGPT (owner report 2026-11-05). Any failure is None:
-    the call then runs as Javis, as before, instead of not starting."""
+    id. Until this was fixed the call ignored it: the call model spoke as plain TTTOS and the work it handed off ran
+    as plain TTTOS too, so asked who it was, it answered that it was ChatGPT (owner report 2026-11-05). Any failure is None:
+    the call then runs as TTTOS, as before, instead of not starting."""
     if not conv_sid:
         return None
     try:
@@ -18858,7 +18858,7 @@ async def _voice_ask_javis(request: str, conv_sid: str, brain: str, key: str = "
     """
     own_key = bool(key)   # khoá riêng dùng một lần: phiên RAM của nó phải chết theo, xem finally
     key = key or f"voice:{conv_sid}"
-    # A call in a partner's chat hands its work to that partner (prompt, model, memory), not to plain Javis.
+    # A call in a partner's chat hands its work to that partner (prompt, model, memory), not to plain TTTOS.
     agent = _voice_agent(conv_sid, brain)
     sess = _tg_session(_agent_sess_key(key, agent))
     try:
@@ -18903,9 +18903,9 @@ def _voice_quota_frame(prov) -> dict:
     if reset > time.time():
         when = localefmt.format_ts(reset, "%H:%M")
     vi = "ChatGPT Live đã hết lượt của gói ChatGPT" + (f" (mở lại lúc {when})" if when else "") + \
-        ". Javis chuyển sang tài khoản hoặc đường gọi kế tiếp."
+        ". TTTOS chuyển sang tài khoản hoặc đường gọi kế tiếp."
     en = "ChatGPT Live is out of quota on the ChatGPT plan" + (f" (back at {when})" if when else "") + \
-        ". Javis moves to the next account or call path."
+        ". TTTOS moves to the next account or call path."
     return {"type": "error", "code": "quota", "message": localefmt.chu(vi, en)}
 
 
@@ -18966,8 +18966,8 @@ async def voice_live_ws(ws: WebSocket, session_id: str = Query(""), brain: str =
                 memory_index = _fit_memory_index(idx.read_text(encoding="utf-8"), cap=voice_live.MEMORY_CHARS)
         except Exception:
             memory_index = ""
-    # A call from a partner's chat speaks as that partner (name, role, file, memory), not as plain Javis.
-    # `_voice_persona` logs its own failures; anything else still starts the call, as Javis.
+    # A call from a partner's chat speaks as that partner (name, role, file, memory), not as plain TTTOS.
+    # `_voice_persona` logs its own failures; anything else still starts the call, as TTTOS.
     _persona_kw = {}
     try:
         _p = _voice_persona(session_id, brain)
@@ -19017,7 +19017,7 @@ async def voice_live_ws(ws: WebSocket, session_id: str = Query(""), brain: str =
     # câu tiến độ), nên lời đọc đó không thành bong bóng thứ hai và không vào lịch sử.
     jobs: dict = {}                  # việc bộ não chính đang chạy: số thứ tự -> {request, started, step}
     job_seq = {"n": 0}
-    spoke = {"t": 0.0}               # lần gần nhất Javis nói về việc nền (kết quả hay tiến độ)
+    spoke = {"t": 0.0}               # lần gần nhất TTTOS nói về việc nền (kết quả hay tiến độ)
     heartbeat = {"task": None}
     readback = {"pending": 0, "active": False}
     # File pasted during the call (0.236.0): while its brain turn runs, and ATTACHMENT_GUARD_S after its answer is
@@ -19145,7 +19145,7 @@ async def voice_live_ws(ws: WebSocket, session_id: str = Query(""), brain: str =
         await _run_one(name, cid, req, running)
 
     async def _heartbeat():
-        """Việc chạy lâu thì Javis tự lên tiếng: người dùng đang không nhìn màn hình, im lặng mấy phút
+        """Việc chạy lâu thì TTTOS tự lên tiếng: người dùng đang không nhìn màn hình, im lặng mấy phút
         là họ không biết còn sống hay đã chết (chủ dự án 03/10: "anh sẽ rất lo lắng về việc đấy").
 
         Chỉ nói khi không ai đang nói và đã cách lần nói trước đủ lâu. Câu này không thành bong bóng,
@@ -19367,7 +19367,7 @@ async def voice_live_ws(ws: WebSocket, session_id: str = Query(""), brain: str =
                 await _j(ev)
             elif t == "interrupted":
                 readback["active"], readback["pending"] = False, 0
-                # Đoạn đã đọc dở vẫn là lời Javis đã nói: chốt vào phiên rồi xoá bộ đệm,
+                # Đoạn đã đọc dở vẫn là lời TTTOS đã nói: chốt vào phiên rồi xoá bộ đệm,
                 # không để nó dính sang lượt sau.
                 if asst_buf["text"].strip():
                     try:
@@ -19417,7 +19417,7 @@ async def voice_live_ws(ws: WebSocket, session_id: str = Query(""), brain: str =
 async def tts_voices(lang: str = Query("")):
     """Giọng Edge cho MỘT ngôn ngữ. Không truyền `lang` = ngôn ngữ trả lời đang cấu hình.
 
-    Trước đây hàm này lọc cứng `Locale.startswith("vi")`, nên dù Javis có trả lời tiếng Anh
+    Trước đây hàm này lọc cứng `Locale.startswith("vi")`, nên dù TTTOS có trả lời tiếng Anh
     thì ô chọn giọng vẫn chỉ hiện giọng Việt - và một câu tiếng Anh đọc bằng giọng Việt thì
     nghe như máy hỏng. Danh sách ngôn ngữ lấy từ sổ đăng ký chứ không khai lại ở đây.
     """
@@ -19627,7 +19627,7 @@ async def websocket_endpoint(ws: WebSocket):
 
 async def _chat_socket(ws):
     """Vòng nhận tin của khung chat, tách khỏi `websocket_endpoint` (0.440.0) chỉ để server
-    tự gọi được nó: Javis Gate (`chat_bridge`) đưa tin của ChatGPT/Claude vào hội thoại bằng
+    tự gọi được nó: TTTOS Gate (`chat_bridge`) đưa tin của ChatGPT/Claude vào hội thoại bằng
     một kết nối ẢO đi đúng con đường này, nên lượt đó chạy y hệt khi chủ gõ tay (chữ chạy trên
     mọi tab, nút Dừng, lưu kho, ghi nhật ký tự học). Cổng đăng nhập vẫn nằm ở endpoint: chỉ mã
     trong tiến trình mới gọi thẳng được hàm này."""
@@ -19681,9 +19681,9 @@ async def _chat_socket(ws):
                                "dup": False, "rejected": True})
         if payload.get("message") and sid and not _CHAT_RUNTIME.get_job(sid):
             await send_client({"type": "error", "session_id": sid, "content": localefmt.chu(
-                f"Máy chủ gặp lỗi khi nhận tin này ({type(exc).__name__}), Javis chưa chạy nó. Gửi lại sau ít phút, "
+                f"Máy chủ gặp lỗi khi nhận tin này ({type(exc).__name__}), TTTOS chưa chạy nó. Gửi lại sau ít phút, "
                 "nếu vẫn lỗi thì báo nhà phát triển kèm nhật ký máy chủ.",
-                f"The server hit an error taking this message ({type(exc).__name__}), Javis did not run it. Send it "
+                f"The server hit an error taking this message ({type(exc).__name__}), TTTOS did not run it. Send it "
                 "again in a few minutes, and report it with the server log if it keeps failing.")})
             await send_client({"type": "turn_done", "session_id": sid})
 
@@ -19694,7 +19694,7 @@ async def _chat_socket(ws):
             self._sid = sid
             self._runtime_trace = runtime_trace
             # 0.354.0: what the turn has put out so far, to know whether it can run again on the next route.
-            self.acted = False      # the model called a tool (Javis's own housekeeping lines aside)
+            self.acted = False      # the model called a tool (TTTOS's own housekeeping lines aside)
             self.said = ""          # streamed text, first 2000 characters
             self.can_hold = False   # armed by _do_turn when another route may take over
             self._held = None       # frames held back after an error while nothing was put out yet
@@ -19866,7 +19866,7 @@ async def _chat_socket(ws):
                 except Exception:  # noqa: BLE001 - an unreadable file keeps the main level
                     pass
             elif javis_core.is_core_channel((_row0 or {}).get("channel")):
-                reasoning = _core_reasoning(mcfg)       # 0.283.0: Javis Core's own level, not the main chat's
+                reasoning = _core_reasoning(mcfg)       # 0.283.0: TTTOS Core's own level, not the main chat's
             fast_mode.use(mcfg.get("fast") is True)
             _CONTEXT_RUNTIME.set_route(
                 runtime_trace,
@@ -19904,7 +19904,7 @@ async def _chat_socket(ws):
 
             await ws.send_text(json.dumps({
                 "type": "status",
-                "content": localefmt.chu("Javis đang suy nghĩ...", "Javis is thinking...")
+                "content": localefmt.chu("TTTOS đang suy nghĩ...", "TTTOS is thinking...")
             }))
 
             if _persona and _persona[0] == "agent":
@@ -19946,7 +19946,7 @@ async def _chat_socket(ws):
 
                 Vì sao khác: bỏ CLAUDE.md đổi lấy token là món hời khi bị siết TPM và mỗi
                 token đều tính tiền. Với gói thuê bao thì không tính tiền theo token, mà
-                CLAUDE.md lại chính là 21.500 ký tự luật hành xử của Javis - vứt nó đi để
+                CLAUDE.md lại chính là 21.500 ký tự luật hành xử của TTTOS - vứt nó đi để
                 tiết kiệm thứ mình không bị tính là đổi hành vi lấy một khoản không cần.
                 Nên ở đây chỉ chọn lọc hai nguồn ĐỌC THÊM: bộ nhớ và skill.
 
@@ -20080,7 +20080,7 @@ async def _chat_socket(ws):
                 # ===== Gói SuperGrok / X Premium+ qua GROK BUILD CLI - tool native + MCP hub =====
                 #
                 # CÓ nối lại mạch như nhánh Gemini/Codex, khác nhánh `agy` ngay dưới: `grok`
-                # tự sinh id phiên rồi phát ra trong dòng sự kiện, nên Javis chỉ ĐỌC LẠI id đó
+                # tự sinh id phiên rồi phát ra trong dòng sự kiện, nên TTTOS chỉ ĐỌC LẠI id đó
                 # chứ không tự bịa ra một cái. Không có chuyện lưu nhầm một id sai dạng rồi
                 # lượt sau nối vào mạch không tồn tại - lý do khiến `agy` phải bỏ resume.
                 actual_model = api_model or None
@@ -20117,8 +20117,8 @@ async def _chat_socket(ws):
                              "threshold": compaction.SUBSCRIPTION_THREAD_MAX_TOKENS})
                         await ws.send_text(json.dumps({
                             "type": "tool_call", "tool": "javis_nen_mach",
-                            "content": localefmt.chu("⚙ Mạch hội thoại đã dài, Javis mở mạch mới.",
-                                                     "⚙ The conversation thread got long, Javis started a new one.")}))
+                            "content": localefmt.chu("⚙ Mạch hội thoại đã dài, TTTOS mở mạch mới.",
+                                                     "⚙ The conversation thread got long, TTTOS started a new one.")}))
                     kcli.session_id = _k_mach or None
                     # Mạch mới thì mồi lại bằng transcript đã lưu, y như Codex/Gemini: không có
                     # bước này là mở mạch mới = mất sạch ngữ cảnh cuộc đang nói dở.
@@ -20151,7 +20151,7 @@ async def _chat_socket(ws):
                             final_text = ev.get("content") or ""
                         elif et == "usage":
                             # Token VÀO của lượt là dấu hiệu DUY NHẤT để biết mạch đã phình tới
-                            # đâu (CLI tự quản mạch, Javis không nhìn vào được).
+                            # đâu (CLI tự quản mạch, TTTOS không nhìn vào được).
                             await asyncio.to_thread(store.set_last_input_tokens, conv_sid, int(ev.get("input_tokens") or 0))
                         elif et == "error":
                             _k_loi = True
@@ -20307,10 +20307,10 @@ async def _chat_socket(ws):
                         "content": localefmt.chu(
                             "⚙ Mạch hội thoại đã dài "
                             f"({_codex_ctx:,} token mỗi lượt), "
-                            "Javis mở mạch mới và mang theo tóm tắt.",
+                            "TTTOS mở mạch mới và mang theo tóm tắt.",
                             "⚙ The conversation thread got long "
                             f"({_codex_ctx:,} tokens per turn), "
-                            "Javis started a new one and carried a summary over."),
+                            "TTTOS started a new one and carried a summary over."),
                     }))
                 ccli.session_id = stored_codex_thread or None
                 if not ccli.is_available():
@@ -20415,8 +20415,8 @@ async def _chat_socket(ws):
                         await ws.send_text(json.dumps({
                             "type": "system",
                             "content": localefmt.chu(
-                                "Phiên Codex cũ không còn trên máy - Javis đang khôi phục ngữ cảnh từ lịch sử đã lưu.",
-                                "The old Codex session is no longer on this machine - Javis is restoring "
+                                "Phiên Codex cũ không còn trên máy - TTTOS đang khôi phục ngữ cảnh từ lịch sử đã lưu.",
+                                "The old Codex session is no longer on this machine - TTTOS is restoring "
                                 "the context from saved history.")
                         }))
                         ccli.session_id = None
@@ -20748,7 +20748,7 @@ async def _chat_socket(ws):
                             # Thử lại chỉ có nghĩa khi việc cần làm là CO NHỎ. Hết hạn mức
                             # theo NGÀY, hay bị chặn nhịp mà không rõ chiều nào, thì gửi lại
                             # chỉ tốn thêm một lượt để ăn đúng cái lỗi đó lần nữa - và tệ hơn,
-                            # nó dựng lên vẻ "Javis đang xử lý" trong khi không xử lý được gì.
+                            # nó dựng lên vẻ "TTTOS đang xử lý" trong khi không xử lý được gì.
                             if str(_limit_hit.get("remedy") or "") not in ("shrink", "wait"):
                                 break
                             # Không đọc được hạn mức từ lỗi lần này thì lấy con số đã HỌC được
@@ -20809,7 +20809,7 @@ async def _chat_socket(ws):
                 # 0.353.0: the Claude account that should run now (only here: other engines never touch it).
                 _turn_acc["anthropic-cli"] = _plan_account_apply(cli, "anthropic-cli", mcfg)
                 # Cùng luật với Codex: mạch phình quá ngưỡng thì thôi --resume, mở mạch mới.
-                # Claude Code cũng tự quản transcript nên Javis chỉ có đúng con số token vào
+                # Claude Code cũng tự quản transcript nên TTTOS chỉ có đúng con số token vào
                 # của lượt trước làm dấu hiệu.
                 _cli_xoay_mach = bool(cli.session_id) and compaction.nen_mach_thue_bao(
                     _row0.get("last_input_tokens"), msg_count=_row0.get("msg_count"),
@@ -20827,10 +20827,10 @@ async def _chat_socket(ws):
                         "content": localefmt.chu(
                             "⚙ Mạch hội thoại đã dài "
                             f"({int(_row0.get('last_input_tokens') or 0):,} token mỗi lượt), "
-                            "Javis mở mạch mới.",
+                            "TTTOS mở mạch mới.",
                             "⚙ The conversation thread got long "
                             f"({int(_row0.get('last_input_tokens') or 0):,} tokens per turn), "
-                            "Javis started a new one."),
+                            "TTTOS started a new one."),
                     }))
                 # Stable prompt (0.445.0, #975): plain chats only. An agent DM keeps its own prompt, which has
                 # its own clock and session lines.
@@ -20840,7 +20840,7 @@ async def _chat_socket(ws):
                 cli.system_prompt = sysprompt
                 # mode: `full` cho mọi phiên như xưa nay; riêng phiên coding lấy theo chip Mức
                 # quyền của trang đó, vì ở trang ấy người dùng CHỌN mức chứ không thừa kế.
-                _apply_mcp(cli, mode=_muc_quyen_luot_chat(_row0, user_message), brain=brain)   # gắn MCP do Javis quản lý (nhiều shop POSCake...)
+                _apply_mcp(cli, mode=_muc_quyen_luot_chat(_row0, user_message), brain=brain)   # gắn MCP do TTTOS quản lý (nhiều shop POSCake...)
                 _streamed = ""      # phần đã stream - phương án dự phòng khi luồng đứt trước 'final'
                 _cli_sid = None
                 _cost = None
@@ -20856,7 +20856,7 @@ async def _chat_socket(ws):
                 if not cli.session_id:
                     # Bỏ --resume là Claude Code mất sạch mạch cũ. Mở mạch mới mà không mang
                     # theo gì thì đó không phải tiết kiệm, đó là làm hỏng hội thoại: người
-                    # dùng hỏi tiếp "cái đó" và Javis không còn biết "cái đó" là gì. Mồi lại
+                    # dùng hỏi tiếp "cái đó" và TTTOS không còn biết "cái đó" là gì. Mồi lại
                     # từ transcript SQLite, đúng cách nhánh Codex/Gemini vẫn làm.
                     #
                     # Điều kiện là KHÔNG CÓ MẠCH chứ không phải "vừa xoay mạch" như bản cũ.
@@ -20865,8 +20865,8 @@ async def _chat_socket(ws):
                     # SQLite (xem `clear_native_threads` ở nhánh đường tắt); lượt trước
                     # đứt trước sự kiện `final` nên chưa kịp lưu id; và update/restart làm
                     # rollout cũ biến mất. Bản cũ chỉ mồi khi xoay nên cả ba ca kia đều mở
-                    # mạch tay không - Javis quên sạch cuộc đang nói dở (người dùng báo
-                    # 18/08: hỏi tiếp "ok tra và so sánh giúp anh" và Javis hỏi lại "so
+                    # mạch tay không - TTTOS quên sạch cuộc đang nói dở (người dùng báo
+                    # 18/08: hỏi tiếp "ok tra và so sánh giúp anh" và TTTOS hỏi lại "so
                     # sánh gì?"). Phiên MỚI thật sự thì get_messages rỗng và
                     # bootstrap_prompt tự trả về nguyên prompt, không tốn gì.
                     _cli_raw = [{"role": _m["role"], "content": _m["content"]}
@@ -20958,8 +20958,8 @@ async def _chat_socket(ws):
                     await ws.send_text(json.dumps({
                         "type": "system",
                         "content": localefmt.chu(
-                            "Phiên Claude cũ không còn trên máy - Javis đang khôi phục ngữ cảnh từ lịch sử đã lưu.",
-                            "The old Claude session is no longer on this machine - Javis is restoring "
+                            "Phiên Claude cũ không còn trên máy - TTTOS đang khôi phục ngữ cảnh từ lịch sử đã lưu.",
+                            "The old Claude session is no longer on this machine - TTTOS is restoring "
                             "the context from saved history.")
                     }))
                     cli.session_id = None
@@ -21014,7 +21014,7 @@ async def _chat_socket(ws):
 
             # Token VÀO của lượt vừa xong. Với engine gói thuê bao đây là DẤU HIỆU DUY NHẤT
             # cho biết mạch hội thoại của chúng đã phình tới đâu: Claude Code và Codex tự quản
-            # transcript ở phía chúng, Javis không đếm được bằng cách nào khác. Lượt sau đọc
+            # transcript ở phía chúng, TTTOS không đếm được bằng cách nào khác. Lượt sau đọc
             # con số này để quyết định có mở mạch mới hay không (xem compaction).
             # Chỉ ghi khi ĐO ĐƯỢC: lượt lỗi trả 0 mà ghi đè thì tưởng mạch vừa được dọn.
             if _ctx_in > 0:
@@ -21061,7 +21061,7 @@ async def _chat_socket(ws):
 
             if _persona and _persona[0] == "agent":
                 # Cuối lượt chat trợ lý: bóc JAVIS_LESSON vào bộ nhớ TRỢ LÝ (không phải bộ
-                # nhớ Javis) và ghi nhật ký chạy của trợ lý, trước khi lượt được lưu như
+                # nhớ TTTOS) và ghi nhật ký chạy của trợ lý, trước khi lượt được lưu như
                 # một lượt chat bình thường.
                 _final_truoc_boc = final_text
                 final_text = _ket_luot_agent(brain, _persona[1], user_message, final_text, conv_sid=conv_sid)
@@ -21122,7 +21122,7 @@ async def _chat_socket(ws):
                                            nho=change_receipt.receipt_block(_doi, _brain_key(brain)))
                 except Exception as _e:  # noqa: BLE001
                     print(f"[change receipt] {type(_e).__name__}: {_e}", file=sys.stderr)
-                # Engine bỏ lại lệnh chạy ngầm (render, build...) → Javis nhận theo dõi và nói ra
+                # Engine bỏ lại lệnh chạy ngầm (render, build...) → TTTOS nhận theo dõi và nói ra
                 # ngay. PHẢI chạy trước cảnh báo hứa suông: có việc được theo dõi thì lời hứa
                 # "xong em gửi" đã có cơ chế thật đứng sau, không còn là hứa suông.
                 try:
@@ -21356,7 +21356,7 @@ async def _chat_socket(ws):
             # "Dừng việc nền đi" là LỆNH, xử NGAY TẠI ĐÂY, không hỏi model.
             #
             # Chủ dự án 15/09 gặp vòng lặp: bảo "tạm dừng cái việc tìm kiếm ngầm đi nhé" thì
-            # Javis dạ vâng rồi GIAO THÊM một việc nền mới mang nội dung "dừng việc nền đang
+            # TTTOS dạ vâng rồi GIAO THÊM một việc nền mới mang nội dung "dừng việc nền đang
             # chạy"; nói lần nữa lại đẻ thêm một việc nữa. Dặn model thôi thì không đủ chắc,
             # vì luật của nó là "cần hành động thì giao bộ não chính", mà dừng việc nghe đúng
             # là một hành động. Nên chốt cứng ở đây: nhận ra câu lệnh là huỷ luôn rồi trả lời,
@@ -21394,8 +21394,8 @@ async def _chat_socket(ws):
 
             async def _giu_cau_goc():
                 await send_raw({"type": "status", "session_id": conv_sid,
-                                "content": localefmt.chu("Javis đang kiểm tra lại câu vừa nghe...",
-                                                         "Javis is double-checking what it just heard...")})
+                                "content": localefmt.chu("TTTOS đang kiểm tra lại câu vừa nghe...",
+                                                         "TTTOS is double-checking what it just heard...")})
                 # Kho phiên và bong bóng giữ câu gốc; chỉ lời gửi bộ não chính kèm ghi chú để
                 # nó tự hiểu từ nghe nhầm mà không giải thích ra (voice_brain.GHI_CHU_CAU_NGHE).
                 await run_turn(conv_sid, original_message + "\n\n" + voice_brain.GHI_CHU_CAU_NGHE,
@@ -21407,7 +21407,7 @@ async def _chat_socket(ws):
                 số, phủ định, lệnh, và từ ngắn như "vâng" không thành tên "Vân". Sửa quá tay thì
                 trả False để bộ não chính nhận nguyên văn.
 
-                0.64.32 khoá hẳn lớp này, làm Javis mất khả năng hiểu câu theo ngữ cảnh (chủ dự án
+                0.64.32 khoá hẳn lớp này, làm TTTOS mất khả năng hiểu câu theo ngữ cảnh (chủ dự án
                 24/09). Nay mở lại có rào: câu đã sửa thay bong bóng kèm chữ thô bên dưới, không
                 âm thầm. Lượt có biên nhận (giu_ban_chep) giữ nguyên bản lưu vì utterance_id đã
                 chốt nội dung; câu diễn giải vẫn dùng để trả lời."""
@@ -21447,14 +21447,14 @@ async def _chat_socket(ws):
 
             try:
                 # A call in a partner's chat speaks with that partner's prompt. The helper logs its own failures;
-                # anything else keeps the Javis voice rather than dropping the fast lane.
+                # anything else keeps the TTTOS voice rather than dropping the fast lane.
                 conf = _voice_brain_conf(conf, conv_sid, brain)
             except Exception:  # noqa: BLE001
                 pass
             try:
                 brain_obj = await voice_brain.get_brain(conv_sid, conf)
-                await send_raw({"type": "status", "content": localefmt.chu("Javis đang trả lời nhanh...",
-                                                                           "Javis is answering quickly..."),
+                await send_raw({"type": "status", "content": localefmt.chu("TTTOS đang trả lời nhanh...",
+                                                                           "TTTOS is answering quickly..."),
                                 "session_id": conv_sid})
                 # Đang có việc nền thì dặn bộ não giọng (V3): kết quả tự hiện, đừng bịa, đừng giao lại.
                 _dan = [x for x in (voice_brain.pending_note(conv_sid),
@@ -21485,7 +21485,7 @@ async def _chat_socket(ws):
                 return
             except Exception as e:
                 # Rơi về bộ não chính thì phải NÓI RA NGAY TRONG KHUNG CHAT, không chỉ stderr.
-                # Trước 0.59.23 chỗ này chỉ gửi một `status`, mà status bị dòng "Javis đang suy
+                # Trước 0.59.23 chỗ này chỉ gửi một `status`, mà status bị dòng "TTTOS đang suy
                 # nghĩ..." của run_turn đè lên trong vài mili giây: người dùng bật mic, nói, rồi
                 # chờ hàng chục giây như thể chưa từng có làn nhanh, và không có gì trên màn hình
                 # cho biết vì sao. Bong bóng `system` thì ở lại (như "Đã dừng lượt này."), và lỗi
@@ -21763,7 +21763,7 @@ async def _chat_socket(ws):
             nào đang mở cũng thấy nó stream, Stop được, kết quả lưu vào kho phiên. Người dùng
             đang chat dở thì đợi lượt đó xong rồi mới chen vào (tối đa 10 phút), không cắt
             ngang. Tin mở lượt được lưu như một tin người dùng có đánh dấu rõ, để mở lại hội
-            thoại vẫn hiểu vì sao Javis tự nói tiếp."""
+            thoại vẫn hiểu vì sao TTTOS tự nói tiếp."""
             for _ in range(120):
                 if not _CHAT_RUNTIME.get_job(conv_sid):
                     break
@@ -21961,7 +21961,7 @@ async def _chat_socket(ws):
                 # Tin từ MIC: sửa TÊN nghe nhầm ("David", "Jarvis", "Gia vít" -> "Javis" và từ vựng
                 # người dùng khai) TRƯỚC khi lưu, bằng so khớp âm tất định của nghe_sua - không phải
                 # AI hay STT phụ. 0.64.32 gỡ lớp này cùng lúc với việc chặn AI viết lại câu, làm
-                # Javis đáp "anh nói là David" (chủ dự án 24/09). Lớp này không đụng từ phủ định, số,
+                # TTTOS đáp "anh nói là David" (chủ dự án 24/09). Lớp này không đụng từ phủ định, số,
                 # lệnh (PROTECTED_WORDS), không sửa tên người thứ ba, và báo lại bong bóng kèm chữ thô
                 # nên không âm thầm. Idempotent nên tin gửi lại cùng utterance_id vẫn khớp receipt.
                 _nghe_tho = ""
@@ -21979,7 +21979,7 @@ async def _chat_socket(ws):
                 # của phiên, không phải từ mặc định chung - nhãn sai là clear_codex_thread_id
                 # dọn nhầm/không dọn mạch native khi đổi engine.
                 _prow = store.get_session(payload.get("session_id") or "") or {}
-                # 0.188.0 (Javis Core spec 9): a chat belongs to ONE brain. A turn in a chat of brain B sent while brain A
+                # 0.188.0 (TTTOS Core spec 9): a chat belongs to ONE brain. A turn in a chat of brain B sent while brain A
                 # is picked on screen (opened from the bell, a link, another tab) runs on brain B: B's memory, files and
                 # tools. The dashboard is told, so it can say so and switch.
                 if _prow.get("brain") and not _cung_brain(str(_prow["brain"]), _brain_key(brain)):
@@ -22083,7 +22083,7 @@ async def _chat_socket(ws):
                         await send_client({"type": "chat_ack", "session_id": conv_sid, "client_msg_id": _cmid,
                                            "dup": False})
                 # Bong bóng đang hiện chữ thô của máy nghe: báo câu đã sửa tên để người dùng thấy
-                # Javis hiểu câu nào, chữ thô hiện nhỏ bên dưới.
+                # TTTOS hiểu câu nào, chữ thô hiện nhỏ bên dưới.
                 if _nghe_tho:
                     await send_raw({"type": "user_text", "session_id": conv_sid,
                                     "text": nghe_sua.split_ui_context(user_message)[1],
@@ -22177,12 +22177,12 @@ async def _chat_socket(ws):
         _CHAT_RUNTIME.remove_client(client_id)
 
 
-# Javis Gate (0.440.0): AI bên ngoài nhắn vào hội thoại qua đúng vòng chat ở trên. Lambda để test
+# TTTOS Gate (0.440.0): AI bên ngoài nhắn vào hội thoại qua đúng vòng chat ở trên. Lambda để test
 # thay `_CHAT_RUNTIME` sau khi nạp vẫn trúng.
 import chat_bridge  # noqa: E402
 
 async def _gate_luu_luot(sid, brain, tin, tra_loi):
-    """Ghi chép của Javis Gate (0.441.0): lưu tin của chủ rồi đi ĐÚNG đường lưu một lượt chat (`_persist_turn`:
+    """Ghi chép của TTTOS Gate (0.441.0): lưu tin của chủ rồi đi ĐÚNG đường lưu một lượt chat (`_persist_turn`:
     Lịch sử, nhật ký hội thoại, vòng tự học), mà không chạy engine nào."""
     st = get_store()
     st.append_message(sid, "user", tin)
@@ -22201,7 +22201,7 @@ chat_bridge.gan(lambda ws: _chat_socket(ws), lambda: _CHAT_RUNTIME, _gate_luu_lu
 # Toàn bộ phần khó (pty, tiến trình, bộ đệm màn hình) nằm trong server/terminal.py.
 # ============================================================
 def _terminal_cwd(brain: str) -> str:
-    """Thư mục shell mở ra. Từ 0.35.8: mặc định là HOME của user đang chạy Javis - "cmd gốc
+    """Thư mục shell mở ra. Từ 0.35.8: mặc định là HOME của user đang chạy TTTOS - "cmd gốc
     của máy" như mọi terminal bình thường (chủ chốt 16/08).
 
     Trước đây mở ở gốc brain và điều đó gây hại thật cho việc chính của tab này (cài + đăng
@@ -22369,8 +22369,8 @@ def _agent_history_channels(brain, channel) -> list:
     Từ 0.65.0 hội thoại bot với khách không hiện ở Trò chuyện mà nằm trong lịch sử của Agent nối với
     chatbot (chủ dự án 2026-09-30). Kênh của phiên bot là `bot:<slug hoặc id>` (xem `_tg_answer`).
 
-    2026-11-08 (owner: admin chats on Zalo "không hiện lịch sử chat lên trên Javis, nhất là nối với một agent"): the
-    owner's chats from the admin channels and the CLI join too. Javis Core's history holds the plain ones (Javis Core
+    2026-11-08 (owner: admin chats on Zalo "không hiện lịch sử chat lên trên TTTOS, nhất là nối với một agent"): the
+    owner's chats from the admin channels and the CLI join too. TTTOS Core's history holds the plain ones (TTTOS Core
     is who answers there); an agent's holds the ones routed to it, stored as `<channel>@<slug>` (`_owner_store_channel`)."""
     ch = str(channel or "").strip()
     if not ch.startswith("agent:"):
@@ -22424,7 +22424,7 @@ def sessions_new(brain: str = Form("brain"), channel: str = Form("web")):
         sid = get_store().create_session(brain=_brain_key(brain), engine="cli", channel=ch)
         return {"id": sid, "channel": ch}
     if loai == "agent" and javis_core.is_core_slug(slug):
-        # A further Javis Core chat ("New chat"). Reports keep landing in the brain's default one.
+        # A further TTTOS Core chat ("New chat"). Reports keep landing in the brain's default one.
         sid = get_store().create_session(brain=_brain_key(brain), engine="cli", channel=javis_core.CHANNEL,
                                          title=javis_core.NAME)
         return {"id": sid, "channel": javis_core.CHANNEL}
@@ -22534,7 +22534,7 @@ def _gan_reaction(store, session_id, msgs) -> None:
 
 @app.post("/sessions/{session_id}/messages/{message_id}/pin")
 async def sessions_message_pin(session_id: str, message_id: int, request: Request):
-    """0.374.0: pin an answer into the chat's table of contents, or unpin it. Body {"pinned": true|false}. Only Javis's
+    """0.374.0: pin an answer into the chat's table of contents, or unpin it. Body {"pinned": true|false}. Only TTTOS's
     answers are pinned (a question is already in the list). Writes nothing else and starts no turn."""
     try:
         body = await request.json()
@@ -22572,7 +22572,7 @@ async def sessions_message_pin(session_id: str, message_id: int, request: Reques
 #   cuộc đã dài, đã tạo xong tài liệu, và giờ mới cần tìm. Quét tin nhắn thì mở được ngay cả
 #   cuộc từ tháng trước, không phải chờ tích luỹ dữ liệu mới.
 #
-# Đổi lại: chỉ thấy được file mà Javis có NHẮC trong câu trả lời. CLAUDE.md đã dặn nhúng
+# Đổi lại: chỉ thấy được file mà TTTOS có NHẮC trong câu trả lời. CLAUDE.md đã dặn nhúng
 # `[tên](đường-dẫn)` mỗi khi tạo file cho người dùng, nên phần lớn rơi vào lưới; file ghi
 # lặng lẽ giữa lượt thì không.
 PHIEN_TS_MAX_FILE = 200        # trần một cuộc, đủ cho cuộc dài nhất mà không đổ ra vô hạn
@@ -22596,7 +22596,7 @@ def _ts_trong_brain(broot: Path, duong: Path):
 
 @app.get("/sessions/{session_id}/assets")
 def sessions_assets(session_id: str, brain: str = Query("")):
-    """File Javis đã tạo và link đã nhắc trong CUỘC TRÒ CHUYỆN này.
+    """File TTTOS đã tạo và link đã nhắc trong CUỘC TRÒ CHUYỆN này.
 
     Ứng viên file có hai nguồn, và luật giữ khác nhau vì độ tin cậy khác nhau:
 
@@ -22869,7 +22869,7 @@ def sessions_pin(session_id: str, pinned: str = Form("1")):
 
 @app.post("/sessions/{session_id}/archive")
 def sessions_archive(session_id: str, archived: str = Form("1")):
-    """Archive a chat (history menu, 2026-11-09): it leaves the list but keeps every message, so Javis still remembers
+    """Archive a chat (history menu, 2026-11-09): it leaves the list but keeps every message, so TTTOS still remembers
     it and search still finds it. archived=0 brings it back. A new message from a person also brings it back
     (SessionStore.append_message)."""
     on = str(archived).strip() not in ("0", "false", "")
@@ -22932,7 +22932,7 @@ def _sessions_meta_sync(session_id: str):
     if not sess:
         return JSONResponse({"error": "not found"}, status_code=404)
     if javis_core.is_core_channel(sess.get("channel")):
-        # 0.402.0: a Javis Core chat shows the pin of Javis Core, not an old stamp of this one chat.
+        # 0.402.0: a TTTOS Core chat shows the pin of TTTOS Core, not an old stamp of this one chat.
         _cp = _core_pin(cfgmod.read_settings().get("model", {}))
         sess["pinned_provider"], sess["pinned_model"] = _cp.get("provider") or None, _cp.get("model") or None
     pp = (sess.get("pinned_provider") or "").strip()
@@ -22955,7 +22955,7 @@ def _sessions_meta_sync(session_id: str):
         except Exception:  # noqa: BLE001
             pass
     elif javis_core.is_core_channel(sess.get("channel")):
-        # 0.283.0: a Javis Core chat is an assistant's chat for the level chip too, with its own level.
+        # 0.283.0: a TTTOS Core chat is an assistant's chat for the level chip too, with its own level.
         sess["agent_slug"] = javis_core.SLUG
         sess["agent_reasoning"] = _core_reasoning(cfgmod.read_settings().get("model", {}))
     # Owner, 05/11/2026: the model the next turn of this chat really runs on, so the chip is right on opening a chat
@@ -22977,7 +22977,7 @@ async def agent_set_reasoning(slug: str, level: str = Form(...), brain: str = Fo
         return JSONResponse({"ok": False, "error": localefmt.chu("Mức suy luận không hợp lệ", "Invalid reasoning level")},
                             status_code=400)
     if javis_core.is_core_slug(slug):
-        # Javis Core keeps its level in settings (no agent file of its own), apart from the main chat's `reasoning`.
+        # TTTOS Core keeps its level in settings (no agent file of its own), apart from the main chat's `reasoning`.
         await asyncio.to_thread(cfgmod.update_settings, {"model": {"core_reasoning": level}})
         return {"ok": True, "slug": slug, "reasoning": level}
     path = _agents_dir(brain) / f"{slug}.md"
@@ -23005,7 +23005,7 @@ async def sessions_set_model(session_id: str, provider: str = Form(""),
     CHỦ Ý không đi qua _set_main_model: hàm đó ghi mốc nhật ký usage cho việc đổi bộ não
     TOÀN CỤC, ghim theo phiên mà đi qua đó là rác hoá biểu đồ token.
 
-    0.402.0: a Javis Core chat pins Javis Core as a whole (`model.core_provider/core_model`), see `_core_pin`."""
+    0.402.0: a TTTOS Core chat pins TTTOS Core as a whole (`model.core_provider/core_model`), see `_core_pin`."""
     prov = (provider or "").strip()
     if prov and not _provider_def(prov):
         return JSONResponse({"error": localefmt.chu(f"provider không tồn tại: {prov}",
@@ -23173,7 +23173,7 @@ def projects_pin(project_id: str, pinned: str = Form("1")):
 
     Khác hai route ghim kia (`.../files/{id}/pin`, `.../links/{id}/pin`): hai cái đó quyết
     định file/link có được NẠP SẴN vào prompt hay không, còn cái này thuần tuý là thứ tự
-    hiển thị, không đụng gì tới thứ Javis đọc.
+    hiển thị, không đụng gì tới thứ TTTOS đọc.
     """
     store = get_store()
     if not store.get_project(project_id):
@@ -23310,7 +23310,7 @@ async def openai_compat_connect(request: Request):
 
     Owner 05/11/2026: the Advanced card runs on the OpenAI format, so the seller's own list ({base}/models) fills the
     model picker and nobody has to type a model name. The URL is typed by the owner, so saving blind would show
-    "Connected" with a wrong key: Javis calls {base}/models first, and for a seller with no list it sends one tiny
+    "Connected" with a wrong key: TTTOS calls {base}/models first, and for a seller with no list it sends one tiny
     /chat/completions request (max_tokens 1) with the model typed in the box that then opens.
     `id` edits that gateway, `add` appends one; a page from before (neither) edits the only gateway it knows.
     A blank key reuses the saved one, for the same gateway and URL only; a gateway may have no key at all (a server
@@ -23413,7 +23413,7 @@ async def anthropic_compat_connect(request: Request):
 
     Same rule as OpenAI Compatible: the URL is typed by the owner, so saving blind would show
     "Connected" with a wrong key. The check differs because most such gateways have no
-    /v1/models: when the list is missing, Javis sends one tiny /v1/messages request (max_tokens 1)
+    /v1/models: when the list is missing, TTTOS sends one tiny /v1/messages request (max_tokens 1)
     with the first typed model instead. A blank key reuses the saved one, for the same URL only."""
     import httpx
     data = await request.json()
@@ -23677,7 +23677,7 @@ async def runtime_diagnostics(hours: float = Query(24.0), limit: int = Query(200
             # Token đã đốt trong 60 giây qua, gộp MỌI nguồn. Đây là thứ trả lời được câu
             # "sao canary bị chặn trong khi tôi có chat gì đâu": loop nền vừa ăn hết hạn mức.
             "tpm_window": quota_scheduler.snapshot(60),
-            # Hạn mức Javis TỰ HỌC từ lỗi nhà cung cấp trả về. Khác quota_presets ở chỗ
+            # Hạn mức TTTOS TỰ HỌC từ lỗi nhà cung cấp trả về. Khác quota_presets ở chỗ
             # đây là số thật của tài khoản này, do chính nhà cung cấp nói ra.
             "learned_limits": limit_learner.snapshot(),
             # Mức tiết kiệm token đang chọn + danh sách mức, để giao diện vẽ ba nút thay
@@ -24132,7 +24132,7 @@ def _limit_autoshrink_message(provider: str, model: str, hit: dict) -> str:
             return (f"{provider} đang chặn nhịp gọi, bảo chờ {cho:.0f} giây. "
                     f"Bạn hỏi lại sau chừng đó là được.{loi}")
         return (f"{provider} từ chối lượt này vì hạn mức, nhưng không nói rõ hạn mức nào nên "
-                f"Javis chưa biết phải làm gì để qua.{loi}")
+                f"TTTOS chưa biết phải làm gì để qua.{loi}")
 
     dau = f"{provider} báo vượt {nhan}: hạn mức {limit:,}"
     if used:
@@ -24151,7 +24151,7 @@ def _limit_autoshrink_message(provider: str, model: str, hit: dict) -> str:
         khi_nao = f" khoảng {cho:.0f} giây nữa" if cho else " một lát"
         return (dau + f"Cửa sổ hiện tại đã đầy vì các lượt trước, hỏi lại{khi_nao} là được. "
                 "Rút gọn câu hỏi không giúp vì hạn mức này đếm theo thời gian.")
-    return (dau + "Javis đã tự rút gọn ngữ cảnh và thử lại một lần nhưng vẫn không vừa. "
+    return (dau + "TTTOS đã tự rút gọn ngữ cảnh và thử lại một lần nhưng vẫn không vừa. "
             + model_limits.blocked_hint(provider, model, requested or limit,
                                         _configured_api_providers()))
 
@@ -24383,7 +24383,7 @@ QUOTA_OWNER_OF = {
 
 # Ba MỨC tiết kiệm token, thay cho việc bắt người dùng tự hiểu 10 đường canary và đơn vị
 # basis point. Người dùng chỉ cần biết "tiết kiệm ít hay nhiều", còn bên dưới bật đường nào
-# là việc của Javis.
+# là việc của TTTOS.
 #
 # Chỉ đưa vào đây những đường CHẠY ĐƯỢC với cấu hình mặc định. readonly_canary,
 # orchestrator_canary, write_canary... đều đòi allowlist capability mà mặc định rỗng, nên
@@ -24544,7 +24544,7 @@ async def runtime_preset_set(level: str = Form(...)):
         if "quota_profiles" not in entry:
             continue
         # BỔ SUNG chứ không phải "trống thì mới ghi". Bản trước bỏ qua khi danh sách đã có
-        # gì đó, nên người đổi bộ não (đúng thứ Javis mời chào: đổi được bộ não) bị kẹt với
+        # gì đó, nên người đổi bộ não (đúng thứ TTTOS mời chào: đổi được bộ não) bị kẹt với
         # hạn mức của bộ não CŨ: `_quota` lọc theo provider nên không khớp cái nào, và mức
         # tiết kiệm lặng lẽ ngừng chạy trong khi trang vẫn ghi đang bật.
         co_san = [x for x in (entry.get("quota_profiles") or []) if isinstance(x, dict)]
@@ -24563,12 +24563,12 @@ async def runtime_preset_set(level: str = Form(...)):
             continue
         canh_bao.append(
             localefmt.chu(
-                f"Chưa có bảng hạn mức sẵn cho '{prov}', nên Javis biên soạn ngữ cảnh theo trần "
+                f"Chưa có bảng hạn mức sẵn cho '{prov}', nên TTTOS biên soạn ngữ cảnh theo trần "
                 "mặc định (context_runtime.api_context). Vẫn tiết kiệm được ngay; sau lần đầu "
-                "nhà cung cấp báo vượt hạn mức, Javis dùng đúng con số thật của họ.",
-                f"There is no built-in limit table for '{prov}' yet, so Javis builds the context "
+                "nhà cung cấp báo vượt hạn mức, TTTOS dùng đúng con số thật của họ.",
+                f"There is no built-in limit table for '{prov}' yet, so TTTOS builds the context "
                 "under the default ceiling (context_runtime.api_context). It still saves right "
-                "away; the first time the provider reports a limit hit, Javis uses their real "
+                "away; the first time the provider reports a limit hit, TTTOS uses their real "
                 "numbers."))
 
     da_bat, da_tat = [], []
@@ -24777,7 +24777,7 @@ async def runtime_task_resume(task_id: str):
 
 
 # ============================================================
-# Telegram bot - nhắn Telegram ↔ Javis (dùng engine theo Settings; CLI thì có cả MCP)
+# Telegram bot - nhắn Telegram ↔ TTTOS (dùng engine theo Settings; CLI thì có cả MCP)
 # ============================================================
 _TG_BOT = None
 # ĐA PHIÊN theo tài khoản: mỗi chat_id giữ NGỮ CẢNH RIÊNG để không lẫn hội thoại giữa
@@ -24903,8 +24903,8 @@ def _tg_save_brain_map() -> None:
         print(f"[tg brain map write] {type(e).__name__}: {e}", file=sys.stderr)
 
 
-# 2026-11-08: the channels the owner talks to Javis through outside the dashboard (the Admin channels page and the
-# terminal). Their chats show in Javis Core's history on the Partners page; one routed to an agent is stored as
+# 2026-11-08: the channels the owner talks to TTTOS through outside the dashboard (the Admin channels page and the
+# terminal). Their chats show in TTTOS Core's history on the Partners page; one routed to an agent is stored as
 # `<channel>@<slug>` and shows in that agent's history instead (`_agent_history_channels`).
 OWNER_TURN_CHANNELS = ("telegram", "zalo", "lark", "discord", "slack", "whatsapp", "cli")
 
@@ -25044,7 +25044,7 @@ def _tg_compact_bg(sess, prov, api_key, api_model):
 #
 # QUAN TRỌNG: xoay chỉ xoay BẢN GHI. Ngữ cảnh engine (sess['cli'] của Claude CLI, thread Codex,
 # sess['or'] của nhánh API vốn đã có compact_mem lo cửa sổ) KHÔNG bị đụng tới, nên người dùng
-# Telegram không hề thấy Javis quên gì - chỉ dashboard là thấy hội thoại chia thành khúc đọc được.
+# Telegram không hề thấy TTTOS quên gì - chỉ dashboard là thấy hội thoại chia thành khúc đọc được.
 _TG_CONV_IDLE_S = 12 * 3600      # nghỉ quá ngần này → lượt kế mở phiên mới
 _TG_CONV_MAX_MSGS = 200          # ~100 lượt hỏi-đáp/phiên → mở phiên mới dù đang chat liên tục
 _TG_CONV_ARCHIVE_DAYS = 30       # phiên Telegram nguội quá ngần này → tự cất vào kho lưu
@@ -25268,7 +25268,7 @@ async def _tg_answer(text, meta=None, progress=None, channel="telegram", bot=Non
     _luot = turn_context.from_meta(channel, meta, la_chu=not bot)
     if bot:
         # 0.429.0: jobs this turn creates (reminders, loops, Kanban) are stamped with the bot, so the Tasks page
-        # shows them under the bot's assistant instead of Javis Core.
+        # shows them under the bot's assistant instead of TTTOS Core.
         # A plain string, so a hook reading the turn (a shallow copy) cannot edit it for the next reader.
         _luot["bot_id"] = str(bot["id"])
         # 0.459.0: an internal API turn opens private documents by the caller's scope list, never by its chat id. The
@@ -25738,7 +25738,7 @@ async def _bot_tra_loi(text, *, sess, sysprompt, prov, api_key, api_model, reaso
 
     Vì sao không đi theo bốn nhánh engine như đường chat của chủ:
 
-    1. **Để đổi bộ não không đổi trải nghiệm.** Đó là lời hứa gốc của Javis. Đi bốn nhánh thì
+    1. **Để đổi bộ não không đổi trải nghiệm.** Đó là lời hứa gốc của TTTOS. Đi bốn nhánh thì
        Claude Code có Bash, Codex có kho MCP riêng, engine API bị trần vòng gọi tool - ba
        kiểu hành xử khác nhau cho cùng một con bot, và chủ đổi model là khách thấy khác ngay.
        Ở đây mọi engine nhận CÙNG system prompt, CÙNG tài liệu, CÙNG lịch sử, và đều không có
@@ -25886,13 +25886,13 @@ def _bot_full_prompt(brain, sys_bot, lang, conv_sid=""):
 
     Đủ prompt admin vì chủ muốn bot Toàn quyền làm được đúng những gì kênh admin làm, và phần hướng
     dẫn công cụ, kỹ năng, giao việc nằm ở đó. Vai Agent đứng SAU và nói rõ nó thắng phần giới thiệu
-    Javis ở trên, để bot vẫn là con bot chủ dựng chứ không tự xưng Javis với khách."""
+    TTTOS ở trên, để bot vẫn là con bot chủ dựng chứ không tự xưng TTTOS với khách."""
     base = build_system_prompt(brain, lang=lang, session_id=conv_sid or "")
     return (base + "\n\n# === BOT TOÀN QUYỀN: VAI CỦA BẠN TRONG CUỘC CHAT NÀY ===\n"
             "Bạn đang trả lời qua một bot chuyên trách mà chủ đã đặt ở mức TOÀN QUYỀN: bạn có đủ công "
-            "cụ, kết nối, kỹ năng và quyền thao tác như khi chủ chat trực tiếp với Javis. Người đang "
+            "cụ, kết nối, kỹ năng và quyền thao tác như khi chủ chat trực tiếp với TTTOS. Người đang "
             "nhắn có thể KHÔNG phải chủ. Nói chuyện theo đúng vai và quy định dưới đây; chỗ nào khác "
-            "phần giới thiệu Javis ở trên thì làm theo phần dưới.\n\n" + str(sys_bot or ""))
+            "phần giới thiệu TTTOS ở trên thì làm theo phần dưới.\n\n" + str(sys_bot or ""))
 
 
 async def _bot_tra_loi_co_tool(text, *, sess, sysprompt, prov, api_key, api_model, reasoning,
@@ -25989,7 +25989,7 @@ async def _bot_tra_loi_co_tool(text, *, sess, sysprompt, prov, api_key, api_mode
         # engine có hỗ trợ tool không, trong khi thứ hỏng là cái khác hẳn.
         return "", loi2 + loi_, False
 
-    # Lần đầu GIỮ ẢNH cho cả đường không-tool (0.94.0). Trước đó vòng tool rỗng là ảnh bị đổ lỗi ngay: bot "Javis Vũ" trên gói
+    # Lần đầu GIỮ ẢNH cho cả đường không-tool (0.94.0). Trước đó vòng tool rỗng là ảnh bị đổ lỗi ngay: bot "TTTOS Vũ" trên gói
     # ChatGPT bị ghi "từ chối ảnh" ở những lượt mà thứ hỏng thật là vòng tool (cùng ngày nó báo 129 lượt không gọi được công cụ).
     out, loi, roi_tool = await _mot_lan(gui)
     if not out and co_anh:
@@ -26087,9 +26087,9 @@ async def _tg_answer_engine(text, meta, progress, *, chat_id, sess, brain, mcfg,
                 pass
     # Block kênh (port gateway hermes-agent): engine biết đang trả lời qua đâu, ai đang nhắn,
     # và cách gửi file trả về (auto-attach + endpoint send-file).
-    # telegram_running phải theo kênh THẬT: bật cờ đó cho lượt CLI là dạy Javis một công thức
+    # telegram_running phải theo kênh THẬT: bật cờ đó cho lượt CLI là dạy TTTOS một công thức
     # gửi file qua Telegram trong khi người hỏi đang ngồi ở terminal.
-    # Bot chuyên trách KHÔNG dùng system prompt của Javis: prompt đó dạy cách điều phối, ghi
+    # Bot chuyên trách KHÔNG dùng system prompt của TTTOS: prompt đó dạy cách điều phối, ghi
     # vault, giao việc - toàn thứ bot trả lời người ngoài không được làm. Nó dùng prompt của
     # chính Agent nó trỏ tới. Xem chatbot_runtime.build_bot_prompt.
     _bot_full = False   # bot mức Toàn quyền: chạy ĐÚNG đường engine của kênh admin (0.85.3)
@@ -26121,7 +26121,7 @@ async def _tg_answer_engine(text, meta, progress, *, chat_id, sess, brain, mcfg,
         # Nên mức này KHÔNG dừng ở đây: nó rơi xuống đúng các nhánh engine của chủ bên dưới (công cụ
         # gốc, MCP hub, kết nối của tài khoản Claude/ChatGPT, kỹ năng), chỉ khác hai chỗ: prompt mang
         # VAI của Agent, và brain là brain của bot. Đường tắt, nguồn chọn lọc và gateway huỷ lịch của
-        # chủ bị bỏ qua vì chúng thay prompt bằng giọng Javis.
+        # chủ bị bỏ qua vì chúng thay prompt bằng giọng TTTOS.
         if _muc != "full" and sess.get("bot") is None:
             # First turn of this chat since the server started: the history lived in RAM only, so read a private
             # chat back from the inbox instead of meeting a returning customer as a stranger. Full-access bots
@@ -26187,7 +26187,7 @@ async def _tg_answer_engine(text, meta, progress, *, chat_id, sess, brain, mcfg,
         # HƯỚNG DẪN project đi cả vào đường tiết kiệm; danh sách tài liệu thì không.
         # Hướng dẫn là hợp đồng hành xử ("luôn trả lời bằng tiếng Anh"), vài trăm ký tự, và bỏ
         # nó đi nghĩa là cùng một project cùng một câu hỏi mà lượt này tuân luật lượt kia
-        # không - người dùng không có cách nào biết vì sao, chỉ thấy Javis bướng. Danh sách
+        # không - người dùng không có cách nào biết vì sao, chỉ thấy TTTOS bướng. Danh sách
         # tài liệu là dữ liệu tra cứu, bỏ thì cùng lắm model phải hỏi lại.
         _n = build_adaptive_source_prompt(
             brain, include_memory=include_memory, include_skills=include_skills, routing_overlays=kind == "api")
@@ -26207,7 +26207,7 @@ async def _tg_answer_engine(text, meta, progress, *, chat_id, sess, brain, mcfg,
                                                else "voice" if "call_lang" in (meta or {}) else "cli"))
     try:
         if _bot_full or agent:
-            raise _BoQua()   # selected sources swap the prompt for Javis's voice: not for a bot or an agent
+            raise _BoQua()   # selected sources swap the prompt for TTTOS's voice: not for a bot or an agent
         _p8 = await asyncio.to_thread(
             _get_adaptive_context().prepare, runtime_trace, text, _brain_root(brain),
             str(conv_sid or chat_id), [], channel, prov,
@@ -26239,7 +26239,7 @@ async def _tg_answer_engine(text, meta, progress, *, chat_id, sess, brain, mcfg,
             api_model or mcfg.get("claude_model") or "mặc định", kind,
         )
     # The plain-words schedule cancel gateway is the owner's shortcut; a full-access bot and an agent
-    # turn still cancel through the javis_schedule tool. The shortcut answers in Javis's voice, not
+    # turn still cancel through the javis_schedule tool. The shortcut answers in TTTOS's voice, not
     # in the agent's role.
     schedule_action = None if (_bot_full or agent) else await _schedule_cancel_action(text, brain)
     if schedule_action:
@@ -26294,7 +26294,7 @@ async def _tg_answer_engine(text, meta, progress, *, chat_id, sess, brain, mcfg,
         _apply_grok_hub(kcli, _brain_root(brain))
         _plan_account_apply(kcli, "grok-cli")   # 0.353.0: the Grok account that should run now
         if not kcli.is_available():
-            return ("⚠ Chưa cài Grok Build CLI trên máy chạy Javis. Cài một lần:\n"
+            return ("⚠ Chưa cài Grok Build CLI trên máy chạy TTTOS. Cài một lần:\n"
                     f"`{grok_cli.lenh_cai()}`\n"
                     "Rồi đăng nhập ở thẻ Grok trên trang Models.")
         _hoi = text
@@ -26340,7 +26340,7 @@ async def _tg_answer_engine(text, meta, progress, *, chat_id, sess, brain, mcfg,
         acli.mode = "full"
         _apply_antigravity_hub(acli, _brain_root(brain))
         if not acli.is_available():
-            return ("⚠ Chưa cài Antigravity CLI trên máy chạy Javis. Cài một lần:\n"
+            return ("⚠ Chưa cài Antigravity CLI trên máy chạy TTTOS. Cài một lần:\n"
                     f"`{antigravity_cli.lenh_cai()}`\n"
                     "Rồi gõ `agy` một lần để đăng nhập Google.")
         _hoi = text
@@ -26525,7 +26525,7 @@ async def _tg_answer_engine(text, meta, progress, *, chat_id, sess, brain, mcfg,
             sess["or"] = [{"role": "system", "content": sysprompt + ident}]
             # Lịch sử này chỉ sống trong RAM, nên restart là mất. Dựng lại từ transcript đã
             # lưu (xem `_tg_lich_su_kho`) - đây là nửa THẬT SỰ quan trọng với người dùng chạy
-            # engine API: nối lại được id phiên mà lịch sử vẫn rỗng thì Javis vẫn quên sạch.
+            # engine API: nối lại được id phiên mà lịch sử vẫn rỗng thì TTTOS vẫn quên sạch.
             #
             # Chỉ chạy khi `sess["or"]` rỗng, tức phiên vừa dựng: đang chat liên tục thì khối
             # này không đụng tới. /reset và đổi brain xoá cả sid lẫn liên kết bền nên
@@ -26685,7 +26685,7 @@ async def _tg_answer_engine(text, meta, progress, *, chat_id, sess, brain, mcfg,
         except Exception as _e:
             print(f"[link file telegram] {type(_e).__name__}: {_e}", file=sys.stderr)
         # File sinh ra trong lượt → bot gửi đính kèm SAU câu trả lời (xem telegram_bot._handle_turn).
-        # vault_root = brain phiên này: ảnh Javis tạo nhúng dạng ![](attachments/x.png) (path tương
+        # vault_root = brain phiên này: ảnh TTTOS tạo nhúng dạng ![](attachments/x.png) (path tương
         # đối) được resolve về gốc vault để tự đính kèm về ĐÚNG người đang chat, khỏi phải curl.
         files = channel_context.collect_turn_files(out, written, t0,
                                                    cwd=_brain_root(brain), exclude=sess["sent"],
@@ -26699,7 +26699,7 @@ async def _tg_answer_engine(text, meta, progress, *, chat_id, sess, brain, mcfg,
 
 async def _tg_help_text(brain):
     return (
-        "🤖 Javis Telegram\n\n"
+        "🤖 TTTOS Telegram\n\n"
         "Lệnh:\n"
         "/status - engine, model, vault, trạng thái\n"
         "/skills - liệt kê skill\n"
@@ -26711,14 +26711,14 @@ async def _tg_help_text(brain):
         "/cli - engine Claude (có MCP/skill)\n"
         "/or - engine OpenRouter (chat + MCP đa-model)\n"
         "/retry - gửi lại câu gần nhất\n"
-        "/usage - token và chi phí Javis đã dùng\n"
+        "/usage - token và chi phí TTTOS đã dùng\n"
         "/tasks - việc nền đang chạy, xếp hàng, bị kẹt\n"
         "/memory - mục lục bộ nhớ dài hạn của brain\n"
         "/plan <việc> - chỉ lập kế hoạch, chưa làm gì ra ngoài\n"
         "/reset - hội thoại mới · /stop - dừng\n\n"
-        "Gửi tin thường để hỏi Javis. ChatGPT/Codex và OpenRouter đều dùng được MCP của Javis.\n"
+        "Gửi tin thường để hỏi TTTOS. ChatGPT/Codex và OpenRouter đều dùng được MCP của TTTOS.\n"
         "Gõ /tên-skill để gọi skill (cần engine Claude CLI).\n"
-        "Gửi file/ảnh vào đây để Javis đọc. File Javis tạo ra sẽ tự gửi lại cho bạn ở đây."
+        "Gửi file/ảnh vào đây để TTTOS đọc. File TTTOS tạo ra sẽ tự gửi lại cho bạn ở đây."
     )
 
 
@@ -27025,7 +27025,7 @@ async def _tg_command(cmd, arg, chat=None, meta=None):
         # không tốn gì - lượt kế cũng tạo.
         sess = _tg_session(chat_key)
         # Cắt mạch của CẢ BỐN engine. Trước đây chỉ Claude Code được reset và Codex bị vứt đối
-        # tượng, còn Grok/Antigravity giữ nguyên mạch native - /reset xong Javis vẫn nhớ y
+        # tượng, còn Grok/Antigravity giữ nguyên mạch native - /reset xong TTTOS vẫn nhớ y
         # nguyên, đúng thứ người dùng gõ lệnh này để thoát khỏi.
         _tg_ngat_mach(sess)
         sess["or"] = None
@@ -27052,7 +27052,7 @@ async def _tg_command(cmd, arg, chat=None, meta=None):
         prov, model, ghim = _tg_model_hieu_luc(chat_key)
         busy = _tg_chat_busy(chat_key)
         bname = brain_label.display(_brain_root(brain))
-        return {"reply": ("📊 Trạng thái Javis\n"
+        return {"reply": ("📊 Trạng thái TTTOS\n"
                           f"Provider: {prov}\n"
                           f"Model: {model}"
                           + (localefmt.chu(" (📌 ghim riêng cho cuộc trò chuyện này)", " (📌 pinned to this chat)")
@@ -27114,7 +27114,7 @@ async def _tg_command(cmd, arg, chat=None, meta=None):
         try:
             _or = await _openrouter_credits(cfgmod.read_settings().get("model", {}) or {})
         except Exception:
-            _or = None    # số dư là phần thêm: hỏng thì vẫn in số Javis tự đo
+            _or = None    # số dư là phần thêm: hỏng thì vẫn in số TTTOS tự đo
         return {"reply": lenh_he_thong.dinh_dang_muc_dung(usage_store.summary(), _or)}
     if cmd in ("tasks", "viec"):
         try:
@@ -27130,7 +27130,7 @@ async def _tg_command(cmd, arg, chat=None, meta=None):
         # có cổng chặn ở hub: lượt Telegram chưa mang mức quyền riêng từng lượt.
         if not arg.strip():
             return {"reply": "Gõ /plan kèm việc cần lên kế hoạch, ví dụ: /plan dọn lại kho hàng "
-                             "cuối tháng. Javis chỉ đọc và đề xuất, chưa làm gì ra ngoài."}
+                             "cuối tháng. TTTOS chỉ đọc và đề xuất, chưa làm gì ra ngoài."}
         return {"ask": lenh_he_thong.khoi_ke_hoach() + arg.strip()}
     if cmd == "agents":
         ags = agents_index(brain, kem_prompt=False)   # lệnh này chỉ in tên + vai trò
@@ -27188,12 +27188,12 @@ async def _tg_command(cmd, arg, chat=None, meta=None):
 
 
 # ---- Talking to an agent (partner) from the owner's Telegram bot ----
-# Customer report 0.270 (Code 24): "@TEST-Thẩm định viên ..." over Telegram was answered by Javis,
+# Customer report 0.270 (Code 24): "@TEST-Thẩm định viên ..." over Telegram was answered by TTTOS,
 # and the partner's run log had no turn; the only command was /agents, which just lists them.
 # Now, in the OWNER's bot and only in a chat on its whitelist:
 #   - a message that starts with `@<agent name or slug>` is one turn of that agent;
-#   - `/agent <name>` makes that agent answer every message of the chat, `/agent off` goes back to Javis;
-#   - `@javis ...` asks Javis one question while an agent is picked.
+#   - `/agent <name>` makes that agent answer every message of the chat, `/agent off` goes back to TTTOS;
+#   - `@javis ...` asks TTTOS one question while an agent is picked.
 # The turn itself is the CLI agent turn (`_tg_answer(..., agent=...)`, from #744): agent prompt, model,
 # own session, lessons, rules and run log. Customer-facing bot accounts (chatbot_runtime) have their own
 # answer and command functions, so none of this is reachable from them.
@@ -27228,7 +27228,7 @@ def _agent_name_key(s) -> str:
     return re.sub(r"[\s_\-]+", " ", _fold_accents(str(s or ""))).strip()
 
 
-# What `@...` or `/agent ...` call Javis itself (the main assistant, not an agent of the brain).
+# What `@...` or `/agent ...` call TTTOS itself (the main assistant, not an agent of the brain).
 _TG_JAVIS_KEYS = frozenset({"javis", _agent_name_key(javis_core.NAME), _agent_name_key(javis_core.SLUG)})
 _TG_AGENT_OFF = frozenset({"off", "tat", "huy", "none", "stop"}) | _TG_JAVIS_KEYS
 
@@ -27308,14 +27308,14 @@ def _tg_agent_list_text(rows, head="") -> str:
     lines = [f"• {r['name']}" + (f" ({r['slug']})" if _agent_name_key(r["name"]) != _agent_name_key(r["slug"]) else "")
              for r in rows[:30]]
     return ((head + "\n\n") if head else "") + "\n".join(lines) + "\n\n" + localefmt.chu(
-        "Gõ @<tên> <câu hỏi> để hỏi một câu, hoặc /agent <tên> để cộng sự đó trả lời cả chat (/agent off để về Javis).",
+        "Gõ @<tên> <câu hỏi> để hỏi một câu, hoặc /agent <tên> để cộng sự đó trả lời cả chat (/agent off để về TTTOS).",
         "Type @<name> <question> to ask once, or /agent <name> to let that partner answer the whole chat "
-        "(/agent off to go back to Javis).")
+        "(/agent off to go back to TTTOS).")
 
 
 def _tg_agent_pinned(chat, root, rows):
     """(row, notice) of the agent picked with /agent for this chat. A pick whose brain changed (/brain)
-    or whose agent is gone is dropped, with a notice saying Javis answers again."""
+    or whose agent is gone is dropped, with a notice saying TTTOS answers again."""
     pin = _TG_AGENT_MAP.get(str(chat))
     if not pin:
         return None, ""
@@ -27325,8 +27325,8 @@ def _tg_agent_pinned(chat, root, rows):
     _TG_AGENT_MAP.pop(str(chat), None)
     _tg_save_agent_map()
     return None, localefmt.chu(
-        f"(Cộng sự '{pin.get('slug')}' đã chọn không còn trong brain này, Javis trả lời lại từ đây.)",
-        f"(The partner '{pin.get('slug')}' picked earlier is not in this brain any more, Javis answers from here.)")
+        f"(Cộng sự '{pin.get('slug')}' đã chọn không còn trong brain này, TTTOS trả lời lại từ đây.)",
+        f"(The partner '{pin.get('slug')}' picked earlier is not in this brain any more, TTTOS answers from here.)")
 
 
 def _tg_agent_route(chat, text, bot_username="") -> dict:
@@ -27339,7 +27339,7 @@ def _tg_agent_route(chat, text, bot_username="") -> dict:
     root = _brain_root(_tg_brain(key))
     rows = _tg_agent_rows(root)
     if not rows:
-        return out   # nothing to pick: an `@someone` message is just a message to Javis
+        return out   # nothing to pick: an `@someone` message is just a message to TTTOS
     kind, hits, rest = _tg_agent_mention(text, rows, bot_username)
     if kind == "javis":
         out["text"] = rest or text
@@ -27373,7 +27373,7 @@ def _tg_agent_route(chat, text, bot_username="") -> dict:
 
 def _tg_owner_precheck(text, meta):
     """Owner bot precheck: a mention that names no agent, or several, is answered with the list
-    BEFORE a turn starts (no "Javis is working" message, no turn spent on a guess)."""
+    BEFORE a turn starts (no "TTTOS is working" message, no turn spent on a guess)."""
     m = meta or {}
     r = _tg_agent_route(m.get("chat_id"), text, m.get("bot_username") or "")
     return {"reply": r["reply"]} if r["reply"] else None
@@ -27426,15 +27426,15 @@ async def _tg_owner_command(cmd, arg, chat=None, meta=None):
             had = _TG_AGENT_MAP.pop(chat_key, None)
             if had:
                 _tg_save_agent_map()
-            return {"reply": localefmt.chu("Javis trả lời chat này như thường.",
-                                           "Javis answers this chat as usual.")}
+            return {"reply": localefmt.chu("TTTOS trả lời chat này như thường.",
+                                           "TTTOS answers this chat as usual.")}
         if not rows:
             return {"reply": localefmt.chu("Brain này chưa có cộng sự nào (tạo ở trang Cộng sự trên dashboard).",
                                            "This brain has no partner yet (create one on the Partners page).")}
         if not a:
             cur, notice = _tg_agent_pinned(chat_key, root, rows)
             head = (localefmt.chu(f"Đang trả lời chat này: {cur['name']}.", f"Answering this chat: {cur['name']}.")
-                    if cur else localefmt.chu("Đang trả lời chat này: Javis.", "Answering this chat: Javis."))
+                    if cur else localefmt.chu("Đang trả lời chat này: TTTOS.", "Answering this chat: TTTOS."))
             return {"reply": _tg_agent_list_text(rows, "\n".join(x for x in (notice, head) if x))}
         hits = _tg_agent_find(rows, a)
         if len(hits) != 1:
@@ -27447,12 +27447,12 @@ async def _tg_owner_command(cmd, arg, chat=None, meta=None):
         _tg_save_agent_map()
         name = hits[0]["name"]
         return {"reply": localefmt.chu(
-            f"🤝 Từ giờ {name} trả lời chat này. Gõ @javis <câu hỏi> để hỏi Javis một câu, /agent off để về Javis.",
-            f"🤝 {name} answers this chat from now on. Type @javis <question> to ask Javis once, /agent off to go back.")}
+            f"🤝 Từ giờ {name} trả lời chat này. Gõ @javis <câu hỏi> để hỏi TTTOS một câu, /agent off để về TTTOS.",
+            f"🤝 {name} answers this chat from now on. Type @javis <question> to ask TTTOS once, /agent off to go back.")}
     res = await _tg_command(cmd, arg, chat, meta)
     if cmd in ("reset", "new", "clear"):
         # The chat's agent conversations live in their own sessions (`_agent_sess_key`): /reset
-        # starts those over too, not only Javis's.
+        # starts those over too, not only TTTOS's.
         pre = chat_key + "@"
         for k in {k for k in list(_TG_SESS) + list(_TG_SID_MAP) if str(k).startswith(pre)}:
             s = _tg_session(k)
@@ -27463,14 +27463,14 @@ async def _tg_owner_command(cmd, arg, chat=None, meta=None):
             _tg_quen_sid(s)
     elif cmd in ("agents", "help", "menu", "start") and isinstance(res, dict) and "reply" in res:
         res["reply"] += "\n\n" + localefmt.chu(
-            "/agent <tên> - chọn cộng sự trả lời chat này (/agent off: về Javis) · @<tên> <câu hỏi> - hỏi cộng sự một câu",
-            "/agent <name> - pick the partner that answers this chat (/agent off: back to Javis) · "
+            "/agent <tên> - chọn cộng sự trả lời chat này (/agent off: về TTTOS) · @<tên> <câu hỏi> - hỏi cộng sự một câu",
+            "/agent <name> - pick the partner that answers this chat (/agent off: back to TTTOS) · "
             "@<name> <question> - ask a partner once")
     elif cmd == "status" and isinstance(res, dict) and "reply" in res:
         pin = _TG_AGENT_MAP.get(chat_key)
         if pin:
-            res["reply"] += "\n" + localefmt.chu(f"Cộng sự: {pin.get('slug')} (/agent off để về Javis)",
-                                                 f"Partner: {pin.get('slug')} (/agent off to go back to Javis)")
+            res["reply"] += "\n" + localefmt.chu(f"Cộng sự: {pin.get('slug')} (/agent off để về TTTOS)",
+                                                 f"Partner: {pin.get('slug')} (/agent off to go back to TTTOS)")
     return res
 
 
@@ -27493,7 +27493,7 @@ async def _stt_nghe(data, ten="", agent=None):
     _cfg = cfgmod.read_settings()
     key = (_cfg.get("model") or {}).get("groq_api_key") or ""
     # Gợi ý ngôn ngữ theo cấu hình. reply_lang="auto" -> truyền "" để Whisper TỰ DÒ, thay vì
-    # ép "vi" như trước: người nói tiếng Anh vào một Javis đang để "auto" thì cái ép đó biến
+    # ép "vi" như trước: người nói tiếng Anh vào một TTTOS đang để "auto" thì cái ép đó biến
     # câu của họ thành một câu tiếng Việt sai nghĩa.
     _lc2 = _cfg.get("locale") or {}
     # Thứ tự: ngôn ngữ trả lời đã GHIM -> ngôn ngữ giao diện -> để Whisper tự dò.
@@ -27576,7 +27576,7 @@ def _zalo_ghi_cho(meta) -> str:
 
 
 def _zalo_cau_tu_choi(ma: str) -> str:
-    return ("Bạn chưa được cấp quyền dùng Javis này.\n"
+    return ("Bạn chưa được cấp quyền dùng TTTOS này.\n"
             f"Mã ghép nối của bạn: {ma}\n"
             "Đưa mã này cho chủ máy để họ cho phép ở trang Kênh.")
 
@@ -27692,7 +27692,7 @@ async def zalo_push_wake(request: Request, conn: str = Query("")):
     """A wake-up from a javis-zalo process this server started: "something landed in my live buffer" or "my Zalo
     connection went up or down" (zalo_push.py). It carries no message; the read loop fetches those through the MCP
     tool as always. Refused unless it comes straight from this machine (no tunnel, no proxy) with this server
-    process's bearer, so a page on the Internet or a javis-zalo of an earlier lifetime cannot make Javis do anything,
+    process's bearer, so a page on the Internet or a javis-zalo of an earlier lifetime cannot make TTTOS do anything,
     and all a valid call can do is make the loop read one account now."""
     if not _direct_local_request(request):
         return JSONResponse({"ok": False}, status_code=403)
@@ -27763,7 +27763,7 @@ async def zalo_bot_test():
             for cid in ids:
                 try:
                     r = await c.post(url, json={"chat_id": cid,
-                                                "text": "Javis Zalo đã kết nối. Nhắn câu hỏi bất kỳ nhé."})
+                                                "text": "TTTOS Zalo đã kết nối. Nhắn câu hỏi bất kỳ nhé."})
                     d = r.json() if r.content else {}
                     if d.get("ok"):
                         sent += 1
@@ -27882,7 +27882,7 @@ async def chatbot_api_turn(request: Request):
         headers = {"Retry-After": "900"} if body.get("code") == "banned" else None
         return JSONResponse(body, status_code=status, headers=headers)
 
-    # Source and key first, body after (0.459.0): nobody outside, or without the key, makes Javis buffer a body, and a
+    # Source and key first, body after (0.459.0): nobody outside, or without the key, makes TTTOS buffer a body, and a
     # body is read only up to the channel's cap.
     account, bad = api_channel.gate(auth, ip, hdrs)
     if bad:
@@ -27960,9 +27960,9 @@ async def channels_webhook_info(request: Request, channel: str = ""):
         # WeChat takes http on port 80 as well as https, so plain http is a warning in words, not a refusal.
         return {"ok": True, "webhook_url": url, "verify_token": _wc_webhook_token(), "https": True,
                 "warning": "" if url.startswith("https://") else localefmt.chu(
-                    "WeChat chỉ gọi được địa chỉ công khai ở cổng 443 (https) hoặc 80. Mở Javis bằng tên miền "
+                    "WeChat chỉ gọi được địa chỉ công khai ở cổng 443 (https) hoặc 80. Mở TTTOS bằng tên miền "
                     "HTTPS rồi mở lại form này để lấy đúng địa chỉ.",
-                    "WeChat can only call a public address on port 443 (https) or 80. Open Javis through its "
+                    "WeChat can only call a public address on port 443 (https) or 80. Open TTTOS through its "
                     "HTTPS domain, then reopen this form to get the right address.")}
     if kenh != "messenger":
         return JSONResponse({"ok": False, "error": localefmt.chu("Kênh này không dùng webhook",
@@ -28139,15 +28139,15 @@ async def messenger_oauth_callback(state: str = Query(""), code: str = Query("")
     res = await messenger_oauth.callback(state, code, error, error_description)
     if res.get("ok"):
         title = localefmt.chu("✓ Đã đăng nhập Facebook", "✓ Signed in with Facebook")
-        body = localefmt.chu(f"Tìm thấy {len(res['pages'])} Fanpage. Quay lại tab Javis để chọn Trang muốn nối, "
+        body = localefmt.chu(f"Tìm thấy {len(res['pages'])} Fanpage. Quay lại tab TTTOS để chọn Trang muốn nối, "
                              "tab này tự đóng.",
-                             f"Found {len(res['pages'])} Page(s). Go back to the Javis tab to pick the Pages to "
+                             f"Found {len(res['pages'])} Page(s). Go back to the TTTOS tab to pick the Pages to "
                              "connect, this tab closes by itself.")
     else:
         title = localefmt.chu("⚠ Chưa đăng nhập được", "⚠ Sign-in did not finish")
         body = str(res.get("error", ""))
     html = ("<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, "
-            "initial-scale=1'><title>Javis</title></head><body style='font-family:system-ui,sans-serif;font-size:18px;"
+            "initial-scale=1'><title>TTTOS</title></head><body style='font-family:system-ui,sans-serif;font-size:18px;"
             "background:#111;color:#eee;text-align:center;padding:72px 16px'>"
             f"<h2>{html_mod.escape(title)}</h2><p>{html_mod.escape(body)}</p>"
             + ("<script>setTimeout(function(){try{window.close()}catch(e){}},1500)</script>" if res.get("ok") else "")
@@ -28227,7 +28227,7 @@ async def _ms_link_instagram(c, page_id: str, page_token: str, app_id: str, app_
 
 @app.post("/messenger/instagram")
 async def messenger_instagram_toggle(request: Request):
-    """Turn a Page's Instagram on or off in Javis (0.447.0). Off: its messages and comments are dropped."""
+    """Turn a Page's Instagram on or off in TTTOS (0.447.0). Off: its messages and comments are dropped."""
     try:
         body = await request.json()
     except Exception:
@@ -28273,9 +28273,9 @@ async def messenger_comments_mode(request: Request):
 async def messenger_privacy():
     """Privacy policy and data deletion page for the owner's Meta app (needed to go Live)."""
     try:
-        brand = str(cfgmod.read_settings().get("workspace_name") or "") or "Javis OS"
+        brand = str(cfgmod.read_settings().get("workspace_name") or "") or "TTTOS"
     except Exception:
-        brand = "Javis OS"
+        brand = "TTTOS"
     pages = []
     try:
         pages = [(a.get("meta") or {}).get("bot_name") or a.get("label") or ""
@@ -28471,14 +28471,14 @@ async def threads_oauth_callback(state: str = Query(""), code: str = Query(""), 
             threads_oauth._set(state, status="saved", account_id=aid)
     if res.get("ok"):
         title = localefmt.chu("✓ Đã nối Threads", "✓ Threads connected")
-        body = localefmt.chu(f"Đã nối @{res['account'].get('username', '')}. Quay lại tab Javis, tab này tự đóng.",
-                             f"@{res['account'].get('username', '')} is connected. Go back to the Javis tab, "
+        body = localefmt.chu(f"Đã nối @{res['account'].get('username', '')}. Quay lại tab TTTOS, tab này tự đóng.",
+                             f"@{res['account'].get('username', '')} is connected. Go back to the TTTOS tab, "
                              "this tab closes by itself.")
     else:
         title = localefmt.chu("⚠ Chưa nối được Threads", "⚠ Threads did not connect")
         body = str(res.get("error", ""))
     html = ("<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, "
-            "initial-scale=1'><title>Javis</title></head><body style='font-family:system-ui,sans-serif;font-size:18px;"
+            "initial-scale=1'><title>TTTOS</title></head><body style='font-family:system-ui,sans-serif;font-size:18px;"
             "background:#111;color:#eee;text-align:center;padding:72px 16px'>"
             f"<h2>{html_mod.escape(title)}</h2><p>{html_mod.escape(body)}</p>"
             + ("<script>setTimeout(function(){try{window.close()}catch(e){}},1500)</script>" if res.get("ok") else "")
@@ -28539,12 +28539,12 @@ async def threads_check(request: Request):
     exp = float(meta.get("token_expires") or 0)
     if exp:
         days = int((exp - time.time()) // 86400)
-        items.append(item("expiry", days > 7 or None, ("Token còn hạn, Javis tự gia hạn", "The token is valid and renews itself"),
+        items.append(item("expiry", days > 7 or None, ("Token còn hạn, TTTOS tự gia hạn", "The token is valid and renews itself"),
                           localefmt.chu(f"còn {days} ngày", f"{days} days left"),
-                          ("Bật một bot cho kênh này để Javis tự gia hạn, hoặc đăng nhập Threads lại.",
-                           "Turn on a bot for this channel so Javis renews the token, or log in to Threads again.")))
+                          ("Bật một bot cho kênh này để TTTOS tự gia hạn, hoặc đăng nhập Threads lại.",
+                           "Turn on a bot for this channel so TTTOS renews the token, or log in to Threads again.")))
     last = float(meta.get("last_webhook") or 0)
-    items.append(item("webhook", True if last else None, ("Threads đã gửi bình luận về Javis", "Threads has sent replies to Javis"),
+    items.append(item("webhook", True if last else None, ("Threads đã gửi bình luận về TTTOS", "Threads has sent replies to TTTOS"),
                       localefmt.format_ts(last, "%Y-%m-%d %H:%M") if last else localefmt.chu("chưa nhận lần nào", "none received yet"),
                       ("Trong App Dashboard, Threads API, Webhooks: dán Địa chỉ webhook và Mã xác minh ở thẻ này, đăng ký "
                        "trường replies, rồi chuyển app sang Live. Thử bình luận một bài của bạn để kiểm tra.",
@@ -28568,7 +28568,7 @@ async def threads_uninstall(request: Request):
 
 @app.post("/threads/delete")
 async def threads_delete(request: Request):
-    """The data deletion callback the Threads use case requires. Javis keeps no data about other Threads users
+    """The data deletion callback the Threads use case requires. TTTOS keeps no data about other Threads users
     beyond the replies in the owner's own inbox, which the owner deletes there."""
     return {"url": _ms_base(request) + "/messenger/privacy", "confirmation_code": secrets.token_hex(8)}
 
@@ -28652,14 +28652,14 @@ async def zalo_oa_oauth_callback(state: str = Query(""), code: str = Query(""), 
     res = await zalo_oa_oauth.callback(state, code, oa_id, error, error_description)
     if res.get("ok"):
         title = localefmt.chu("✓ Đã cấp quyền Zalo OA", "✓ Zalo OA access granted")
-        body = localefmt.chu(f"OA {res.get('oa_name') or res.get('oa_id')}. Quay lại tab Javis, tab này tự đóng.",
-                             f"OA {res.get('oa_name') or res.get('oa_id')}. Go back to the Javis tab, this tab "
+        body = localefmt.chu(f"OA {res.get('oa_name') or res.get('oa_id')}. Quay lại tab TTTOS, tab này tự đóng.",
+                             f"OA {res.get('oa_name') or res.get('oa_id')}. Go back to the TTTOS tab, this tab "
                              "closes by itself.")
     else:
         title = localefmt.chu("⚠ Chưa cấp quyền được", "⚠ Access was not granted")
         body = str(res.get("error", ""))
     html = ("<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, "
-            "initial-scale=1'><title>Javis</title></head><body style='font-family:system-ui,sans-serif;font-size:18px;"
+            "initial-scale=1'><title>TTTOS</title></head><body style='font-family:system-ui,sans-serif;font-size:18px;"
             "background:#111;color:#eee;text-align:center;padding:72px 16px'>"
             f"<h2>{html_mod.escape(title)}</h2><p>{html_mod.escape(body)}</p>"
             + ("<script>setTimeout(function(){try{window.close()}catch(e){}},1500)</script>" if res.get("ok") else "")
@@ -29327,7 +29327,7 @@ async def _github_team_fix(team: dict, text: str) -> bool:
 def _github_session_info(sid: str) -> dict:
     """Title, the person's latest request, and the engine/model a chat runs on, for the PR, the review and metrics.
 
-    `task` is the latest message the PERSON wrote (not a fix round Javis opened): a chat can hold several jobs, and
+    `task` is the latest message the PERSON wrote (not a fix round TTTOS opened): a chat can hold several jobs, and
     the chat title only describes the first one."""
     store = get_store()
     row = store.get_session(sid) or {}
@@ -29337,7 +29337,7 @@ def _github_session_info(sid: str) -> dict:
             if m.get("role") != "user":
                 continue
             text = chat_recall.strip_block(str(m.get("content") or "")).strip()
-            if text and not text.startswith("[Javis GitHub]"):
+            if text and not text.startswith("[TTTOS GitHub]"):
                 task = text
                 break
     except Exception:  # noqa: BLE001
@@ -29461,7 +29461,7 @@ async def telegram_test():
             for cid in ids:
                 try:
                     r = await c.post(f"https://api.telegram.org/bot{t['token']}/sendMessage",
-                                     json={"chat_id": cid, "text": "✅ Javis Telegram đã kết nối. Nhắn câu hỏi bất kỳ nhé."})
+                                     json={"chat_id": cid, "text": "✅ TTTOS Telegram đã kết nối. Nhắn câu hỏi bất kỳ nhé."})
                     d = r.json()
                     if d.get("ok"):
                         sent += 1
@@ -29478,9 +29478,9 @@ async def telegram_test():
 # ============================================================
 # KÊNH CLI - chat qua HTTP (xem docs/dev/2026-08-cli-spec.md)
 #
-# Trước bản này, muốn nói chuyện với Javis chỉ có hai đường: WebSocket /ws (dashboard, cần
+# Trước bản này, muốn nói chuyện với TTTOS chỉ có hai đường: WebSocket /ws (dashboard, cần
 # cookie) và long-polling Telegram. Không có cách nào `curl` một câu hỏi vào, nên cũng không
-# có cách nào cắm Javis vào cron, đường ống Unix hay một CLI.
+# có cách nào cắm TTTOS vào cron, đường ống Unix hay một CLI.
 #
 # Hai endpoint dưới đây KHÔNG có lõi riêng: chúng gọi thẳng `_tg_answer(..., channel="cli")`,
 # tức đúng cái vỏ mà Telegram chạy hằng ngày. Vỏ đó là chỗ duy nhất biết khớp phiên trong kho,
@@ -29586,7 +29586,7 @@ async def _cli_turn(message: str, brain: str, session: str, host: str, progress=
     API engines build the system prompt only when that session is new, and Claude Code / Codex
     resume its native thread), its own `_TG_SID_MAP` entry and its own stored conversation. Sharing
     the plain session made the first turn's prompt stick: a plain turn then `agent=x` ran with
-    Javis's prompt, and `agent=x` then `agent=y` ran with x's. `@` never survives
+    TTTOS's prompt, and `agent=x` then `agent=y` ran with x's. `@` never survives
     `_cli_sess_key`, so no plain session can collide with an agent one. The reply still names the
     plain session the client sent.
 
@@ -29778,7 +29778,7 @@ async def telegram_send_file(payload: dict = Body(...)):
     (miễn đăng nhập qua _AUTH_LOCAL_EXACT - request từ ngoài vẫn bị chặn).
     Body: {"path": "<đường dẫn tuyệt đối>", "caption": "<mô tả ngắn>", "chat_id": "<id người hỏi>"}.
     ĐA PHIÊN: có chat_id (và trong whitelist) → gửi ĐÚNG người đang hỏi + dedupe theo phiên họ;
-    thiếu chat_id → gửi chủ bot (ID đầu whitelist) như cũ. Ảnh/tệp Javis tạo trong lượt nay tự đính
+    thiếu chat_id → gửi chủ bot (ID đầu whitelist) như cũ. Ảnh/tệp TTTOS tạo trong lượt nay tự đính
     kèm về đúng người qua auto-attach (collect_turn_files), nên đường curl này ít khi cần cho chat."""
     path = str((payload or {}).get("path", "")).strip().strip('"')
     caption = str((payload or {}).get("caption", "")).strip()
@@ -29920,7 +29920,7 @@ async def slash_status(session_id: str = Query(""), brain: str = Query("brain"))
 def _doc_muc_luc_bo_nho(brain: str, toi_da: int = 20000) -> dict:
     """Mục lục bộ nhớ dài hạn của brain: `memory/MEMORY.md` + số file chi tiết trong `facts/`.
 
-    Chữ thường `memory/` là cố ý (Linux coi `Memory/` là thư mục khác mà Javis không bao giờ
+    Chữ thường `memory/` là cố ý (Linux coi `Memory/` là thư mục khác mà TTTOS không bao giờ
     mở - xem CLAUDE.md, mục Long-term memory).
     """
     root = Path(_brain_root(brain))
@@ -30103,7 +30103,7 @@ async def _ve_si_claude_creds():
     """Vòng vệ sĩ ~/.claude/.credentials.json mỗi 5 phút: bản lành thì sao lưu, file hỏng/mất
     thì phục hồi + hô to. Chống vụ "thi thoảng Claude Code tự đăng xuất" (16/08) - tiến trình
     claude bị watchdog giết đúng lúc đang ghi file token là file cụt, CLI coi như chưa đăng
-    nhập. Codex không bị vì token ChatGPT do chính Javis giữ."""
+    nhập. Codex không bị vì token ChatGPT do chính TTTOS giữ."""
     async def _vong():
         while True:
             try:
@@ -30176,7 +30176,7 @@ async def _warm_mcp_hub():
     để tin nhắn/tool call đầu tiên không phải chờ.
 
     Bản đầu chỉ gọi thẳng `discover_all("full")`, và chính chỗ đó là bệnh (báo cáo 31/08:
-    "khi update rất hay bị mất kết nối với các MCP của Javis, đặc biệt là Pancake POS").
+    "khi update rất hay bị mất kết nối với các MCP của TTTOS, đặc biệt là Pancake POS").
     `discover_all` đi qua vòng dò của LƯỢT CHAT, tức trần 20 giây mỗi nguồn - đúng con số
     sinh ra để bảo vệ người đang ngồi chờ, nhưng ở đây không có ai chờ cả. Sau một lần cập
     nhật thì pool rỗng, và với bản Docker cache npm/uv cũng mất theo ảnh cũ, nên nguồn nguội
@@ -30260,7 +30260,7 @@ async def _shutdown_mcp_pool():
     except Exception:
         pass
     # Shell của tab Code chạy trong process group RIÊNG (setsid), nên nó KHÔNG chết theo server
-    # - tắt Javis mà bỏ quên là để lại một đàn shell mồ côi giữ cổng và file.
+    # - tắt TTTOS mà bỏ quên là để lại một đàn shell mồ côi giữ cổng và file.
     try:
         terminal.KHO.dong_het()
     except Exception:
@@ -30329,7 +30329,7 @@ TEAM_WORK_MODE = "full"
 
 
 def _codex_user_mcp_servers():
-    """MCP servers in the user's own Codex config besides Javis' hub: Codex would call them without the gate."""
+    """MCP servers in the user's own Codex config besides TTTOS' hub: Codex would call them without the gate."""
     try:
         import tomllib
         p = claude_cli._codex_home() / "config.toml"
@@ -30351,15 +30351,15 @@ def _team_gate_support(provider):
         from claude_sdk_engine import ClaudeSDK
         if not ClaudeSDK.pre_tool_hooks_supported():
             return {"ok": False, "approved_actions": False,
-                    "reason": "bản claude-agent-sdk đang cài chưa có móc PreToolUse nên Javis không chặn được công cụ trước khi chạy"}
+                    "reason": "bản claude-agent-sdk đang cài chưa có móc PreToolUse nên TTTOS không chặn được công cụ trước khi chạy"}
     if prov == aux_engine.CODEX:
         if not _hub_enabled():
             return {"ok": False, "approved_actions": False,
-                    "reason": "MCP Hub đang tắt nên Codex gọi thẳng các kết nối, không qua cổng duyệt của Javis"}
+                    "reason": "MCP Hub đang tắt nên Codex gọi thẳng các kết nối, không qua cổng duyệt của TTTOS"}
         extra = _codex_user_mcp_servers()
         if extra:
             return {"ok": False, "approved_actions": False,
-                    "reason": ("Codex trên máy này có MCP riêng ngoài Javis (" + ", ".join(extra[:5]) + ") mà Javis không "
+                    "reason": ("Codex trên máy này có MCP riêng ngoài TTTOS (" + ", ".join(extra[:5]) + ") mà TTTOS không "
                                "chặn được trước khi chạy")}
     deny = True
     if prov == aux_engine.GROK_CLI:
@@ -31430,7 +31430,7 @@ def _team_docs_block(team, tools=False):
 
 # 0.449.0: in a team the push happens once the whole JOB is done, not after each member's turn: several members can
 # work in the same worktree at once, and a half-done edit must not be committed. Prompt text stays Vietnamese.
-TEAM_GITHUB_NOTE = ("Trong nhóm: Javis kiểm tra, commit và đẩy lên GitHub khi CẢ VIỆC NHÓM xong (không phải sau từng "
+TEAM_GITHUB_NOTE = ("Trong nhóm: TTTOS kiểm tra, commit và đẩy lên GitHub khi CẢ VIỆC NHÓM xong (không phải sau từng "
                     "lượt), nên mỗi thành viên để lại worktree ở trạng thái chạy được khi kết thúc phần của mình.")
 TEAM_SKILL_MAX_CHARS = 12000
 
@@ -31590,8 +31590,8 @@ async def teams_import(file: UploadFile = File(...), brain: str = Form("brain"),
                             status_code=400)
     pv = team_bundle.preview(data)
     if not pv.get("ok"):
-        return JSONResponse({"ok": False, "error": localefmt.chu("Đây không phải file team của Javis",
-                                                                 "This is not a Javis team file")}, status_code=400)
+        return JSONResponse({"ok": False, "error": localefmt.chu("Đây không phải file team của TTTOS",
+                                                                 "This is not a TTTOS team file")}, status_code=400)
     if preview in ("1", "true"):
         return pv
     ops = team_api.current()
@@ -31660,7 +31660,7 @@ _register_judge_view_part()
 def _dm_reaction_author(sess: dict) -> tuple:
     """(agent_key, config_version) của tác giả câu trả lời trong phiên `sess`. Phiên kênh `agent:<slug>` là của trợ lý đó:
     mã do host tra (ghim của phiên, không thì cấp mã bền cho trợ lý mà KHÔNG bật Cộng hưởng rồi ghim phiên, như nhóm
-    chat cấp mã cho thành viên). Phiên Javis chính: ("", 0). Không tra được (file trợ lý mất, phiên của mã cũ): ("", 0)."""
+    chat cấp mã cho thành viên). Phiên TTTOS chính: ("", 0). Không tra được (file trợ lý mất, phiên của mã cũ): ("", 0)."""
     persona = workflow_chat.persona_cua_phien(sess or {})
     if not persona or persona[0] != "agent":
         return "", 0
@@ -31733,8 +31733,8 @@ async def sessions_message_reaction(session_id: str, message_id: int, request: R
                                     agent_config_version=ver, goal_id=str(receipt.get("goal_id") or ""), **extra)
         if not got["replayed"] and not extra:
             _feedback_projector().project("dm", got["log_id"])
-        # 0.403.0 (owner, 2026-10-29): a notice opened in Javis Core is a chat message; the emoji the owner puts on it
-        # there is Javis Core's feedback on that notice (`notify_policy.react`). The marker names the bell item.
+        # 0.403.0 (owner, 2026-10-29): a notice opened in TTTOS Core is a chat message; the emoji the owner puts on it
+        # there is TTTOS Core's feedback on that notice (`notify_policy.react`). The marker names the bell item.
         if not got["replayed"] and javis_core.is_core_channel(sess.get("channel")):
             m = _CITE_INBOX_RE.search(str(msg.get("content") or ""))
             if m:
@@ -31764,7 +31764,7 @@ _NOTICE_AXIS = {"should_speak": "needed", "should_silent": "not_needed"}
 
 
 async def _notice_feedback_from_chat(item_id: str, value: str, axis: str) -> None:
-    """An emoji (and the speak/silent axis) the owner put on a notice inside Javis Core's chat, passed to Javis Core's
+    """An emoji (and the speak/silent axis) the owner put on a notice inside TTTOS Core's chat, passed to TTTOS Core's
     judge like the bell's buttons (0.403.0). Taking a reaction back changes nothing. Never raises."""
     try:
         ax = _NOTICE_AXIS.get(axis, "")
@@ -32062,7 +32062,7 @@ async def agent_jobs_list(slug: str, brain: str = "brain", source: str = "all", 
     """Việc của một trợ lý, đọc thẳng bản ghi gốc (không sao chép): việc nhóm (kể cả bước con, hỗ trợ), việc từ chat
     riêng, mục tiêu Auto. Lọc theo nguồn và ngăn, phân trang bằng `cursor`. Chỉ đọc, không tạo gì."""
     root = _brain_key(brain)
-    # 2026-11-05: Javis Core has its own file and Auto now, so its Jobs tab lists its work like any agent's.
+    # 2026-11-05: TTTOS Core has its own file and Auto now, so its Jobs tab lists its work like any agent's.
     if not _agent_md_path(root, slug):
         return JSONResponse({"ok": False, "error": localefmt.chu("Không tìm thấy trợ lý", "Assistant not found")},
                             status_code=404)
@@ -32601,7 +32601,7 @@ def _pulse_wake_dm_sync(brain, slug, why="owner_message"):
 
 
 def _pulse_seen_resolve(ctx, ids, session_id):
-    """Chỉ tin CỦA AGENT trong Javis: tin nhóm do agent viết, câu trả lời trong phiên `agent:<slug>`. Trả (ngữ cảnh chuẩn,
+    """Chỉ tin CỦA AGENT trong TTTOS: tin nhóm do agent viết, câu trả lời trong phiên `agent:<slug>`. Trả (ngữ cảnh chuẩn,
     mã tin, agent_key, mã phiên)."""
     ss, out = get_store(), []
     ctx = str(ctx or "")
@@ -33159,12 +33159,12 @@ def _improvement_loop_engines(root):
     except team_engine.TeamEngineUnavailable as error:
         raise PermissionError(f"engine_unavailable: {error.reason}") from None
     def solve(skill, prompt):
-        system = ("You are a Javis assistant. Follow the skill below exactly.\n\n<skill>\n" + skill +
+        system = ("You are a TTTOS assistant. Follow the skill below exactly.\n\n<skill>\n" + skill +
                   "\n</skill>\n\nAnswer only in the format the skill asks for.")
         return _improvement_text_call(system, prompt, "improvement-loop-solve-" + __import__("secrets").token_hex(4))
 
     def improve(instructions):
-        return _improvement_text_call("You improve skills for the Javis assistant. Keep the skill's language and "
+        return _improvement_text_call("You improve skills for the TTTOS assistant. Keep the skill's language and "
                                       "style.", instructions, "improvement-loop-improve-" + __import__("secrets").token_hex(4))
     return solve, improve
 
@@ -33647,7 +33647,7 @@ plugin_zip_routes.register(app, plugin_zip_routes.PluginZipDeps(
 ))
 
 
-# Invitation to star Javis on GitHub (0.324.0, owner request 2026-10-25), see server/star_nudge.py.
+# Invitation to star TTTOS on GitHub (0.324.0, owner request 2026-10-25), see server/star_nudge.py.
 # Registered LAST so route_table.json only grows at the end.
 import routes.star_nudge as star_nudge_routes   # noqa: E402
 
@@ -33687,7 +33687,7 @@ async def plan_limits_get(goi: int = 0):
     Grok Build and Antigravity report no meter, so theirs only turns red once a turn was refused.
     `goi=1` (the popover opening) also names each plan: Claude by the name Anthropic gives it now
     (the profile copy Claude Code keeps in `.claude.json`, falling back to `claude auth status`), ChatGPT
-    from the sign-in Javis holds, Grok from its own auth file. Antigravity keeps no plan name."""
+    from the sign-in TTTOS holds, Grok from its own auth file. Antigravity keeps no plan name."""
     import plan_limits
     await asyncio.to_thread(plan_limits.quet_codex)
     d = await asyncio.to_thread(plan_limits.doc)

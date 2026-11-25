@@ -1,6 +1,6 @@
 """WhatsApp gateway over the official WhatsApp Business Cloud API (Meta), 0.71.0.
 
-Unlike Telegram, Zalo and Slack, WhatsApp has no way for Javis to pull messages: Meta POSTs
+Unlike Telegram, Zalo and Slack, WhatsApp has no way for TTTOS to pull messages: Meta POSTs
 every inbound message to a webhook. So this module has two halves:
 
   - `WhatsAppBot`: the transport, same contract as `TelegramBot` (start/stop/status/send_text/
@@ -393,7 +393,7 @@ class WhatsAppBot(HangLuot):
         }
         if self.chat_ids and chat not in self.chat_ids:
             await self._send(client, chat, localefmt.chu(
-                "Bạn không có quyền dùng bot Javis này.", "You are not allowed to use this Javis bot."))
+                "Bạn không có quyền dùng bot TTTOS này.", "You are not allowed to use this TTTOS bot."))
             return
         text = await self._message_text(client, msg, chat)
         if not text:

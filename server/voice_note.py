@@ -1,4 +1,4 @@
-"""Voice notes: Javis records a short spoken message and attaches it to its answer (0.202.0).
+"""Voice notes: TTTOS records a short spoken message and attaches it to its answer (0.202.0).
 
 Idea borrowed from OpenMausBot's voice notes. Some answers are better heard than read: a morning
 summary to play while driving, a reminder read out to someone at home. The tool `javis_voice_note`
@@ -10,7 +10,7 @@ readable and searchable without playing anything.
 Edge TTS (free, the app's default voice engine), picked by the language of the text unless a
 voice is named. At most MAX_CHARS characters, the same limit OpenMausBot uses.
 
-0.255.0: when ElevenLabs is the chosen voice (Settings > Voice) the note is spoken by it, so Javis
+0.255.0: when ElevenLabs is the chosen voice (Settings > Voice) the note is spoken by it, so TTTOS
 sounds the same in a note as in the chat. If ElevenLabs fails (quota, key revoked) the note falls
 back to Edge rather than not being made.
 """

@@ -85,7 +85,7 @@ def refusal_for(tool_name: str, tool_input, roots: list, cwd=None) -> str:
 
 
 def _text(path: str, why: str) -> str:
-    return (f"Javis CHẶN ghi vào '{path}': {why}. Việc này đang chạy dưới mức Toàn quyền nên chỉ ghi được file thường "
+    return (f"TTTOS CHẶN ghi vào '{path}': {why}. Việc này đang chạy dưới mức Toàn quyền nên chỉ ghi được file thường "
             "trong bộ não đang làm việc. Đây là rào bảo mật, không phải lỗi ổ đĩa hay sandbox. Ghi nội dung vào chỗ "
             "khác trong bộ não (ví dụ drafts/), hoặc đưa nội dung vào câu trả lời để chủ tự lưu.")
 
@@ -103,7 +103,7 @@ def make_hook(engine):
         try:
             why = refusal_for(name, (input_data or {}).get("tool_input") or {}, roots, cwd)
         except Exception as e:  # noqa: BLE001
-            why = f"Javis không kiểm được đường dẫn ghi của lời gọi này ({type(e).__name__}), đã chặn."
+            why = f"TTTOS không kiểm được đường dẫn ghi của lời gọi này ({type(e).__name__}), đã chặn."
         if not why:
             return {}
         try:

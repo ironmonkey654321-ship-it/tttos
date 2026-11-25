@@ -2,11 +2,11 @@
 image_gen.py - Tạo ảnh bằng GÓI ChatGPT (OAuth device-code) - KHÔNG cần OpenAI API key.
 
 Cơ chế (port từ plugin image_gen/openai-codex của nousresearch/hermes-agent): gọi Codex Responses
-API (https://chatgpt.com/backend-api/codex/responses - CÙNG endpoint Javis đã dùng cho chat ChatGPT)
+API (https://chatgpt.com/backend-api/codex/responses - CÙNG endpoint TTTOS đã dùng cho chat ChatGPT)
 với builtin tool 'image_generation' (model gpt-image-2) + tool_choice=required, stream SSE, lấy ảnh
 base64 trong 'image_generation_call.result'. Token OAuth lấy từ openai_oauth.valid_creds() (tự refresh).
 
-Vì sao Javis trước đây KHÔNG tạo ảnh trực tiếp: đường chat ChatGPT (engine.responses_with_mcp) chỉ
+Vì sao TTTOS trước đây KHÔNG tạo ảnh trực tiếp: đường chat ChatGPT (engine.responses_with_mcp) chỉ
 gửi function tool, chưa từng gửi builtin tool 'image_generation'. Module này bổ sung đúng chỗ đó.
 
 Ảnh lưu vào <vault>/attachments/ để nhúng thẳng vào chat: ![](attachments/<tên>.png)
@@ -34,13 +34,13 @@ CODEX_RESPONSES_URL = "https://chatgpt.com/backend-api/codex/responses"
 # (không thử model nào khác). Không đặt thì HOST_MODEL chỉ là lựa chọn đầu tiên, xem
 # host_model_candidates(): gói ChatGPT nào không có model này (2026-10-15, ảnh chụp của chủ
 # repo: "The 'gpt-5.5' model is not supported when using Codex with a ChatGPT account") thì
-# Javis chuyển sang model khác trong danh mục thật của tài khoản thay vì chết ở đó.
+# TTTOS chuyển sang model khác trong danh mục thật của tài khoản thay vì chết ở đó.
 _HOST_ENV = os.getenv("JAVIS_IMAGE_HOST_MODEL", "").strip()
 HOST_MODEL = _HOST_ENV or "gpt-5.5"
 MAX_HOST_TRIES = 4
 # Model vừa tạo ảnh thành công gần nhất: lượt sau thử nó trước, khỏi đốt một lượt 400.
 _host_ok: list = [""]
-# Model đã gỡ khỏi Javis (main._MODEL_DA_GO) mà danh mục cũ có thể còn giữ.
+# Model đã gỡ khỏi TTTOS (main._MODEL_DA_GO) mà danh mục cũ có thể còn giữ.
 _KHONG_PHAI_MODEL = frozenset({"chatgpt-web"})
 _TU_CHOI_MODEL = ("not supported", "unsupported", "does not exist", "not found", "not available",
                   "do not have access", "don't have access", "no access", "invalid model")
@@ -236,7 +236,7 @@ def _attachments_dir(vault: Path) -> Path:
     return d
 
 
-BRAND_SOFTWARE = "Javis OS"
+BRAND_SOFTWARE = "TTTOS"
 BRAND_SOURCE = "https://javisos.com"
 
 
@@ -300,7 +300,7 @@ def strip_c2pa_png(raw: bytes) -> bytes:
 
 
 def brand_png(raw: bytes) -> bytes:
-    """Gắn thông tin tác giả (Javis OS / javisos.com) vào PNG, chèn ngay sau IHDR.
+    """Gắn thông tin tác giả (TTTOS / javisos.com) vào PNG, chèn ngay sau IHDR.
 
     CHỈ THÊM, không gỡ chunk nào - phần Content Credentials (C2PA) mà nhà cung cấp
     ảnh nhúng sẵn vẫn nằm nguyên trong file. Lưu ý: vì thêm chunk làm đổi byte của
@@ -495,9 +495,9 @@ async def generate_chatgpt(prompt: str, aspect_ratio: str = "square", quality: s
         ds = ", ".join(da_thu)
         err = err + localefmt.chu(
             f" (đã thử model: {ds}). Gói ChatGPT này không cho dùng các model đó để tạo ảnh. Mở trang "
-            "Models để Javis tải lại danh sách model của ChatGPT rồi thử lại.",
+            "Models để TTTOS tải lại danh sách model của ChatGPT rồi thử lại.",
             f" (models tried: {ds}). This ChatGPT plan does not allow those models for image generation. "
-            "Open the Models page so Javis reloads the ChatGPT model list, then try again.")
+            "Open the Models page so TTTOS reloads the ChatGPT model list, then try again.")
 
     if err or not b64:
         return {"ok": False, "error": err or localefmt.chu(

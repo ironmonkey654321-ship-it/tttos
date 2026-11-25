@@ -1,5 +1,5 @@
 """
-MCP client của Javis - để MỌI bộ não (API/OAuth lẫn hub) dùng được MCP.
+MCP client của TTTOS - để MỌI bộ não (API/OAuth lẫn hub) dùng được MCP.
 v2: SESSION POOL sống lâu giữa các tin nhắn (hết cảnh mỗi tool call mở session mới),
 thêm transport stdio (MCP local như javis-zalo, webcake-landing-mcp) và
 "internal" (cầu nối Python nội bộ như botcake_mcp).
@@ -37,7 +37,7 @@ def _owner_tz_env(own_env) -> dict:
 
     A POS or chat MCP that works out "today" by itself reads the process clock, and on a VPS that is UTC, so "orders
     today" asked at 6am in Vietnam returned yesterday's. Handing it the owner's timezone makes the server's own idea
-    of a day match Javis's. A connector that sets its own `TZ` keeps it. Not on Windows: its C runtime reads `TZ` in
+    of a day match TTTOS's. A connector that sets its own `TZ` keeps it. Not on Windows: its C runtime reads `TZ` in
     the POSIX "EST5EDT" form and would misread an IANA name, which is worse than the machine's local time.
     """
     if os.name == "nt" or "TZ" in (own_env or {}):
@@ -171,7 +171,7 @@ class McpHttpSession:
         Đây là chỗ đã gây ra vụ 03/09/2026 (Pancake POS "Làng Chài Xưa"): máy chủ MCP có
         quyền XOÁ PHIÊN bất cứ lúc nào - hết hạn, họ deploy lại, hoặc bộ cân tải đưa ta
         sang máy khác - và chuẩn quy định lúc đó máy chủ trả 404 còn CLIENT PHẢI TỰ BẮT TAY
-        LẠI. Javis trước đây không hề đọc mã HTTP, nên 404 kèm thân JSON-RPC được `r.json()`
+        LẠI. TTTOS trước đây không hề đọc mã HTTP, nên 404 kèm thân JSON-RPC được `r.json()`
         nuốt gọn thành một phản hồi bình thường, `tools/list` trả `[]` mà KHÔNG ném lỗi.
 
         Hậu quả dây chuyền, không có lấy một dòng lỗi ở đâu:
@@ -351,7 +351,7 @@ class McpStdioSession:
         return self._init_task is not None and not self._init_task.done()
 
     def _argv(self):
-        # Tìm cả trong Scripts/bin của venv Javis: uvx/uv cài theo requirements nằm ở đó
+        # Tìm cả trong Scripts/bin của venv TTTOS: uvx/uv cài theo requirements nằm ở đó
         # (PATH hệ thống thường không có) → connector PyPI (uvx ...) chạy được out-of-the-box.
         venv_bin = str(Path(sys.executable).parent)
         search = venv_bin + os.pathsep + os.environ.get("PATH", "")
@@ -497,7 +497,7 @@ class McpStdioSession:
                 return obj
             if obj.get("method") == "notifications/tools/list_changed":
                 self.tools_changed = True   # the pool's cached tool list is stale (SessionPool.cached_tools)
-            # notification/request từ server → bỏ qua (Javis không hỗ trợ sampling)
+            # notification/request từ server → bỏ qua (TTTOS không hỗ trợ sampling)
 
     async def ensure_init(self):
         """Run the MCP handshake once per process, in a task of its own.
@@ -978,7 +978,7 @@ class SessionPool:
         down = self._down.get(key)
         if down and down[1] == h and time.time() - down[0] < _DOWN_TTL:
             return (f"ERROR: nguồn {spec.get('label') or key} vừa không khởi động được "
-                    f"({down[2]}). Javis tạm ngừng gọi nguồn này {_DOWN_TTL} giây, đừng gọi lại "
+                    f"({down[2]}). TTTOS tạm ngừng gọi nguồn này {_DOWN_TTL} giây, đừng gọi lại "
                     "liên tục: báo người dùng bấm Kiểm tra ở trang Kết nối.")
         started = [False]
 
@@ -1226,7 +1226,7 @@ async def discover_resolved(conns, bo_qua=None):
                 #     cây tiến trình, tức là giết luôn cái đơn đang lên dở - đúng lỗi "lên đơn
                 #     thứ 2 là rớt kết nối" khách của chủ repo báo 01/09/2026. Giữ phiên, và trả
                 #     lại danh sách tool lần dò trước để nguồn KHÔNG biến mất khỏi hộp công cụ
-                #     chỉ vì nó đang bận (biến mất là Javis nói "chưa đấu POS", cũng sai nốt).
+                #     chỉ vì nó đang bận (biến mất là TTTOS nói "chưa đấu POS", cũng sai nốt).
                 # (b) Server thật sự treo giữa một request: huỷ từ ngoài để lại nửa câu trả lời
                 #     trong ống, lần sau đọc là lệch pha vĩnh viễn - vứt phiên, đừng tái dùng.
                 if pool.dang_goi_tool(spec):

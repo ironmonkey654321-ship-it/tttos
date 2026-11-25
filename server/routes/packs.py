@@ -103,14 +103,14 @@ def _connector_cua_app() -> list:
         ra = []
         for cid, c in (mcp_catalog.tat_ca() or {}).items():
             # Chạy LỆNH thì là bậc code, dù không một dòng Python nào: `transport: stdio` khiến
-            # Javis chạy `npx` với toàn bộ biến môi trường của máy chủ.
+            # TTTOS chạy `npx` với toàn bộ biến môi trường của máy chủ.
             code = str(c.get("transport") or "http").lower() == "stdio" or bool(c.get("command"))
             nhom = str(c.get("category") or "Khác")
             ra.append({
                 "id": cid, "kind": "connector",
                 "name": {"vi": c.get("name", cid)},
                 "description": {"vi": c.get("description", "")},
-                "version": "", "author": {"name": "Javis"},
+                "version": "", "author": {"name": "TTTOS"},
                 "category": nhom, "category_label": {"vi": nhom}, "nhom": nhom,
                 "tier": "code" if code else "data",
                 "verified": True, "icon": c.get("icon", ""),
@@ -176,8 +176,8 @@ def _pack_brain(pid: str) -> str:
 
 
 def _tu_choi():
-    return JSONResponse({"ok": False, "error": localefmt.chu("Cần đăng nhập vào Javis để quản lý gói.",
-                                                         "Sign in to Javis to manage packs.")},
+    return JSONResponse({"ok": False, "error": localefmt.chu("Cần đăng nhập vào TTTOS để quản lý gói.",
+                                                         "Sign in to TTTOS to manage packs.")},
                         status_code=401)
 
 
@@ -334,7 +334,7 @@ def _make_router() -> APIRouter:
             g["nhom"] = _nhom(g)
         # Connector đi kèm app cũng hiện TRONG kho, đánh dấu sẵn là đã cài. Người dùng không
         # phân biệt "thứ ship theo app" với "thứ tải từ kho" - họ chỉ muốn một chỗ để nhìn xem
-        # Javis nối được với cái gì. Trộn vào đây thì lưới Kết nối của kho có đủ mặt hàng ngay
+        # TTTOS nối được với cái gì. Trộn vào đây thì lưới Kết nối của kho có đủ mặt hàng ngay
         # từ ngày đầu, thay vì trống trơn cho tới khi ai đó phát hành gói connector.
         #
         # Chúng KHÔNG tải về từ đâu cả (`download.url` rỗng), và gỡ chúng đi qua `core_off`

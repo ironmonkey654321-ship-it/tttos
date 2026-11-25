@@ -1,14 +1,14 @@
-"""Tiến trình nền do engine bỏ lại: Javis nhận theo dõi, xong thì tự báo và tự làm tiếp (0.64.66).
+"""Tiến trình nền do engine bỏ lại: TTTOS nhận theo dõi, xong thì tự báo và tự làm tiếp (0.64.66).
 
 Vì sao có file này
 ==================
-Chủ repo báo 2026-09-27, kèm nguyên đoạn chat: nhờ Javis làm video, Javis trả lời "Đang render
+Chủ repo báo 2026-09-27, kèm nguyên đoạn chat: nhờ TTTOS làm video, TTTOS trả lời "Đang render
 nền, xong mình ghép tiếng và gửi video" rồi im. Video render xong lúc 14:57 mà phải tới 16:14,
-khi chủ hỏi "xong video chưa", Javis mới biết.
+khi chủ hỏi "xong video chưa", TTTOS mới biết.
 
 Gốc rễ: engine có shell (Codex, Grok Build, Antigravity) tự bật lệnh dài chạy ngầm (`cmd &`,
-`nohup cmd &`) rồi kết thúc lượt. Javis chỉ biết tự báo về cho việc Kanban, loop và nhắc hẹn.
-Một tiến trình do engine tự bật thì Javis không hề biết nó tồn tại, nên không có gì đánh thức
+`nohup cmd &`) rồi kết thúc lượt. TTTOS chỉ biết tự báo về cho việc Kanban, loop và nhắc hẹn.
+Một tiến trình do engine tự bật thì TTTOS không hề biết nó tồn tại, nên không có gì đánh thức
 khung chat khi nó xong. Còn lời hứa "xong mình gửi" là lời của model, không có cơ chế nào đứng
 sau.
 
@@ -93,7 +93,7 @@ def nhom_con_song(pgid: int) -> bool:
 
     Tiến trình đã chết mà chưa ai dọn (zombie, trạng thái Z) vẫn làm killpg(0) thành công. Máy
     thật có tiến trình số 1 dọn chúng (tini trong Docker, systemd, launchd), nhưng một container
-    chạy thẳng uvicorn làm PID 1 thì không: khi đó việc đã xong mà Javis tưởng còn chạy mãi. Nên
+    chạy thẳng uvicorn làm PID 1 thì không: khi đó việc đã xong mà TTTOS tưởng còn chạy mãi. Nên
     có /proc thì hỏi thêm trạng thái từng thành viên, chỉ tính người còn sống thật.
     """
     if not POSIX or not pgid:
@@ -248,7 +248,7 @@ def ghi_nhom(tag: str, pid: int) -> None:
 # ---------------------------------------------------------------------------------------
 # The owner reported on 2026-11-04 that a long video render or edit started from the chat never
 # reported back, neither in the chat nor in the bell. The process group test above cannot see
-# Claude Code's work: Javis keeps its `claude` process warm between turns (it does not exit), the
+# Claude Code's work: TTTOS keeps its `claude` process warm between turns (it does not exit), the
 # SDK starts it without a session of its own, and its Bash tool runs every command in a NEW
 # session. So `nohup ffmpeg ... &` left behind by Claude Code was never adopted, and
 # `javis_job op=then` silently dropped its instruction at the end of the turn.
@@ -373,7 +373,7 @@ def _marked(mark: str) -> List[dict]:
 
 
 def groups_left_by_mark(mark) -> List[int]:
-    """Process groups the engine marked `mark` left running (see ENV_MARK). Groups Javis already
+    """Process groups the engine marked `mark` left running (see ENV_MARK). Groups TTTOS already
     tracks, the server's own group and groups holding an engine the server started are skipped."""
     m = _clean_mark(mark)
     if not POSIX or not m:
@@ -489,9 +489,9 @@ def nhan_nuoi_theo_tag(tag: str, brain_root: str, chat_id: str, *, hua: bool = F
 
 
 def theo_doi_nhom(pgid: int, mo_ta: str, cwd: str, brain_root: str, chat_id: str) -> str:
-    """Nhận theo dõi NGAY một nhóm tiến trình Javis tự bật (terminal của engine API, 0.256.0).
+    """Nhận theo dõi NGAY một nhóm tiến trình TTTOS tự bật (terminal của engine API, 0.256.0).
 
-    Khác `nhan_nuoi_theo_tag`: không cần đợi hết lượt rồi dò nhóm còn sống, vì chính Javis bật
+    Khác `nhan_nuoi_theo_tag`: không cần đợi hết lượt rồi dò nhóm còn sống, vì chính TTTOS bật
     tiến trình và biết chắc mã nhóm. Trả mã việc (rỗng nếu không theo dõi được).
     """
     if not POSIX or not pgid or not chat_id:

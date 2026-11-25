@@ -8,7 +8,7 @@ every brain and the shell. This channel runs a Chatbot instead, so every fence a
 it sees only its own brain, runs no shell command and reaches no data source at the low level. The two doors never
 share anything: a key of this channel opens `TURN_PATH` and nothing else, and an API token does not open `TURN_PATH`.
 
-The account secret is a KEY Javis generates (`new_key`), shown to the owner exactly once. The channel-account store
+The account secret is a KEY TTTOS generates (`new_key`), shown to the owner exactly once. The channel-account store
 keeps one encrypted secret per account; here that secret is the SHA-256 of the key, so nothing on disk can give the
 key back. A call finds its account by hashing the key and comparing in constant time (`account_for_key`); the
 account then names exactly one bot. The caller never says which bot.
@@ -53,14 +53,14 @@ from channels import KenhSpec
 
 SPEC = KenhSpec(
     id="api", nhan="API nội bộ", kind="bot", logo="api", mau="#475569",
-    lay_token=("Javis tự sinh khoá khi bạn bấm Lưu và chỉ hiện đúng một lần. Dán khoá đó vào máy chủ sẽ gọi bot "
+    lay_token=("TTTOS tự sinh khoá khi bạn bấm Lưu và chỉ hiện đúng một lần. Dán khoá đó vào máy chủ sẽ gọi bot "
                "(header Authorization: Bearer)."),
     tom_tat=("Thử nghiệm. Cho một máy chủ của bạn (vd web nội bộ) hỏi bot qua HTTP. Bot chỉ chạy ở mức Chỉ đọc hoặc Đọc tài liệu, "
              "không gửi tin ra ngoài."),
     nang_luc={"nhom": False, "gui_chu": False, "gui_file": False},
     en={
         "nhan": "Internal API",
-        "lay_token": ("Javis generates a key when you click Save and shows it exactly once. Put that key on the server "
+        "lay_token": ("TTTOS generates a key when you click Save and shows it exactly once. Put that key on the server "
                       "that calls the bot (header Authorization: Bearer)."),
         "tom_tat": ("Experimental. Lets one of your servers (an internal web app, say) ask the bot over HTTP. The bot runs at Read "
                     "only or Read documents, and sends nothing out."),
@@ -68,7 +68,7 @@ SPEC = KenhSpec(
 )
 
 TURN_PATH = "/chatbot-api/v1/turn"
-# The add-account form asks for no token: Javis makes the key (routes/channels.py reads this flag).
+# The add-account form asks for no token: TTTOS makes the key (routes/channels.py reads this flag).
 GENERATED_KEY = True
 # The highest permission level a bot may run at on this channel (chatbot_runtime reads it inside every turn).
 PERMISSION_CEILING = "read_docs"
@@ -88,7 +88,7 @@ DEDUPE_TTL_S = 24 * 3600
 
 ENV_ALLOW = "JAVIS_CHATBOT_API_ALLOW"
 # This machine only. A caller in another container or on the LAN is added to JAVIS_CHATBOT_API_ALLOW by the owner,
-# as narrow as it can be (one address, or the one Docker network the caller shares with Javis). See rule 5 above.
+# as narrow as it can be (one address, or the one Docker network the caller shares with TTTOS). See rule 5 above.
 DEFAULT_ALLOW = "127.0.0.0/8,::1/128"
 # Same list as main._FORWARD_HEADERS: a reverse proxy or tunnel adds one of these, a server calling directly does not.
 # Nginx Proxy Manager runs in the same Docker network, so without this check the whole Internet would come in through
@@ -152,8 +152,8 @@ def account_for_key(raw: str) -> Optional[dict]:
 
 async def verify_token(token: str) -> dict:
     """kind="bot" contract. This channel takes no pasted token: the key is generated on Save."""
-    return {"ok": False, "error": localefmt.chu("Kênh API nội bộ không dùng token dán vào: Javis tự sinh khoá khi lưu.",
-                                                "The internal API channel takes no pasted token: Javis generates the key on Save.")}
+    return {"ok": False, "error": localefmt.chu("Kênh API nội bộ không dùng token dán vào: TTTOS tự sinh khoá khi lưu.",
+                                                "The internal API channel takes no pasted token: TTTOS generates the key on Save.")}
 
 
 # ============================================================
@@ -419,13 +419,13 @@ async def handle_http(auth_header: str, client_ip: str, headers: Optional[dict],
         return await _handle(auth_header, client_ip, headers, body, turn_id, account)
     except Exception as e:      # noqa: BLE001 - the caller gets a generic sentence, the log keeps the detail
         print(f"[chatbot-api {turn_id}] {type(e).__name__}: {e}", file=sys.stderr)
-        return _err(500, "internal", "Javis gặp lỗi khi xử lý lượt này.", "Javis hit an error handling this turn.",
+        return _err(500, "internal", "TTTOS gặp lỗi khi xử lý lượt này.", "TTTOS hit an error handling this turn.",
                     turn_id=turn_id)
 
 
 def gate(auth_header: str, client_ip: str, headers: Optional[dict]) -> tuple:
     """(account, None) when the source and the key pass, else (None, error tuple). Needs no body, so the route runs it
-    BEFORE reading one (maintainer, 0.459.0): a caller from outside, or without the key, never gets to make Javis
+    BEFORE reading one (maintainer, 0.459.0): a caller from outside, or without the key, never gets to make TTTOS
     buffer a request body."""
     import config as cfgmod
     if not source_allowed(client_ip, headers):
@@ -490,7 +490,7 @@ async def _handle(auth_header, client_ip, headers, body, turn_id, account=None) 
         result = await _run(bot, turn, meta, aid, turn_id)
     finally:
         if result is None:
-            result = _err(500, "internal", "Javis gặp lỗi khi xử lý lượt này.", "Javis hit an error handling this turn.",
+            result = _err(500, "internal", "TTTOS gặp lỗi khi xử lý lượt này.", "TTTOS hit an error handling this turn.",
                           turn_id=turn_id)
         fut.set_result(result)
         if result[0] != 200:

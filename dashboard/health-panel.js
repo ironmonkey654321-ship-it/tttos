@@ -1,6 +1,6 @@
-/* Health section of the Work page (0.199.0): incidents Javis Core is handling, and the read-only health scan.
+/* Health section of the Work page (0.199.0): incidents TTTOS Core is handling, and the read-only health scan.
  *
- * Incidents (server/incident_desk.py): a background run broke, Javis Core retried it once or said what only you can
+ * Incidents (server/incident_desk.py): a background run broke, TTTOS Core retried it once or said what only you can
  * fix. Each row has "Done" to close it. Health scan (server/sentinel.py): failures of the last 24 hours from every
  * store, grouped by cause and sorted by count. Nothing here starts or changes a job.
  *

@@ -33,7 +33,7 @@ _LOAI = ("agent", "workflow")
 
 def persona_cua_phien(row: Optional[dict]) -> Optional[Tuple[str, str]]:
     ch = str((row or {}).get("channel") or "")
-    # Javis Core (0.185.0) is not a persona: its chat is a normal Javis turn plus a role block.
+    # TTTOS Core (0.185.0) is not a persona: its chat is a normal TTTOS turn plus a role block.
     if javis_core.is_core_channel(ch):
         return None
     for loai in _LOAI:

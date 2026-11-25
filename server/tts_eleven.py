@@ -1,6 +1,6 @@
-"""ElevenLabs voice for Javis (0.255.0): speech for read-aloud, the Basic call path and voice notes.
+"""ElevenLabs voice for TTTOS (0.255.0): speech for read-aloud, the Basic call path and voice notes.
 
-Owner, 2026-10-20: "đang thiếu mất ElevenLabs để làm giọng của Javis". The provider existed since the
+Owner, 2026-10-20: "đang thiếu mất ElevenLabs để làm giọng của TTTOS". The provider existed since the
 first settings page, but three things kept it out of reach:
 
 - The default model `eleven_multilingual_v2` has no Vietnamese (its 29 languages leave it out;

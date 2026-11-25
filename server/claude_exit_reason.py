@@ -11,7 +11,7 @@ collect those lines (`_stderr_tail`), but only quoted them for a startup timeout
 and nothing to act on (customer report, 12/11/2026). Measured on Claude Code 2.1.322 with SDK 0.2.172, four ways to
 get exactly that message, each with the cause sitting in `_stderr_tail`:
 
-  - Javis runs as root: "--dangerously-skip-permissions cannot be used with root/sudo privileges for security reasons"
+  - TTTOS runs as root: "--dangerously-skip-permissions cannot be used with root/sudo privileges for security reasons"
   - a bad MCP config: "Error: Invalid MCP configuration:" plus the detail on the next line
   - a flag this `claude` does not know: "error: unknown option '--...'"
   - a bad `--settings` value: "Error: Settings file not found: ..."
@@ -59,21 +59,21 @@ def explain(text, stderr_lines=()):
     tail = _tail(stderr_lines)
     seen = " ".join(tail).lower()
     if "cannot be used with root/sudo" in seen:
-        vi = ("Claude Code từ chối chạy vì Javis đang chạy bằng tài khoản root: ở mức Toàn quyền nó không cho bỏ qua "
-              "bước hỏi quyền dưới root. Chạy Javis bằng một tài khoản thường; hoặc nếu máy này dành riêng cho Javis "
-              "(VPS, container) thì thêm dòng IS_SANDBOX=1 vào file .env của Javis rồi khởi động lại.")
-        en = ("Claude Code refused to run because Javis runs as root: at Full access it will not skip permission "
-              "prompts under root. Run Javis as a regular user; or, if this machine is dedicated to Javis (a VPS, a "
-              "container), add the line IS_SANDBOX=1 to Javis' .env file and restart.")
+        vi = ("Claude Code từ chối chạy vì TTTOS đang chạy bằng tài khoản root: ở mức Toàn quyền nó không cho bỏ qua "
+              "bước hỏi quyền dưới root. Chạy TTTOS bằng một tài khoản thường; hoặc nếu máy này dành riêng cho TTTOS "
+              "(VPS, container) thì thêm dòng IS_SANDBOX=1 vào file .env của TTTOS rồi khởi động lại.")
+        en = ("Claude Code refused to run because TTTOS runs as root: at Full access it will not skip permission "
+              "prompts under root. Run TTTOS as a regular user; or, if this machine is dedicated to TTTOS (a VPS, a "
+              "container), add the line IS_SANDBOX=1 to TTTOS' .env file and restart.")
     elif "invalid mcp configuration" in seen:
         vi = ("Claude Code không khởi động được vì cấu hình nguồn dữ liệu (MCP) gửi cho nó không hợp lệ. Mở trang "
               "Kết nối, xem lại nguồn vừa thêm hoặc vừa sửa rồi gửi lại tin nhắn.")
         en = ("Claude Code could not start because the data source (MCP) configuration it was given is invalid. "
               "Open the Connections page, review the source just added or edited, then send the message again.")
     elif "unknown option" in seen:
-        vi = ("Claude Code trên máy không hiểu một tuỳ chọn Javis gửi, thường vì bản đang cài đã cũ. Cập nhật "
+        vi = ("Claude Code trên máy không hiểu một tuỳ chọn TTTOS gửi, thường vì bản đang cài đã cũ. Cập nhật "
               "Claude Code (lệnh `claude update`) rồi gửi lại tin nhắn.")
-        en = ("The Claude Code on this machine does not know an option Javis passed, usually because the installed "
+        en = ("The Claude Code on this machine does not know an option TTTOS passed, usually because the installed "
               "version is old. Update Claude Code (`claude update`), then send the message again.")
     else:
         vi = f"Claude Code dừng với mã thoát {code} trước khi trả lời."
@@ -83,9 +83,9 @@ def explain(text, stderr_lines=()):
         vi += f' Claude Code in ra: "{quoted}"'
         en += f' Claude Code printed: "{quoted}"'
     else:
-        vi += (" Nó không in ra lý do nào. Chạy thử lệnh `claude` trong terminal của máy đang chạy Javis để xem "
+        vi += (" Nó không in ra lý do nào. Chạy thử lệnh `claude` trong terminal của máy đang chạy TTTOS để xem "
                "lỗi, hoặc gửi log của server cho người hỗ trợ.")
-        en += (" It printed no reason. Run `claude` in a terminal on the machine running Javis to see the error, "
+        en += (" It printed no reason. Run `claude` in a terminal on the machine running TTTOS to see the error, "
                "or send the server log to support.")
     return localefmt.chu(vi, en)
 

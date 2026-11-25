@@ -1,5 +1,5 @@
 """
-share_bundle.py - Xuất/Nhập năng lực Javis (agent / skill / workflow) dưới dạng gói .zip để
+share_bundle.py - Xuất/Nhập năng lực TTTOS (agent / skill / workflow) dưới dạng gói .zip để
 CHIA SẺ giữa các brain / người dùng.
 
 Gói "javis-bundle" = 1 file .zip:
@@ -153,7 +153,7 @@ def build_bundle(kind, slug, *, agents_dir, workflows_dir, skills_root,
         return None, None
 
     # primary = cái ĐẦU TIÊN tìm thấy - giữ nguyên hình dạng manifest v1 để gói chọn-nhiều
-    # mở được bằng mọi bản Javis cũ (import chỉ đọc items + file, không đọc primary).
+    # mở được bằng mọi bản TTTOS cũ (import chỉ đọc items + file, không đọc primary).
     goc = [i for i in items if i["type"] == kind and i["slug"] in slugs]
     prim = goc[0] if goc else None
     manifest = {
@@ -207,7 +207,7 @@ def import_bundle(data: bytes, filename, *, agents_dir, workflows_dir, skills_ro
 
     def write_one(target: Path, blob: bytes, typ, slug, arc=None):
         key = f"{typ}:{slug}"
-        # Javis Core (0.185.0) is the platform's system assistant: its slug is reserved, and a bundled
+        # TTTOS Core (0.185.0) is the platform's system assistant: its slug is reserved, and a bundled
         # `agents/javis-core.md` would only shadow it.
         if typ == "agent" and str(slug).lower() == "javis-core":
             skp.add(key); return

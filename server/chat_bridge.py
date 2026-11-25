@@ -1,10 +1,10 @@
-"""Javis Gate: một AI bên ngoài (ChatGPT, Claude...) đọc và nhắn vào hội thoại của Javis như chủ gõ tay.
+"""TTTOS Gate: một AI bên ngoài (ChatGPT, Claude...) đọc và nhắn vào hội thoại của TTTOS như chủ gõ tay.
 
 Vì sao có module này (0.440.0)
 ------------------------------
-Gói "Javis trong ChatGPT" (nay là Javis Gate) cho ChatGPT gọi tool của Javis qua MCP. Khi ChatGPT
-muốn Javis LÀM một việc, đường duy nhất là `javis_task`: việc rơi vào Kanban và chạy ngầm. Người
-dùng báo (02/11): không biết việc đó đang chạy, đã dừng hay vẫn sống, và Javis không học được gì
+Gói "TTTOS trong ChatGPT" (nay là TTTOS Gate) cho ChatGPT gọi tool của TTTOS qua MCP. Khi ChatGPT
+muốn TTTOS LÀM một việc, đường duy nhất là `javis_task`: việc rơi vào Kanban và chạy ngầm. Người
+dùng báo (02/11): không biết việc đó đang chạy, đã dừng hay vẫn sống, và TTTOS không học được gì
 vì trao đổi giữa hai bên không đi qua khung chat, mà vòng tự học chỉ đọc khung chat.
 
 Module này cho cửa Gate bốn tool: tìm hội thoại, đọc hội thoại, GỬI tin vào một hội thoại, và chờ
@@ -15,7 +15,7 @@ kho phiên, ghi `memory/conversations` và vào hàng đợi tự học. Không 
 Ranh giới
 ---------
 - Bốn tool chỉ hiện ở cửa Gate (`mcp_hub.tra_loi_jsonrpc(gate=...)`), không bao giờ ở danh sách
-  tool của chính Javis: Javis tự nhắn vào hội thoại của mình là vòng lặp, không phải tính năng.
+  tool của chính TTTOS: TTTOS tự nhắn vào hội thoại của mình là vòng lặp, không phải tính năng.
 - Tool GỬI chỉ có ở mức Toàn quyền: một lượt chat của chủ chạy với quyền của chủ, nên mức Chỉ đọc
   hay Ghi nháp mà gửi được là đi vòng qua chính mức quyền đó.
 - Chỉ gửi vào hội thoại của CHỦ (khung Trò chuyện, chat với Cộng sự). Không đọc, không gửi vào
@@ -25,13 +25,13 @@ Ranh giới
 
 Ghi chép (0.441.0)
 ------------------
-Chủ dự án 02/11: "chat ở bên nào thì cũng copy hội thoại đấy vào Javis để có ngữ cảnh". Javis không
+Chủ dự án 02/11: "chat ở bên nào thì cũng copy hội thoại đấy vào TTTOS để có ngữ cảnh". TTTOS không
 đọc được lịch sử chat của ChatGPT hay Claude (chúng chỉ gửi sang thứ chúng tự truyền vào lúc gọi
 tool), nên tool thứ năm `javis_chat_note` để AI bên ngoài tự ghi lại phần đáng giữ: chủ hỏi gì, đã
-chốt gì, vì sao. Ghi chép KHÔNG chạy lượt nào của Javis (không tốn hạn mức bộ não), nhưng đi qua đúng
+chốt gì, vì sao. Ghi chép KHÔNG chạy lượt nào của TTTOS (không tốn hạn mức bộ não), nhưng đi qua đúng
 đường lưu lượt chat (`main._persist_turn`): vào Lịch sử, `memory/conversations` và vòng tự học. Mỗi
 cuộc chat bên ngoài có một hội thoại riêng "Từ ChatGPT: <tên>", hoặc ghi thẳng vào một hội thoại có
-sẵn của Javis khi AI đưa `id`.
+sẵn của TTTOS khi AI đưa `id`.
 """
 from __future__ import annotations
 
@@ -97,7 +97,7 @@ def khoi_ghi_chep(nguon: str) -> str:
     """Khối đầu của một ghi chép: cùng tiền tố với `khoi` (giao diện gỡ khối, hiện nhãn nguồn), nhưng nói rõ
     với model đây là ghi chép để nắm ngữ cảnh, không phải yêu cầu làm gì."""
     n = ten_nguon(nguon)
-    return (f"{KHOI_GATE} {n}. Ghi chép từ cuộc chat của chủ trên {n}, để Javis nắm ngữ cảnh và nhớ "
+    return (f"{KHOI_GATE} {n}. Ghi chép từ cuộc chat của chủ trên {n}, để TTTOS nắm ngữ cảnh và nhớ "
             f"quyết định của chủ; không phải yêu cầu làm việc.]\n\n")
 
 
@@ -266,7 +266,7 @@ def _ma_cuoi(st, sid: str) -> int:
 
 async def gui(sid: str, text: str, nguon: str) -> dict:
     """Đưa một tin vào hội thoại như chủ gõ. Phiên đang trả lời thì tin thành tin GÕ THÊM (lượt đang
-    chạy đọc nó, hoặc nó chạy ngay sau lượt đó), y như chủ gõ thêm trong lúc Javis đang làm."""
+    chạy đọc nó, hoặc nó chạy ngay sau lượt đó), y như chủ gõ thêm trong lúc TTTOS đang làm."""
     if "chay" not in _HOST:
         return {"ok": False, "error": "chat bridge is not ready"}
     st = _store()
@@ -301,13 +301,13 @@ async def gui(sid: str, text: str, nguon: str) -> dict:
     if loi:
         return {"ok": False, "error": str(loi.get("content") or "rejected")}
     if not dang_chay and not _dang_chay(row["id"]) and _ma_cuoi(st, row["id"]) <= truoc:
-        return {"ok": False, "error": "Javis did not take the message"}
+        return {"ok": False, "error": "TTTOS did not take the message"}
     return {"ok": True, "id": row["id"], "title": row.get("title") or "",
             "mode": "queued" if dang_chay else "started", "after_id": truoc}
 
 
 async def ket_qua(sid: str, after_id: int = 0, cho: float = CHO_MAC_DINH) -> dict:
-    """Chờ tối đa `cho` giây cho lượt xong, rồi trả các câu Javis viết sau tin `after_id`."""
+    """Chờ tối đa `cho` giây cho lượt xong, rồi trả các câu TTTOS viết sau tin `after_id`."""
     st = _store()
     row = st.get_session(str(sid or ""))
     if not row or not doc_duoc(row.get("channel")):
@@ -336,7 +336,7 @@ async def ket_qua(sid: str, after_id: int = 0, cho: float = CHO_MAC_DINH) -> dic
         job = _rt().get_job(row["id"])
         dang_viet = _cat(str(getattr(job, "text", "") or "")[-3000:], 3000)
         return {"ok": True, "status": "running", "answer_so_far": chu, "writing_now": dang_viet,
-                "hint": "Javis is still working. Call javis_chat_result again with the same after_id."}
+                "hint": "TTTOS is still working. Call javis_chat_result again with the same after_id."}
     if not chu:
         return {"ok": True, "status": "no_answer",
                 "hint": "The turn ended without a reply (stopped, or an error). Read the conversation."}
@@ -393,7 +393,7 @@ def noi_dung_ghi_chep(nguon: str, hoi: str, tra_loi: str, chot: str) -> str:
 
 async def ghi_chep(nguon: str, ten: str = "", hoi: str = "", tra_loi: str = "", chot: str = "",
                    sid: str = "") -> dict:
-    """Lưu một ghi chép của AI bên ngoài vào Javis. KHÔNG chạy lượt nào của Javis."""
+    """Lưu một ghi chép của AI bên ngoài vào TTTOS. KHÔNG chạy lượt nào của TTTOS."""
     if "luu" not in _HOST:
         return {"ok": False, "error": "chat notes are not ready"}
     hoi, tra_loi, chot = (str(x or "").strip() for x in (hoi, tra_loi, chot))
@@ -443,7 +443,7 @@ TOOLS: Dict[str, dict] = {
     "javis_chat_find": {
         "muc": "doc",
         "description": (
-            "Find the owner's Javis conversations by title (accents ignored) or by words in their messages. "
+            "Find the owner's TTTOS conversations by title (accents ignored) or by words in their messages. "
             "Empty query lists the most recent chats. Use this first when the owner names a chat "
             "(for example 'the Viet Web chat')."),
         "schema": {"type": "object", "properties": {
@@ -453,48 +453,48 @@ TOOLS: Dict[str, dict] = {
     "javis_chat_read": {
         "muc": "doc",
         "description": (
-            "Read the last messages of one Javis conversation, oldest first, so you can advise the owner "
-            "on what to do next. 'running' tells whether Javis is answering right now."),
+            "Read the last messages of one TTTOS conversation, oldest first, so you can advise the owner "
+            "on what to do next. 'running' tells whether TTTOS is answering right now."),
         "schema": {"type": "object", "required": ["id"], "properties": {
             "id": _ID, "last": {"type": "integer", "description": "How many recent messages, 1-60 (default 20)."}}},
     },
     "javis_chat_send": {
         "muc": "full",
         "description": (
-            "Post a message into a Javis conversation as if the owner typed it there, so Javis does the work "
-            "in that chat: the owner watches it live, can press Stop, and Javis learns from it. Only send "
+            "Post a message into a TTTOS conversation as if the owner typed it there, so TTTOS does the work "
+            "in that chat: the owner watches it live, can press Stop, and TTTOS learns from it. Only send "
             "after the owner agreed. Start the message with one line on what the owner approved and why, "
-            "then the instruction. Waits up to wait_seconds for the reply; if Javis is still working, call "
+            "then the instruction. Waits up to wait_seconds for the reply; if TTTOS is still working, call "
             "javis_chat_result with the returned after_id. Prefer this over javis_task for work in a chat."),
         "schema": {"type": "object", "required": ["id", "message"], "properties": {
             "id": _ID,
-            "message": {"type": "string", "description": "The instruction for Javis, in the owner's language."},
+            "message": {"type": "string", "description": "The instruction for TTTOS, in the owner's language."},
             "wait_seconds": {"type": "integer",
                              "description": f"Seconds to wait for the reply, 0-{CHO_TOI_DA} (default {CHO_MAC_DINH})."}}},
     },
     "javis_chat_note": {
         "muc": "ghi",
         "description": (
-            "Save a note of THIS chat into Javis so Javis keeps the context and remembers the owner's decisions. "
-            "It does not run Javis and costs Javis nothing. Call it whenever the owner settles something (a "
+            "Save a note of THIS chat into TTTOS so TTTOS keeps the context and remembers the owner's decisions. "
+            "It does not run TTTOS and costs TTTOS nothing. Call it whenever the owner settles something (a "
             "decision, a choice, a plan, a fact about their business), and when a useful chat ends; not after "
             "every message. asked: what the owner said, in their own words where it matters. answered: your "
             "answer in 1-5 sentences. decided: what the owner agreed or chose, and why. title: a short name for "
             "this chat, the SAME every time in this chat so notes land together. To note into one existing "
-            "Javis chat instead (for example the chat this work belongs to), pass its id."),
+            "TTTOS chat instead (for example the chat this work belongs to), pass its id."),
         "schema": {"type": "object", "required": ["asked"], "properties": {
             "title": {"type": "string", "description": "Short name of this chat on your side, stable across calls."},
             "asked": {"type": "string", "description": "What the owner said or asked."},
             "answered": {"type": "string", "description": "Your answer, short."},
             "decided": {"type": "string", "description": "What the owner decided, and why. Empty if nothing yet."},
-            "id": {"type": "string", "description": "Optional: a Javis conversation id to note into instead."}}},
+            "id": {"type": "string", "description": "Optional: a TTTOS conversation id to note into instead."}}},
     },
     "javis_chat_result": {
         "muc": "doc",
         "description": (
-            "Wait for and return Javis's reply after javis_chat_send. status: done (answer), running (call again), "
+            "Wait for and return TTTOS's reply after javis_chat_send. status: done (answer), running (call again), "
             "no_answer (stopped or failed). If it keeps running past your patience, tell the owner the result "
-            "will appear in the Javis chat and they can ask you to check again later."),
+            "will appear in the TTTOS chat and they can ask you to check again later."),
         "schema": {"type": "object", "required": ["id", "after_id"], "properties": {
             "id": _ID,
             "after_id": {"type": "integer", "description": "after_id returned by javis_chat_send."},
@@ -506,7 +506,7 @@ TOOLS: Dict[str, dict] = {
 
 def _du_quyen(mode: str, muc: str = "full") -> bool:
     """Mức của cửa Gate có đủ cho mức tool không. `doc`: mọi mức. `ghi` (lưu ghi chép, không làm việc ra ngoài):
-    Ghi nháp và Toàn quyền. `full` (để Javis LÀM việc): chỉ Toàn quyền."""
+    Ghi nháp và Toàn quyền. `full` (để TTTOS LÀM việc): chỉ Toàn quyền."""
     m = str(mode or "").strip().lower()
     if muc == "doc":
         return True
@@ -536,8 +536,8 @@ async def goi_tool(ten: str, args: Optional[dict], mode: str, nguon: str) -> str
         return f"ERROR: unknown tool {ten}"
     if not _du_quyen(mode, t["muc"]):
         can = "Full access" if t["muc"] == "full" else "the Draft or Full access level"
-        return (f"ERROR: {ten} needs {can}. The owner can raise it on the Javis Gate page in Javis "
-                "(Plugins, Javis Gate, Open page).")
+        return (f"ERROR: {ten} needs {can}. The owner can raise it on the TTTOS Gate page in TTTOS "
+                "(Plugins, TTTOS Gate, Open page).")
     try:
         if ten == "javis_chat_find":
             kq = tim(a.get("query") or "", _so(a.get("limit"), 10))

@@ -1,6 +1,6 @@
-"""Keeps a Javis whose address leaked out of search results and away from AI crawlers.
+"""Keeps a TTTOS whose address leaked out of search results and away from AI crawlers.
 
-Owner request 2026-11-09: block indexing and block AI bots from reaching Javis OS when the admin link leaks out. A
+Owner request 2026-11-09: block indexing and block AI bots from reaching TTTOS when the admin link leaks out. A
 dashboard reachable from the Internet (VPS, Cloudflare Tunnel, Tailscale Funnel) does get found: its domain shows up in
 certificate transparency logs, a link pasted into a group chat gets crawled, and device search engines (Shodan, Censys)
 scan every address. The login gate already keeps the data behind a password; this module keeps the address itself out
@@ -22,12 +22,12 @@ answering it 403 plus noindex is what removes a leaked link for good. Do not "fi
 into the Disallow group.
 
 Never blocked:
-- requests made on this machine itself (loopback, no forwarding header): Javis's own tools and engines;
+- requests made on this machine itself (loopback, no forwarding header): TTTOS's own tools and engines;
 - machine endpoints that outside services must reach (webhooks, OAuth callbacks, the MCP hub, plugin routes under
-  /ext/ and /.well-known/ such as Javis Gate for ChatGPT and Claude), see `exempt()`;
+  /ext/ and /.well-known/ such as TTTOS Gate for ChatGPT and Claude), see `exempt()`;
 - link previews (facebookexternalhit, TelegramBot, Zalo, Slackbot, Discordbot, Twitterbot...): they are on no list, so a
   share link pasted into a chat still shows its card;
-- ordinary HTTP clients (curl, python-requests, httpx, the claude CLI): the Javis CLI and scripts use them.
+- ordinary HTTP clients (curl, python-requests, httpx, the claude CLI): the TTTOS CLI and scripts use them.
 
 `JAVIS_BLOCK_BOTS=0` turns the 403 off, an escape hatch for an integration whose User-Agent happens to match. The noindex
 header and robots.txt stay: on a private dashboard they cost nothing.
@@ -112,7 +112,7 @@ MACHINE_EXACT = frozenset({
 FORWARD_HEADERS = ("x-forwarded-for", "x-real-ip", "forwarded", "cf-connecting-ip")
 
 _OFF = ("0", "false", "no", "off")
-_BLOCK_BODY = b"Javis OS is private. Automated access is not allowed.\n"
+_BLOCK_BODY = b"TTTOS is private. Automated access is not allowed.\n"
 
 
 def block_enabled() -> bool:
@@ -148,7 +148,7 @@ def exempt(path: str) -> bool:
 def robots_txt() -> str:
     """The /robots.txt body. Built from the lists above so robots.txt and the 403 never disagree."""
     lines = [
-        "# Javis OS is a private dashboard. Nothing here may be indexed or used to train or feed AI.",
+        "# TTTOS is a private dashboard. Nothing here may be indexed or used to train or feed AI.",
         "",
         "# AI crawlers and assistants: fetch nothing.",
     ]

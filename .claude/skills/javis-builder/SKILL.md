@@ -1,19 +1,19 @@
 ---
-name: Javis Builder
-description: "Tạo hoặc sửa năng lực của Javis: agent, skill, workflow, loop, plugin. Kèm mẫu file chuẩn và luật chống trùng."
-description_en: "Create or edit a Javis capability: agent, skill, workflow, loop, plugin. Ships file templates and the rules against duplicates."
+name: TTTOS Builder
+description: "Tạo hoặc sửa năng lực của TTTOS: agent, skill, workflow, loop, plugin. Kèm mẫu file chuẩn và luật chống trùng."
+description_en: "Create or edit a TTTOS capability: agent, skill, workflow, loop, plugin. Ships file templates and the rules against duplicates."
 group: AI
 ---
 
-# Javis Builder - tạo agent / skill / workflow / loop
+# TTTOS Builder - tạo agent / skill / workflow / loop
 
 ## Khi nào dùng
 
 Kích hoạt khi người dùng nói những câu như: "tạo agent chuyên X", "thêm kỹ năng Y",
 "dựng workflow nghiên cứu rồi viết", "tạo loop mỗi 2 tiếng làm Z", "viết tool/plugin
-tính ...", "làm cho Javis biết làm ...".
+tính ...", "làm cho TTTOS biết làm ...".
 
-Khi người dùng muốn Javis có thêm một năng lực, bạn TỰ GHI FILE .md đúng chuẩn dưới đây vào
+Khi người dùng muốn TTTOS có thêm một năng lực, bạn TỰ GHI FILE .md đúng chuẩn dưới đây vào
 vault (brain đang chọn). Studio / trang tương ứng tự nhận file mới. Luôn báo cáo ngắn sau khi tạo.
 
 ## Quy trình (làm đúng thứ tự)
@@ -175,7 +175,7 @@ Cài thẳng vào app, mọi engine đều gọi được: `javis_plugin` op=wri
 - Trước khi tạo: op=list xem đã có plugin nào trùng việc chưa; có thì op=read rồi sửa plugin đó.
 - Sửa: op=read lấy file hiện tại, op=write chỉ gửi file đổi; `remove` = danh sách file cần xoá.
 - Tool tự từ chối lỗi cú pháp Python, đường dẫn lạ, đuôi file lạ, slug trùng plugin hệ thống: đọc câu ERROR, sửa, gửi lại.
-- Plugin mới, hoặc bản sửa đổi mã (.py) hay đổi tools/hooks/min_mode, luôn nằm TẮT. Javis KHÔNG bật được;
+- Plugin mới, hoặc bản sửa đổi mã (.py) hay đổi tools/hooks/min_mode, luôn nằm TẮT. TTTOS KHÔNG bật được;
   nói rõ với người dùng: đọc mã rồi bật ở trang Plugins. Sửa chỉ phần mô tả thì giữ nguyên trạng thái.
 - op=delete chỉ gỡ plugin do chính tool này tạo và đang tắt; còn lại để người dùng gỡ ở trang Plugins.
 
@@ -215,10 +215,10 @@ ctx có `ctx.vault_root`, `ctx.data_dir` (state riêng plugin, không đụng va
 - Skill do engine TỰ HỌC sinh ra -> tạo BẬT sẵn (đánh dấu `origin: javis-learned`), nhưng KHÔNG ghi
   đè skill đã có và KHÔNG hồi sinh skill user đã tắt; agent tự động -> để nháp chờ duyệt. Skill do
   user yêu cầu trực tiếp -> tạo bật luôn nhưng phải kiểm trùng + `description` nêu rõ năng lực,
-  phân biệt được với skill khác (mô tả mơ hồ làm Javis chọn skill sai). Đừng tạo skill trùng
+  phân biệt được với skill khác (mô tả mơ hồ làm TTTOS chọn skill sai). Đừng tạo skill trùng
   chức năng skill đã có.
 - Plugin user (toàn cục lẫn vault) chạy CODE PYTHON THẬT trong tiến trình server -> tạo qua `javis_plugin`
   (tool tự để `enabled: false`), `min_mode` đúng việc tool làm, và NÓI RÕ với user: plugin nằm tắt cho tới khi họ bật nó trong app. Từ 15/10/2026
-  Javis cho tải plugin người dùng mặc định; máy nào muốn chặn hẳn thì đặt env `JAVIS_ENABLE_USER_PLUGINS=false`
+  TTTOS cho tải plugin người dùng mặc định; máy nào muốn chặn hẳn thì đặt env `JAVIS_ENABLE_USER_PLUGINS=false`
   rồi khởi động lại. Plugin làm hành động ra ngoài thì khai `min_mode: full` cho đúng, hub xét theo mức quyền của chỗ gọi.
 - Sau khi tạo, KHÔNG tự chạy thứ có side-effect; để user xem trước.

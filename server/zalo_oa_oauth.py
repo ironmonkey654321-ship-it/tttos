@@ -1,4 +1,4 @@
-"""Grant Javis access to a Zalo OA with Zalo's OAuth v4 flow (authorization code + PKCE).
+"""Grant TTTOS access to a Zalo OA with Zalo's OAuth v4 flow (authorization code + PKCE).
 
 Before this, the owner pasted a refresh token copied from API Explorer on developers.zalo.me. Zalo
 moved OA authorization to OAuth v4, where an app gets its first token pair through the standard
@@ -6,7 +6,7 @@ redirect flow with a PKCE code challenge. This module does that flow on the owne
 
   1. `start()` takes the App ID, App secret key and OA secret key (or reads them from the account
      being reconnected), makes a `code_verifier` and its S256 `code_challenge`, and returns the
-     address of Zalo's permission page. The owner adds this Javis's callback address to the app
+     address of Zalo's permission page. The owner adds this TTTOS's callback address to the app
      once (Official Account, Callback URL); the form shows it ready to copy.
   2. The OA admin picks the OA and allows the app; Zalo sends the browser back to
      `/zalo-oa/oauth/callback?code=...&oa_id=...&state=...`. `callback()` trades the code and the
@@ -14,7 +14,7 @@ redirect flow with a PKCE code challenge. This module does that flow on the owne
   3. The dashboard polls `result()`; once ready, `/zalo-oa/oauth/finish` saves the account with the
      new pair (or replaces the pair of the account being reconnected).
 
-Why the owner's own app: every Javis runs at its own address, Zalo wants the callback registered on
+Why the owner's own app: every TTTOS runs at its own address, Zalo wants the callback registered on
 the app, and the repo is public so it cannot carry an app secret.
 
 Pending grants live in memory for 15 minutes keyed by an unguessable `state`, and the code verifier
@@ -79,9 +79,9 @@ def check_input(cr: dict) -> str:
     if not cr.get("app_secret"):
         return _c("Còn thiếu App secret key.", "The App secret key is missing.")
     if not cr.get("oa_secret"):
-        return _c("Còn thiếu OA secret key (mục Webhook của app). Thiếu nó Javis không kiểm được chữ ký tin "
+        return _c("Còn thiếu OA secret key (mục Webhook của app). Thiếu nó TTTOS không kiểm được chữ ký tin "
                   "Zalo gửi tới, nên bot không chạy.",
-                  "The OA secret key is missing (the app's Webhook section). Without it Javis cannot check the "
+                  "The OA secret key is missing (the app's Webhook section). Without it TTTOS cannot check the "
                   "signature of what Zalo sends, so the bot will not run.")
     return ""
 
@@ -102,8 +102,8 @@ def start(credentials, redirect_uri: str, brain: str = "", label: str = "", acco
         return {"ok": False, "error": bad}
     if not str(redirect_uri or "").startswith("https://"):
         return {"ok": False, "error": _c(
-            "Zalo chỉ trả về địa chỉ HTTPS. Mở Javis bằng tên miền HTTPS rồi bấm lại.",
-            "Zalo only sends you back to an HTTPS address. Open Javis through its HTTPS domain and click again.")}
+            "Zalo chỉ trả về địa chỉ HTTPS. Mở TTTOS bằng tên miền HTTPS rồi bấm lại.",
+            "Zalo only sends you back to an HTTPS address. Open TTTOS through its HTTPS domain and click again.")}
     _purge()
     state = secrets.token_urlsafe(24)
     verifier, challenge = pkce_pair()
@@ -161,8 +161,8 @@ async def callback(state: str, code: str, oa_id: str = "", error: str = "", erro
     with _lock:
         p = dict(_pending.get(state) or {})
     if not p:
-        return {"ok": False, "error": _c("Phiên cấp quyền đã hết hạn. Quay lại Javis bấm Cấp quyền bằng Zalo lần nữa.",
-                                         "This grant expired. Go back to Javis and click Grant access with Zalo again.")}
+        return {"ok": False, "error": _c("Phiên cấp quyền đã hết hạn. Quay lại TTTOS bấm Cấp quyền bằng Zalo lần nữa.",
+                                         "This grant expired. Go back to TTTOS and click Grant access with Zalo again.")}
     if p.get("status") != "pending":
         return {"ok": p.get("status") == "ready", "oa_id": p.get("oa_id", ""), "oa_name": p.get("oa_name", ""),
                 "error": p.get("error", "")}

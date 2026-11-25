@@ -28,7 +28,7 @@
   function LOC() { return (typeof window !== "undefined" && window.JavisI18n && window.JavisI18n.locale && window.JavisI18n.locale()) || "vi-VN"; }
 
   // ---------- model: merge the sources into items, recurring jobs and failures (pure) ----------
-  var CORE = "javis-core";   // Javis Core's slug in GET /agents (server/javis_core.py SLUG)
+  var CORE = "javis-core";   // TTTOS Core's slug in GET /agents (server/javis_core.py SLUG)
   var FIN = { done: 1, cancel: 1 };
 
   function agentOf(card) {
@@ -645,7 +645,7 @@
     return id ? ((S.bots && S.bots.bots) || []).find(function (b) { return b.id === id; }) || { id: id, name: id } : null;
   }
   function agentName(slug) {
-    if (slug === CORE) return "Javis Core";
+    if (slug === CORE) return "TTTOS Core";
     if (slug === "me") return tw("nv.me");
     if (botOf(slug)) return botOf(slug).name;
     var a = (S.agents || []).find(function (x) { return x.slug === slug; });
@@ -1054,7 +1054,7 @@
     var P = pins("who"), busy = {};
     S.ai.items.forEach(function (i) { if (!FIN[i.st]) busy[i.who] = (busy[i.who] || 0) + 1; });
     var A = (S.agents || []).slice();
-    if (!A.some(function (a) { return a.slug === CORE; })) A.unshift({ slug: CORE, name: "Javis Core" });
+    if (!A.some(function (a) { return a.slug === CORE; })) A.unshift({ slug: CORE, name: "TTTOS Core" });
     // A chatbot whose assistant is not in this brain gets its own row once it owns a job (0.429.0).
     var owned = {};
     S.ai.items.concat(S.ai.recurring).forEach(function (i) { owned[i.who] = 1; });

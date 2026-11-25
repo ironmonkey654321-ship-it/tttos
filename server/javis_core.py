@@ -1,20 +1,20 @@
-"""Javis Core: the built-in system assistant pinned in every brain (0.185.0).
+"""TTTOS Core: the built-in system assistant pinned in every brain (0.185.0).
 
 One definition for the whole platform, `system/agents/javis-core.md`, shipped with the app and read
 from there. It is never copied into a brain, so a release updates every brain at once, and nothing a
 person keeps in a brain (memory, lessons, chats) is touched by that update.
 
-Javis Core is not a persona agent. A chat with it is a normal Javis turn (CLAUDE.md, the brain's
+TTTOS Core is not a persona agent. A chat with it is a normal TTTOS turn (CLAUDE.md, the brain's
 MEMORY.md, every tool) plus one short block with its role (`prompt_block`). Its sessions live on the
 channel `agent:javis-core` so the Partners page, the inbox and the chat history treat them like an
 assistant's chats, while `workflow_chat.persona_cua_phien` reports no persona for that channel.
 
-Each brain has one DEFAULT Javis Core chat, the place reports without a target chat land in. The
+Each brain has one DEFAULT TTTOS Core chat, the place reports without a target chat land in. The
 pointer to it is kept in `STATE_DIR/javis_core.json` ({brain_key: session_id}). When that chat is
 deleted or archived, the next call makes a new empty one: deleted content is not brought back, and a
 new report never lands in a chat the person put away.
 
-Javis Core has no account of its own and grants no rights. Its turns run with the rights of the turn
+TTTOS Core has no account of its own and grants no rights. Its turns run with the rights of the turn
 that called it, like any other chat.
 """
 from __future__ import annotations
@@ -29,7 +29,7 @@ import fastyaml
 
 SLUG = "javis-core"
 CHANNEL = "agent:" + SLUG
-NAME = "Javis Core"
+NAME = "TTTOS Core"
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFINITION_PATH = PROJECT_ROOT / "system" / "agents" / f"{SLUG}.md"
 BLOCK_TITLE = "JAVIS CORE"
@@ -81,8 +81,8 @@ def definition() -> Dict[str, str]:
 
 
 def prompt_block(root: Any = None) -> str:
-    """The role block added to a Javis Core turn. With `root` (the brain the turn runs in) the instructions, name and
-    skills come from that brain's Javis Core file (owner, 05/11/2026), else from the platform definition. Empty when
+    """The role block added to a TTTOS Core turn. With `root` (the brain the turn runs in) the instructions, name and
+    skills come from that brain's TTTOS Core file (owner, 05/11/2026), else from the platform definition. Empty when
     there are no instructions at all."""
     if not root:
         body = definition()["body"]
@@ -97,8 +97,8 @@ def prompt_block(root: Any = None) -> str:
 
 def list_entry(last_chat_at: float = 0.0, root: Any = None) -> Dict[str, Any]:
     """The row GET /agents puts first. Same shape as a brain agent, plus the system flags. With `root` the name, role,
-    skills and avatar come from that brain's Javis Core file. The caller picks the role text for the screen language
-    (`role_text`). `system_name` is always "Javis Core"."""
+    skills and avatar come from that brain's TTTOS Core file. The caller picks the role text for the screen language
+    (`role_text`). `system_name` is always "TTTOS Core"."""
     d = definition()
     meta = read_core(root)[0] if root else {}
     me = identity(root) if root else {"name": "", "style": ""}
@@ -142,7 +142,7 @@ def _usable(row: Optional[dict], brain_key: str, same_brain: Callable[[str, str]
 
 def default_session(store: Any, brain_key: str, *, title: str = NAME,
                     same_brain: Optional[Callable[[str, str], bool]] = None) -> str:
-    """The id of this brain's default Javis Core chat, made when missing. Safe to call concurrently:
+    """The id of this brain's default TTTOS Core chat, made when missing. Safe to call concurrently:
     the check and the create run under one lock, so two callers never make two chats."""
     brain_key = str(brain_key or "")
     same = same_brain or (lambda a, b: a == b)
@@ -165,12 +165,12 @@ def current_default(brain_key: str) -> str:
     return _read_map().get(str(brain_key or ""), "")
 
 
-# ── Javis Core as a brain agent file (owner, 05/11/2026) ──────────────────────────────────────────────────────────
+# ── TTTOS Core as a brain agent file (owner, 05/11/2026) ──────────────────────────────────────────────────────────
 #
-# Owner, 05/11/2026: "keep Javis Core exactly like the other agents; it is only the system one you cannot remove, it
+# Owner, 05/11/2026: "keep TTTOS Core exactly like the other agents; it is only the system one you cannot remove, it
 # starts with the system prompt I wrote, and Auto is on and cannot be turned off. Picture, name, skills and documents
 # change like any agent." So each brain gets a real `agents/javis-core.md`, seeded from the platform definition and
-# edited with the same agent editor. Its turns stay full Javis turns (CLAUDE.md, memory, every tool); only the role
+# edited with the same agent editor. Its turns stay full TTTOS turns (CLAUDE.md, memory, every tool); only the role
 # block below them comes from this file.
 #
 # While the body is still the seeded one (`seed_sha` matches), an app update of the definition reaches it. Once the
@@ -261,7 +261,7 @@ def ensure_file(root: Any) -> Optional[Path]:
 
 
 def read_core(root: Any):
-    """(meta, body) of the brain's Javis Core file, made when missing. ({}, definition body) without a brain."""
+    """(meta, body) of the brain's TTTOS Core file, made when missing. ({}, definition body) without a brain."""
     path = ensure_file(root)
     if path is None:
         return {}, definition()["body"]
@@ -302,7 +302,7 @@ def _read_extra(root: Any) -> Dict[str, Any]:
 
 
 def identity(root: Any) -> Dict[str, Any]:
-    """{'name', 'style', 'asked'} of Javis Core in the brain at `root`. Empty name = still called Javis Core."""
+    """{'name', 'style', 'asked'} of TTTOS Core in the brain at `root`. Empty name = still called TTTOS Core."""
     out: Dict[str, Any] = {"name": "", "style": "", "asked": False}
     if not str(root or "").strip():
         return out
@@ -352,12 +352,12 @@ def identity_block(root: Any) -> str:
     lines = []
     if me["name"]:
         lines.append(f"Tên của bạn trong brain này: **{me['name']}** (người dùng đặt). Tự xưng bằng tên này; "
-                     "\"Javis Core\" chỉ còn là tên vai trò hệ thống.")
+                     "\"TTTOS Core\" chỉ còn là tên vai trò hệ thống.")
     elif not me["asked"]:
         lines.append("Bạn CHƯA có tên riêng. Trong câu trả lời đầu tiên, làm xong việc người dùng hỏi (nếu có) rồi "
                      "hỏi thêm MỘT câu ngắn, thân thiện: họ muốn gọi bạn là gì, kèm 2-3 tên gợi ý hợp với họ. Gọi "
                      "`javis_core_name` op=asked ngay lượt đó. Họ chọn tên thì lưu bằng op=set name=...; họ bỏ qua "
-                     "thì giữ tên Javis Core, không hỏi lại.")
+                     "thì giữ tên TTTOS Core, không hỏi lại.")
     else:
         lines.append("Bạn chưa có tên riêng. Người dùng đặt tên lúc nào thì lưu bằng `javis_core_name` op=set.")
     if me["style"]:

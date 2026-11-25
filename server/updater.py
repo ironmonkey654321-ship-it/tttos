@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Updater tách rời của Javis cho bản GIT checkout (Windows + systemd + launchd + nohup).
+"""Updater tách rời của TTTOS cho bản GIT checkout (Windows + systemd + launchd + nohup).
 Server spawn DETACHED:
 
     python updater.py --old-sha <sha> --old-version <v> --target <v> --port <p> --server-pid <pid>
@@ -28,7 +28,7 @@ import winproc  # noqa: E402
 # Updater được server spawn DETACHED, tức nó chạy KHÔNG CÓ console. Trên Windows, một tiến trình
 # không console mà gọi chương trình console (git, pip, systemctl...) thì hệ điều hành tự cấp cho
 # đứa con một cửa sổ mới - người dùng thấy màn hình nháy đen liên tục suốt lượt cập nhật. Nên
-# mọi lời gọi dưới đây đều truyền cờ này. Hai chỗ CỐ Ý không truyền là lúc khởi động lại Javis,
+# mọi lời gọi dưới đây đều truyền cờ này. Hai chỗ CỐ Ý không truyền là lúc khởi động lại TTTOS,
 # vì tiến trình đó phải sống lâu hơn updater.
 _CAM = winproc.no_window()
 
@@ -106,7 +106,7 @@ def _launchd_target():
 
 
 def has_launchd_job():
-    """Mac chạy Javis dưới launchd (job KeepAlive) thì restart PHẢI qua launchd.
+    """Mac chạy TTTOS dưới launchd (job KeepAlive) thì restart PHẢI qua launchd.
 
     Bài học 14/08/2026: updater kill PID server -> launchd KeepAlive respawn ngay tức thì,
     trong khi updater cũng Popen một bản uvicorn của riêng nó -> hai tiến trình giành cổng
@@ -411,7 +411,7 @@ def pip_install():
     """Cài thư viện. Mã lỗi TRẢ VỀ CHO NƠI GỌI KIỂM - trước đây không ai kiểm.
 
     pip hỏng (mất mạng giữa chừng, một gói bị gỡ khỏi PyPI, xung đột phiên bản giữa hai bản
-    Javis) là một trong hai đường dẫn thẳng tới cảnh "cập nhật xong máy chết hẳn": server mới
+    TTTOS) là một trong hai đường dẫn thẳng tới cảnh "cập nhật xong máy chết hẳn": server mới
     thiếu thư viện nên không lên, rồi đường lùi cũng chạy pip và cũng hỏng y hệt. Nuốt mã lỗi
     thì cả hai lần đều im lặng, và người dùng chỉ nhận được một câu chung chung."""
     r = run([venv_python(), "-m", "pip", "install", "-r", "requirements.txt", "-q"])
@@ -493,7 +493,7 @@ def _run_worker(command, env=None):
 
 
 def _launch_systemd_worker(a):
-    """Move the updater out of Javis's cgroup before stopping the systemd service."""
+    """Move the updater out of TTTOS's cgroup before stopping the systemd service."""
     service_name = systemd_service_name()
     command = _systemd_worker_command(a, service_name)
     log(f"Tách updater khỏi {service_name}.service bằng systemd-run…")
@@ -502,7 +502,7 @@ def _launch_systemd_worker(a):
         return True
     log(f"  systemd-run: {error[:400]}")
     # A service running as a normal user (User= in the unit) may neither create system units nor stop its own
-    # service. Its own user manager can host the worker, which then restarts Javis by signal. Only Restart=always
+    # service. Its own user manager can host the worker, which then restarts TTTOS by signal. Only Restart=always
     # brings the unit back after a SIGTERM: on-failure and friends count SIGTERM as a clean exit and leave it down.
     hint = ""
     if hasattr(os, "geteuid") and os.geteuid() != 0:
@@ -519,8 +519,8 @@ def _launch_systemd_worker(a):
             f"&& sudo systemctl restart {service_name}. Để nút Cập nhật chạy được: sudo loginctl enable-linger {user}.",
             f" Update by hand: cd {ROOT} && git pull --ff-only && .venv/bin/python -m pip install -r requirements.txt "
             f"&& sudo systemctl restart {service_name}. To make the Update button work: sudo loginctl enable-linger {user}.")
-    reason = _chu("Không chạy được updater độc lập; Javis vẫn được giữ nguyên. ",
-                  "Could not start an independent updater; Javis has been left running. ")
+    reason = _chu("Không chạy được updater độc lập; TTTOS vẫn được giữ nguyên. ",
+                  "Could not start an independent updater; TTTOS has been left running. ")
     if error:
         reason += error[:400]
     reason += hint
@@ -539,7 +539,7 @@ def main():
     ap.add_argument("--server-pid", type=int, default=0,
                     help="PID server đang chạy (để chế độ nohup kill đúng tiến trình)")
     ap.add_argument("--systemd-worker", action="store_true",
-                    help="Updater đã được tách khỏi cgroup của Javis")
+                    help="Updater đã được tách khỏi cgroup của TTTOS")
     ap.add_argument("--restart-by-signal", action="store_true",
                     help="Worker under the user's systemd: restart the service by signal, not systemctl")
     ap.add_argument("--dry-run", action="store_true")
@@ -616,8 +616,8 @@ def main():
         # Merge đã hủy hoặc fetch thất bại; xác nhận server cũ thật sự lên lại.
         start_server(mode, a.port)
         them = "" if poll_health(a.port, 60) else _chu(
-            " Server cũ CŨNG chưa lên lại - mở Javis bằng tay để chạy tiếp.",
-            " The old server has NOT come back up either - start Javis by hand to continue.")
+            " Server cũ CŨNG chưa lên lại - mở TTTOS bằng tay để chạy tiếp.",
+            " The old server has NOT come back up either - start TTTOS by hand to continue.")
         ly_do = chan_doan_pull_hong(git_error, merge_aborted=tree_safe)
         log("Chẩn đoán: " + (ly_do or "(không nhận ra nguyên nhân quen thuộc)"))
         tho = (git_error or _chu("Không hợp nhất được bản phát hành", "Could not merge the release")).strip()
@@ -754,7 +754,7 @@ def main():
             return 1
         us.write_state({"phase": "done", "result": "rolled_back",
                         "error": _chu("Bản mới lỗi, đã tự quay về bản cũ.",
-                                      "The new version failed, so Javis rolled back to the old one."),
+                                      "The new version failed, so TTTOS rolled back to the old one."),
                         "finished_at": _now()})
         return 0
 

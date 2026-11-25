@@ -1,6 +1,6 @@
 """Thin GitHub REST client for the GitHub-in-chat feature (spec docs/dev/2026-10-github-trong-chat-spec.md).
 
-Why its own module instead of an MCP connector: the spec (section 4.1) keeps everything that talks to GitHub in Javis's
+Why its own module instead of an MCP connector: the spec (section 4.1) keeps everything that talks to GitHub in TTTOS's
 own server code, so the status icons and every step after a push come from GitHub's answers, never from what a model
 says it did. It is also built into the core (section 5.1, owner 2026-10-27): no Store pack, no external MCP.
 

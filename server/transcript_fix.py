@@ -11,7 +11,7 @@ Two entry points:
 The word-level fix:
 
 Two passes, in order:
-  1. Rules (nghe_sua.sua): known cases (Jarvis -> Javis, Javis OS, Groq/Grok...). Free, instant, and
+  1. Rules (nghe_sua.sua): known cases (Jarvis -> TTTOS, TTTOS, Groq/Grok...). Free, instant, and
      always there even with no model at all.
   2. Model: reads the sentence after the rules and fixes words the rules do not know, guided by the
      vocabulary. The model is picked in this order:

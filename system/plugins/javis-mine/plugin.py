@@ -1,7 +1,7 @@
 """Bundled plugin: tool `javis_mytask` - the owner's own tasks, appointments and habits from chat, on every engine.
 
 The Tasks page has a tab "Mine" (server/my_tasks.py). Spec docs/dev/2026-10-nhiem-vu-spec.md 7, 8.4 and 11. Every
-change the owner can make on the page can be asked for in chat (owner, 2026-11-05: "everything I ask Javis to edit in
+change the owner can make on the page can be asked for in chat (owner, 2026-11-05: "everything I ask TTTOS to edit in
 the calendar must be editable"), in-process like javis-task (no HTTP route opened for it):
 
     add      a task, a repeat, a habit or an appointment (kind=appt: date, time, end or duration, place, reminder)
@@ -472,7 +472,7 @@ def _tich(args, ctx, done: bool = True) -> str:
         return f"OK: đã bỏ tích \"{t['title']}\"" + (f" ngày {day}." if t.get("repeat") else ".")
     if t.get("habit") and t.get("repeat"):
         st = my_tasks_mod.habit_state(r["task"], today)
-        return (f"OK: đã tích \"{t['title']}\" ngày {day} (Javis tích theo lời người dùng, họ bỏ tích được trên trang Nhiệm vụ). "
+        return (f"OK: đã tích \"{t['title']}\" ngày {day} (TTTOS tích theo lời người dùng, họ bỏ tích được trên trang Nhiệm vụ). "
                 f"Chuỗi giữ lửa: {st['cur']} ngày.")
     return f"OK: đã đánh dấu xong \"{t['title']}\"."
 
@@ -492,7 +492,7 @@ def register(ctx):
         "op=delete: xoá một mục (việc lặp thì xoá cả chuỗi). op=skip: bỏ qua một lần của việc lặp (date, mặc định lần tới). "
         "op=check / uncheck: CHỈ khi người dùng NÓI RÕ đã làm xong (vd 'đọc sách xong rồi'); câu mơ hồ thì KHÔNG tích. "
         "Nhiều mục khớp thì tool trả danh sách: hỏi lại người dùng, đừng đoán. "
-        "Việc Javis làm thì dùng javis_task hoặc javis_schedule, KHÔNG dùng tool này.",
+        "Việc TTTOS làm thì dùng javis_task hoặc javis_schedule, KHÔNG dùng tool này.",
         _chay,
         schema={
             "type": "object",

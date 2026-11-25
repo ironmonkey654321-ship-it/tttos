@@ -45,7 +45,7 @@ def extract(path) -> str:
         if suf in XLSX_SUFFIXES:
             return _xlsx(p)
         if suf == ".xls":
-            return (f"ERROR: '{p.name}' là file Excel đời cũ (.xls), Javis chỉ đọc được .xlsx. Mở file bằng Excel hoặc "
+            return (f"ERROR: '{p.name}' là file Excel đời cũ (.xls), TTTOS chỉ đọc được .xlsx. Mở file bằng Excel hoặc "
                     f"Google Sheets rồi lưu lại thành .xlsx.")
         return _docx(p)
     except Exception as e:      # noqa: BLE001 - file hỏng hay lạ: nói thẳng, đừng làm sập lượt chat
@@ -56,8 +56,8 @@ def _pdf(p: Path) -> str:
     try:
         import pypdf
     except ImportError:
-        return ("ERROR: máy chủ Javis thiếu thư viện pypdf nên chưa đọc được PDF. Cập nhật Javis (bản mới cài sẵn), hoặc chạy "
-                "`pip install pypdf` trong môi trường của Javis.")
+        return ("ERROR: máy chủ TTTOS thiếu thư viện pypdf nên chưa đọc được PDF. Cập nhật TTTOS (bản mới cài sẵn), hoặc chạy "
+                "`pip install pypdf` trong môi trường của TTTOS.")
     r = pypdf.PdfReader(str(p))
     tong = len(r.pages)
     parts, image_only = [], []

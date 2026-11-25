@@ -1,19 +1,19 @@
-"""Giữ Claude Code trên máy luôn ở bản mới, để model mới tự hiện trong Javis.
+"""Giữ Claude Code trên máy luôn ở bản mới, để model mới tự hiện trong TTTOS.
 
 Danh sách model của gói Claude Code đọc từ CHÍNH binary `claude` (`claude_cli.list_models`),
-nên Javis chỉ thấy model mới khi Claude Code đã lên bản biết model đó. Lỗi thật chủ repo báo
-29/09/2026: Sonnet 5.5 ra rồi mà Javis không có. Binary trên máy đứng ở 2.1.232 (14/08) suốt
+nên TTTOS chỉ thấy model mới khi Claude Code đã lên bản biết model đó. Lỗi thật chủ repo báo
+29/09/2026: Sonnet 5.5 ra rồi mà TTTOS không có. Binary trên máy đứng ở 2.1.232 (14/08) suốt
 sáu tuần, vì:
 
-- Claude Code chỉ tự cập nhật khi người ta mở nó gõ tay. Javis gọi nó chạy ngầm, nên không
-  bao giờ kích hoạt được đường đó. Máy chỉ dùng Claude qua Javis là kẹt vĩnh viễn.
+- Claude Code chỉ tự cập nhật khi người ta mở nó gõ tay. TTTOS gọi nó chạy ngầm, nên không
+  bao giờ kích hoạt được đường đó. Máy chỉ dùng Claude qua TTTOS là kẹt vĩnh viễn.
 - `~/.claude.json` có thể mang `autoUpdates: false`, và app Claude Desktop đặt
   `DISABLE_AUTOUPDATER=1` cho các tiến trình nó đẻ ra.
 
-Nên Javis tự chạy `claude update` mỗi ngày một lần, và có nút bấm để chạy ngay.
+Nên TTTOS tự chạy `claude update` mỗi ngày một lần, và có nút bấm để chạy ngay.
 
 Bản Docker KHÔNG đi đường này: CLI cài bằng `npm -g` dưới quyền root trong ảnh, tiến trình
-Javis chạy bằng user `javis` nên không ghi đè được. Ở đó Claude Code mới tới theo ảnh Javis mới
+TTTOS chạy bằng user `javis` nên không ghi đè được. Ở đó Claude Code mới tới theo ảnh TTTOS mới
 (CI ép lấy bản mới nhất mỗi lần build, xem `.github/workflows/docker-publish.yml`).
 """
 from __future__ import annotations
@@ -116,9 +116,9 @@ def cap_nhat(ly_do: str = "tay") -> dict:
     now = time.time()
     if deploy_info.deploy_mode() == "docker":
         return {"ok": False, "docker": True,
-                "error": localefmt.chu("Bản Docker nhận Claude Code mới theo mỗi bản cập nhật Javis, "
+                "error": localefmt.chu("Bản Docker nhận Claude Code mới theo mỗi bản cập nhật TTTOS, "
                                        "không cập nhật riêng được.",
-                                       "The Docker build gets a new Claude Code with each Javis update; "
+                                       "The Docker build gets a new Claude Code with each TTTOS update; "
                                        "it cannot be updated on its own.")}
     cli = claude_cli.find_claude_cli()
     if not cli:

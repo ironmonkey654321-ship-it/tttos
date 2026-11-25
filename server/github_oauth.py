@@ -1,12 +1,12 @@
-"""Sign in to GitHub with one button: the OAuth device flow of the "Javis OS" GitHub App (0.430.0).
+"""Sign in to GitHub with one button: the OAuth device flow of the "TTTOS" GitHub App (0.430.0).
 
-Why the device flow and not the redirect flow Claude uses: every Javis runs at its own address (localhost, a VPS IP,
+Why the device flow and not the redirect flow Claude uses: every TTTOS runs at its own address (localhost, a VPS IP,
 a tunnel), so there is no single callback URL to register, and the repo is public, so it cannot carry a client
-secret. The device flow needs neither: Javis asks GitHub for a short code, the person types it at
-github.com/login/device and presses Authorize, and Javis polls until GitHub hands over the token. It works the same on
+secret. The device flow needs neither: TTTOS asks GitHub for a short code, the person types it at
+github.com/login/device and presses Authorize, and TTTOS polls until GitHub hands over the token. It works the same on
 a VPS with no browser.
 
-Why a GitHub App and not an OAuth App: the person picks which repos Javis can see by installing the app on them
+Why a GitHub App and not an OAuth App: the person picks which repos TTTOS can see by installing the app on them
 (github.com/apps/javis-os/installations/new), and the token only carries the app's fine-grained permissions
 (Contents, Pull requests, Workflows read/write; Checks, Commit statuses, Actions read).
 
@@ -28,7 +28,7 @@ import httpx
 
 import localefmt
 
-# Public identifiers of the "Javis OS" GitHub App (owner, 2026-11-01). A client id is not a secret: the device flow is
+# Public identifiers of the "TTTOS" GitHub App (owner, 2026-11-01). A client id is not a secret: the device flow is
 # built for apps that cannot keep one. Forks that register their own app override both through the environment.
 CLIENT_ID = "Iv23limeL0BsyXptmTz2"
 APP_SLUG = "javis-os"
@@ -59,7 +59,7 @@ def _web() -> str:
 
 
 def install_url() -> str:
-    """Where the person picks the repos Javis may see (install the app, or change an existing install)."""
+    """Where the person picks the repos TTTOS may see (install the app, or change an existing install)."""
     return f"https://github.com/apps/{app_slug()}/installations/new"
 
 
@@ -88,10 +88,10 @@ def _error_text(code: str, desc: str = "") -> str:
                             "You pressed Cancel on GitHub. Press Sign in again to connect."),
         "expired_token": _c("Mã đã hết hạn. Bấm Đăng nhập lần nữa để lấy mã mới.",
                             "The code expired. Press Sign in again for a new one."),
-        "device_flow_disabled": _c("GitHub App của Javis chưa bật Device Flow.",
-                                   "The Javis GitHub App does not have Device Flow enabled."),
-        "incorrect_client_credentials": _c("GitHub không nhận Client ID của Javis.",
-                                           "GitHub does not recognise the Javis client id."),
+        "device_flow_disabled": _c("GitHub App của TTTOS chưa bật Device Flow.",
+                                   "The TTTOS GitHub App does not have Device Flow enabled."),
+        "incorrect_client_credentials": _c("GitHub không nhận Client ID của TTTOS.",
+                                           "GitHub does not recognise the TTTOS client id."),
     }
     return known.get(code) or _c(f"GitHub từ chối đăng nhập: {desc or code}", f"GitHub refused the sign-in: {desc or code}")
 
@@ -117,7 +117,7 @@ def poll() -> Dict[str, Any]:
     """One poll. Returns {status: pending} | {status: done, token: {...}} | {status: error, error}.
 
     The dashboard may poll faster than GitHub allows; a call before `next_at` answers pending without reaching GitHub,
-    so Javis never earns a `slow_down`. The token dict stays inside the server (the route stores it and drops it)."""
+    so TTTOS never earns a `slow_down`. The token dict stays inside the server (the route stores it and drops it)."""
     with _lock:
         p = dict(_pending)
     if not p:

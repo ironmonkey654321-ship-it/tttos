@@ -1,15 +1,15 @@
-"""Bundled plugin: tool `javis_core_name`, the name and style of Javis Core in one brain (owner, 04/11/2026).
+"""Bundled plugin: tool `javis_core_name`, the name and style of TTTOS Core in one brain (owner, 04/11/2026).
 
-The owner wants people to make Javis Core their own: on the first chat it asks what to call it, then keeps that name
+The owner wants people to make TTTOS Core their own: on the first chat it asks what to call it, then keeps that name
 and the way of talking the person likes. The data lives in `<brain>/Javis/core.json` through `server/javis_core.py`
-(`identity`, `set_identity`), the same agent file the Javis Core editor on the Partners page saves (name), plus `Javis/core.json` (style).
+(`identity`, `set_identity`), the same agent file the TTTOS Core editor on the Partners page saves (name), plus `Javis/core.json` (style).
 
 Owner only: `mcp_hub.OWNER_ONLY_TOOLS` lists it, so a customer-facing bot can never rename the owner's assistant.
 
 Four ops:
 - get: the current name (or none), style and whether the name was already asked.
-- set name=... style=...: save a new name and/or style (name "" = back to "Javis Core").
-- asked: note that Javis Core asked for a name, so it does not ask again in later chats.
+- set name=... style=...: save a new name and/or style (name "" = back to "TTTOS Core").
+- asked: note that TTTOS Core asked for a name, so it does not ask again in later chats.
 - reset: drop the own name and style.
 """
 from __future__ import annotations
@@ -26,7 +26,7 @@ def _root(ctx) -> str:
 
 def _chay(args, ctx) -> str:
     if javis_core is None:
-        return "ERROR: Javis Core chưa sẵn sàng trên máy chủ này."
+        return "ERROR: TTTOS Core chưa sẵn sàng trên máy chủ này."
     root = _root(ctx)
     if not root:
         return "ERROR: lượt này không gắn với brain nào, không lưu được tên."
@@ -34,7 +34,7 @@ def _chay(args, ctx) -> str:
     op = str(a.get("op") or "").strip().lower()
     if op == "get":
         me = javis_core.identity(root)
-        return (f"Tên: {me['name'] or 'chưa đặt (đang là Javis Core)'}. "
+        return (f"Tên: {me['name'] or 'chưa đặt (đang là TTTOS Core)'}. "
                 f"Phong cách: {me['style'] or 'chưa thống nhất'}. "
                 f"Đã hỏi tên: {'rồi' if me['asked'] else 'chưa'}.")
     if op == "set":
@@ -46,7 +46,7 @@ def _chay(args, ctx) -> str:
         me = javis_core.set_identity(root, name=name, style=a.get("style") if "style" in a else None)
         out = []
         if name is not None:
-            out.append(f"Đã đổi tên thành {me['name']}." if me["name"] else "Đã trả lại tên Javis Core.")
+            out.append(f"Đã đổi tên thành {me['name']}." if me["name"] else "Đã trả lại tên TTTOS Core.")
         if "style" in a:
             out.append(f"Đã lưu phong cách: {me['style']}." if me["style"] else "Đã bỏ phong cách riêng.")
         return " ".join(out)
@@ -55,16 +55,16 @@ def _chay(args, ctx) -> str:
         return "Đã ghi nhận là đã hỏi tên. Các chat sau không hỏi lại."
     if op == "reset":
         javis_core.set_identity(root, name="", style="")
-        return "Đã trả lại tên Javis Core và bỏ phong cách riêng."
+        return "Đã trả lại tên TTTOS Core và bỏ phong cách riêng."
     return "ERROR: op phải là get, set, asked hoặc reset."
 
 
 def register(ctx):
     ctx.register_tool(
         "javis_core_name",
-        "Tên riêng và phong cách nói chuyện của Javis Core trong brain này, do NGƯỜI DÙNG chọn. Tên hiện trên trang "
-        "Cộng sự và Javis Core tự xưng bằng tên đó. op=get: xem. op=set name=... (và/hoặc style=..., một câu ngắn "
-        "mô tả giọng điệu người dùng thích): lưu; name rỗng = về lại Javis Core. op=asked: ghi nhận đã hỏi tên để "
+        "Tên riêng và phong cách nói chuyện của TTTOS Core trong brain này, do NGƯỜI DÙNG chọn. Tên hiện trên trang "
+        "Cộng sự và TTTOS Core tự xưng bằng tên đó. op=get: xem. op=set name=... (và/hoặc style=..., một câu ngắn "
+        "mô tả giọng điệu người dùng thích): lưu; name rỗng = về lại TTTOS Core. op=asked: ghi nhận đã hỏi tên để "
         "không hỏi lại. op=reset: bỏ tên và phong cách riêng. Chỉ đổi khi người dùng chọn hoặc đồng ý, không tự đặt.",
         _chay,
         schema={

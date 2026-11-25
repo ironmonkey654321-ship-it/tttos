@@ -1,4 +1,4 @@
-"""API của Hệ thống cộng hưởng cho dashboard (M4): thẻ "Javis đang hướng tới", phản hồi có nghĩa rõ, lệnh của người dùng.
+"""API của Hệ thống cộng hưởng cho dashboard (M4): thẻ "TTTOS đang hướng tới", phản hồi có nghĩa rõ, lệnh của người dùng.
 
 Kế hoạch: docs/superpowers/plans/2026-10-06-resonance-00-mvp.md, Task M4. Dashboard có một tài khoản đăng nhập
 duy nhất; middleware `_auth_guard` và `_csrf_guard` của main.py đã chặn trước khi tới đây, nên request tới được
@@ -376,9 +376,9 @@ def register_agents(app, deps: ResonanceApiDeps):
         if not slug:
             return _err(400, "Thiếu trợ lý", "Missing assistant")
         if slug.lower() == "javis-core" and not on:
-            # Javis Core (owner, 05/11/2026): Auto is always on for the system assistant and cannot be switched off.
-            return _err(403, "Javis Core luôn bật Auto, không tắt được",
-                        "Auto is always on for Javis Core and cannot be switched off")
+            # TTTOS Core (owner, 05/11/2026): Auto is always on for the system assistant and cannot be switched off.
+            return _err(403, "TTTOS Core luôn bật Auto, không tắt được",
+                        "Auto is always on for TTTOS Core and cannot be switched off")
         if on and deps.agent_file(root, slug) is None:
             store = deps.store() if _store_exists() else None
             live = store.agent(root, slug) if store else None
@@ -743,7 +743,7 @@ def register_a5(app, deps: ResonanceApiDeps):
         body = await _body(request)
         if not str(body.get("reviewer_slug") or "").strip():
             return {"ok": True, "pair": None, "removed": True}
-        return _err(410, "Javis đã bỏ người review cố định. Cần kiểm chứng thì giao một việc riêng cho trợ lý phù hợp "
+        return _err(410, "TTTOS đã bỏ người review cố định. Cần kiểm chứng thì giao một việc riêng cho trợ lý phù hợp "
                          "ở tab Công việc.",
                     "Fixed reviewers were removed. To get a check, assign a separate job to a suitable assistant on "
                     "the Jobs tab.", removed=True)

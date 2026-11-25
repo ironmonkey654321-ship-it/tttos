@@ -4,7 +4,7 @@ Why
 ---
 Only Claude Code sends the plan's selling name (`planDisplayName`, see `plan_limits.ten_goi_claude`).
 Codex sends a CODE that no longer matches the name: `prolite` is the $100 tier, `pro` the renamed
-$200 one. Grok and Antigravity send little or nothing. A table in Javis's code would need a new
+$200 one. Grok and Antigravity send little or nothing. A table in TTTOS's code would need a new
 release every time a vendor renames a plan (owner, 2026-11-04), so the table lives in javis-store
 (`plan-names.json`, next to `index.json`). A weekly cloud check opens a Pull Request there when a
 vendor renames something; the owner approves it, and every machine picks it up here.

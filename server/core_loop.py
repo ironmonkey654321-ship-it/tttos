@@ -1,9 +1,9 @@
-"""Javis Core's improvement loop: one loop, many knobs (owner, 10/11/2026).
+"""TTTOS Core's improvement loop: one loop, many knobs (owner, 10/11/2026).
 
-"Propose improvements together with Javis Core so that it scales by itself, does not cost performance, and the
+"Propose improvements together with TTTOS Core so that it scales by itself, does not cost performance, and the
 whole becomes a system that improves with time and with how the person uses it."
 
-So nothing that tunes itself brings its own machinery. A part of Javis that wants to improve REGISTERS A KNOB
+So nothing that tunes itself brings its own machinery. A part of TTTOS that wants to improve REGISTERS A KNOB
 here: its bounds, how to read and write it, and (optionally) a rule that looks at numbers the part already
 keeps and proposes one step. This module does the rest the same way for every knob:
 
@@ -15,7 +15,7 @@ keeps and proposes one step. This module does the rest the same way for every kn
 
 Three kinds of actor, in rising cost:
   rule   plain code looking at counters (this file's `tick`): no model, no tokens;
-  core   Javis Core proposing a change after thinking, inside its own daily allowance (not built yet: it
+  core   TTTOS Core proposing a change after thinking, inside its own daily allowance (not built yet: it
          needs real data from the first two to be worth a model call);
   owner  what the person said in chat (`javis_tune`): always wins, and may jump more than one step.
 
@@ -110,7 +110,7 @@ def _ensure_table() -> None:
 def change(knob_id: str, new, actor: str, why: str = "", now: float = None) -> Optional[dict]:
     """Move one knob. Returns the change, or None when nothing moved (unknown knob, same value, held, too soon).
 
-    A rule or Javis Core moves one step; the owner may jump. The value never leaves the knob's bounds."""
+    A rule or TTTOS Core moves one step; the owner may jump. The value never leaves the knob's bounds."""
     _ensure_table()
     now = time.time() if now is None else now
     k = _KNOBS.get(str(knob_id))

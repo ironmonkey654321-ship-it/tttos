@@ -1,11 +1,11 @@
 """
 Ngữ cảnh kênh hội thoại - port ý tưởng gateway của hermes-agent (NousResearch).
 
-Vấn đề: Javis nhận tin từ nhiều "cửa" (Telegram, dashboard web) nhưng model
+Vấn đề: TTTOS nhận tin từ nhiều "cửa" (Telegram, dashboard web) nhưng model
 không tự biết mình đang trả lời qua cửa nào, và file tạo ra không quay về
 đúng kênh. Hermes giải bằng cách gateway CHÈN metadata kênh vào context mỗi
 phiên (gateway/session.py: Source + User + Connected Platforms + Delivery
-options). Module này làm đúng việc đó cho Javis:
+options). Module này làm đúng việc đó cho TTTOS:
 
 1. build_channel_block()  - block metadata kênh chèn vào system prompt.
 2. collect_turn_files()   - gom file sinh ra trong 1 lượt trả lời để gateway
@@ -34,7 +34,7 @@ _CHAT_APPS = {
         "cho lệnh của chính nó.")),
     "whatsapp": ("WhatsApp", "nhóm WhatsApp", (
         "- TRẦN khoảng 4000 ký tự một tin. Viết gọn ngay từ đầu, đừng để gateway cắt hộ.",
-        "- WhatsApp chỉ cho Javis nhắn trước trong vòng 24 GIỜ kể từ tin cuối người này "
+        "- WhatsApp chỉ cho TTTOS nhắn trước trong vòng 24 GIỜ kể từ tin cuối người này "
         "gửi. Việc nền chạy lâu hơn thế thì kết quả có thể không tới được: nói rõ điều này "
         "khi giao việc dài hạn qua WhatsApp.")),
     "discord": ("Discord", "kênh Discord", (
@@ -75,7 +75,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
     # Cặp key-value brain để chèn vào JSON body của curl (rỗng nếu không rõ brain → giữ hành vi cũ).
     # json.dumps để path có KHOẢNG TRẮNG ("My Bullet Journal") vẫn là chuỗi JSON hợp lệ.
     brain_kv = f'"brain":{json.dumps(brain_root)},' if brain_root else ""
-    platforms = ["local (file trên máy chạy Javis)", "dashboard web"]
+    platforms = ["local (file trên máy chạy TTTOS)", "dashboard web"]
     if telegram_running or source == "telegram":
         platforms.append("Telegram bot")
     if source == "zalo":
@@ -91,9 +91,9 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
 
     lines = [
         "", "",
-        "# === KÊNH HỘI THOẠI HIỆN TẠI (gateway Javis tự chèn - dữ liệu thật, không phải đoán) ===",
+        "# === KÊNH HỘI THOẠI HIỆN TẠI (gateway TTTOS tự chèn - dữ liệu thật, không phải đoán) ===",
         "- Tin của user có thể đến từ MÁY NGHE GIỌNG NÓI (mic, tin thoại): từ tiếng Anh, tên riêng, "
-        "tên công cụ hay bị chép thành từ gần âm (Javis thành David/Jarvis). Hiểu câu theo ngữ "
+        "tên công cụ hay bị chép thành từ gần âm (TTTOS thành David/Jarvis). Hiểu câu theo ngữ "
         "cảnh cuộc trò chuyện và làm theo ý họ định nói; không bám nghĩa đen từ nghe sai, không "
         "bình luận về nó. Chỉ hỏi lại khi đoán sai sẽ gây hại (số, người nhận, hành động ra ngoài).",
         "- Khi user hỏi trạng thái HIỆN TẠI của cron, việc định kỳ, nhắc hẹn hoặc lịch thuốc: BẮT BUỘC "
@@ -109,7 +109,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
         "`javis_connections`), và có kênh nào để BÁO kết quả chưa. Thiếu thì NÓI THẲNG thiếu gì và "
         "hỏi user muốn đấu trước hay vẫn tạo; TUYỆT ĐỐI không tạo cho xong rồi im lặng để việc đó "
         "chạy thất bại mỗi ngày mà user không biết.",
-        "- CHỈ gọi `javis_schedule` khi user ra lệnh rõ ràng đọc/tạo/sửa/xoá lịch tự động của Javis. "
+        "- CHỈ gọi `javis_schedule` khi user ra lệnh rõ ràng đọc/tạo/sửa/xoá lịch tự động của TTTOS. "
         "Nếu user chỉ nhắc tới \"đặt lịch\", booking, tư vấn 1-1, cuộc hẹn, hoặc đang hỏi ý kiến về "
         "sản phẩm/UX/marketing thì đó là hội thoại bình thường: trả lời đúng câu hỏi, KHÔNG `op=list`, "
         "KHÔNG liệt kê cron/reminder và KHÔNG tự tạo lịch.",
@@ -138,7 +138,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
         "và bảo user bật \"AI tự vận hành\" ở trang Nhiệm vụ, KHÔNG được rút gọn thành \"việc đang "
         "chạy, kết quả sẽ tự về\".",
         "- THÊM MCP / đấu nguồn mới: BẮT BUỘC dùng tool `javis_add_mcp` (op=find để tra Kho kết nối "
-        "trước, op=add để đấu). Chỉ đường này nguồn mới mới nằm trong kho của Javis và HIỆN ở khu "
+        "trước, op=add để đấu). Chỉ đường này nguồn mới mới nằm trong kho của TTTOS và HIỆN ở khu "
         "'Đã kết nối' trang Kết nối cho người dùng thấy, đồng thời mọi bộ não dùng chung được. "
         "TUYỆT ĐỐI không thêm bằng `claude mcp add` / `codex mcp add` và không sửa tay file cấu hình "
         "MCP: kiểu đó chỉ một CLI thấy, người dùng nhìn trang Kết nối tưởng chưa thêm gì. Không thấy "
@@ -167,7 +167,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             "## Gửi file cho user qua Telegram (2 cách)",
             "1. TỰ ĐỘNG (nên dùng - luôn về ĐÚNG người đang hỏi): file bạn tạo bằng tool Write trong "
             "lượt này, file có ĐƯỜNG DẪN TUYỆT ĐỐI trong câu trả lời cuối, HOẶC ảnh/tệp trong vault "
-            "nhúng dạng markdown ![](attachments/...) (vd ẢNH Javis vừa tạo) - đều được Javis tự đính "
+            "nhúng dạng markdown ![](attachments/...) (vd ẢNH TTTOS vừa tạo) - đều được TTTOS tự đính "
             f"kèm gửi qua Telegram ngay sau câu trả lời (tối đa {MAX_FILES_PER_TURN} file/lượt, mỗi file "
             f"dưới {MAX_FILE_MB}MB). Ảnh bạn vừa tạo: CHỈ cần nhúng ![](attachments/...) là đủ để user "
             "nhận, KHÔNG cần curl (curl dễ gửi nhầm cho chủ bot).",
@@ -181,7 +181,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             "- KHÔNG nói \"mình đã gửi file\" khi chưa làm một trong hai cách trên.",
             "- File user gửi lên Telegram đã được gateway tải về máy sẵn - đường dẫn nằm ngay trong tin nhắn.",
             "",
-            "## Đặt nhắc hẹn (Javis TỰ thức dậy gửi sau - dùng khi user muốn được nhắc)",
+            "## Đặt nhắc hẹn (TTTOS TỰ thức dậy gửi sau - dùng khi user muốn được nhắc)",
             "Khi user muốn được NHẮC vào lúc nào đó (\"30 phút nữa nhắc tôi...\", \"8h30 sáng mai nhắc...\", "
             "\"mỗi sáng 7h nhắc uống thuốc\", \"tối 9h báo doanh thu hôm nay\").",
             "- CÁCH NÊN DÙNG: gọi tool `javis_schedule` (op=create) - nó TỰ gắn đúng brain phiên này, "
@@ -200,7 +200,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             "hằng tháng = \"0 9 1 * *\". Bạn tự đổi câu user thành cron. Có cron thì tự lặp, KHỎI cần repeat_min.",
             "- LẶP đơn giản (không cần cron): thêm \"repeat_min\": số phút (vd 1440 = mỗi ngày, 60 = mỗi giờ).",
             "- \"mode\":\"notify\" (mặc định) = tới giờ nhắn lại đúng câu nhắc. \"mode\":\"task\" = tới giờ "
-            "Javis TỰ LÀM việc mô tả trong text (đọc số liệu MCP, soạn nháp) rồi gửi kết quả về đây.",
+            "TTTOS TỰ LÀM việc mô tả trong text (đọc số liệu MCP, soạn nháp) rồi gửi kết quả về đây.",
             "- \"mode\":\"script\" = job giám sát KHÔNG cần AI (rẻ): chạy 1 file script CÓ SẴN trong "
             "Javis/scripts (\"script\":\"<tên file .py/.sh/.ps1>\"), đẩy stdout về đây; stdout rỗng thì im lặng, "
             "exit khác 0 thì báo lỗi. Chỉ chạy file user đã tự bỏ vào folder đó - KHÔNG bịa lệnh tuỳ ý.",
@@ -228,12 +228,12 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             "NGƯỜI YÊU CẦU. Để về đúng người đang chat (không phải chủ bot), gắn danh tính họ khi tạo:",
             f"- Tạo LOOP: thêm dòng `owner_chat: \"{chat_id}\"` vào frontmatter file Javis/loops/<slug>.md.",
             f"- Tạo VIỆC: khi POST http://127.0.0.1:{port}/kanban/task, kèm field \"chat_id\":\"{chat_id}\".",
-            "- Bỏ trống owner_chat/chat_id → báo vào khung Javis Core của brain đó (và Telegram của chính chủ nếu đã liên kết), không về người đang chat.",
+            "- Bỏ trống owner_chat/chat_id → báo vào khung TTTOS Core của brain đó (và Telegram của chính chủ nếu đã liên kết), không về người đang chat.",
             "- Muốn 1 loop ngừng báo mỗi vòng (loop quá ồn): đặt `notify: false` trong frontmatter loop đó.",
         ]
     elif source == "zalo":
         # Kênh Zalo Bot. Cố ý KHÔNG gộp vào nhánh Telegram: hai chỗ khác nhau ở đúng những
-        # thứ mà một câu hướng dẫn sai sẽ dạy Javis hứa hão - gửi tài liệu, trần độ dài, và
+        # thứ mà một câu hướng dẫn sai sẽ dạy TTTOS hứa hão - gửi tài liệu, trần độ dài, và
         # cách nhắc hẹn tìm đường về.
         who = (meta.get("user_name") or "").strip() or "user"
         conv = (f"nhóm '{meta.get('chat_title') or '?'}', tin nhắn từ {who}"
@@ -254,7 +254,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             ".md KHÔNG gửi ra được qua kênh này. TUYỆT ĐỐI không nói \"mình đã gửi file\" - hãy "
             "nói thẳng là chưa gửi được qua Zalo, rồi đưa ĐƯỜNG DẪN trong brain để user tự mở, "
             "hoặc đề nghị tóm tắt nội dung ngay trong tin nhắn.",
-            "- ẢNH thì Javis tự đính kèm khi bạn nhúng `![](attachments/...)` như thường lệ, "
+            "- ẢNH thì TTTOS tự đính kèm khi bạn nhúng `![](attachments/...)` như thường lệ, "
             "nhưng đây là đường đang thử nghiệm: gửi hỏng thì user sẽ thấy một dòng báo lỗi.",
             "- Ảnh user gửi lên đã được gateway tải về máy sẵn - đường dẫn nằm ngay trong tin nhắn.",
             "",
@@ -264,7 +264,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             f"\"{chat_id}\"` cho loop, hoặc field \"chat_id\":\"{chat_id}\" khi POST "
             f"http://127.0.0.1:{port}/kanban/task. Giữ NGUYÊN cả tiền tố `zalo:` - đó chính là "
             "thứ server đọc để biết gửi về Zalo chứ không phải Telegram.",
-            "- Bỏ trống thì kết quả vào khung Javis Core của brain trên dashboard, tức là người đang hỏi không thấy gì.",
+            "- Bỏ trống thì kết quả vào khung TTTOS Core của brain trên dashboard, tức là người đang hỏi không thấy gì.",
         ]
     elif source in _CHAT_APPS:
         # Slack and WhatsApp (0.71.0), Discord and Lark/Feishu (0.85.0). One branch because the
@@ -287,7 +287,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             *dong_rieng,
             "",
             f"## Gửi file qua {ten}",
-            "- Javis tự đính kèm ảnh và tài liệu khi bạn nhúng `![](attachments/...)` hoặc link "
+            "- TTTOS tự đính kèm ảnh và tài liệu khi bạn nhúng `![](attachments/...)` hoặc link "
             "file trong brain như thường lệ. Không nói \"đã gửi\" khi chưa nhúng gì.",
             "- File user gửi lên đã được gateway tải về máy sẵn - đường dẫn nằm ngay trong tin nhắn.",
             "",
@@ -300,11 +300,11 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
         ]
     elif source == "cli":
         # Terminal. Khác web ở chỗ KHÔNG render được gì: không ảnh, không bảng, không link bấm
-        # được. Nói thẳng ra đây, nếu không Javis sẽ trả về markdown của web và người dùng nhận
+        # được. Nói thẳng ra đây, nếu không TTTOS sẽ trả về markdown của web và người dùng nhận
         # một đống ký tự gạch dọc.
         who = (meta.get("host") or "").strip()
         lines += [
-            "- Nguồn tin nhắn này: Javis CLI (user đang gõ trong terminal"
+            "- Nguồn tin nhắn này: TTTOS CLI (user đang gõ trong terminal"
             + (f", máy {who}" if who else "") + ").",
             f"- Nền tảng đang kết nối: {', '.join(platforms)}.",
             "- Terminal KHÔNG render markdown: TUYỆT ĐỐI không dùng bảng, không nhúng ảnh "
@@ -321,7 +321,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
     else:
         web_sid = str(meta.get("session_id") or "").strip()
         lines += [
-            "- Nguồn tin nhắn này: Dashboard web Javis (user mở bằng trình duyệt, file hiện dạng đường dẫn).",
+            "- Nguồn tin nhắn này: Dashboard web TTTOS (user mở bằng trình duyệt, file hiện dạng đường dẫn).",
             f"- Nền tảng đang kết nối: {', '.join(platforms)}.",
             "",
             "## Cách trình bày trong khung chat này (kênh ĐỌC, không phải kênh nghe)",
@@ -351,7 +351,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             "cái cớ để viết dài ra hay bẻ một ý nhỏ thành ba gạch đầu dòng.",
             "",
             "## Điều khiển dashboard và máy tính bằng lời (Voice V1)",
-            "- User bảo MỞ một trang / file / việc trên Javis (\"mở trang Nhiệm vụ\", \"mở file X\", "
+            "- User bảo MỞ một trang / file / việc trên TTTOS (\"mở trang Nhiệm vụ\", \"mở file X\", "
             "\"cho xem việc vừa giao\", \"cuộn xuống\"): gọi tool `javis_ui` (action open_page | "
             "open_file | open_task | scroll) rồi thuật đúng kết quả tool trả về. Không mô tả "
             "đường bấm tay khi tool làm được.",
@@ -361,7 +361,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             "Tool trả về đúng thứ vừa cuộn, cứ thuật lại theo đó.",
             "- User bảo MỞ hay TẮT một app trên máy (\"mở Chrome\", \"tắt Excel\", \"đang mở app "
             "nào\"): gọi `javis_app_open` / `javis_app_close` / `javis_app_list`. Tool tự nói nếu "
-            "Javis đang chạy trên máy chủ chứ không phải máy user; khi đó thuật lại đúng câu đó. "
+            "TTTOS đang chạy trên máy chủ chứ không phải máy user; khi đó thuật lại đúng câu đó. "
             "Đóng app là làm ngay theo ý user, chỉ truyền `force=true` khi họ nói ép tắt.",
             "- Khối `[NGỮ CẢNH GIAO DIỆN: ...]` (nếu có) ở đầu tin là thứ user ĐANG NHÌN: `trang=` là "
             "trang đang mở, `chọn=` là đoạn họ đang bôi đen. \"cái này\", \"đoạn này\", \"chỗ này\" "
@@ -404,7 +404,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
                 "sẽ tự hiện ở đây, xem tiến độ ở trang Nhiệm vụ. Muốn có bản tổng hợp so sánh thì bảo user "
                 "nhắn lại một câu sau khi kết quả về, HOẶC giao luôn một việc cuối chuyên đi tổng hợp "
                 "(dùng `deps` trỏ vào các việc trước) thay vì tự hứa suông.",
-                "- Javis TỰ KIỂM lời hứa: cuối mỗi lượt server dò câu trả lời xem có hẹn báo lại "
+                "- TTTOS TỰ KIỂM lời hứa: cuối mỗi lượt server dò câu trả lời xem có hẹn báo lại "
                 "không, rồi đối chiếu với việc nền thật đang có. Hứa mà không có việc nào thì "
                 "server tự dán một dòng đính chính ngay dưới câu của bạn cho user thấy. Nên câu "
                 "hẹn suông không giúp bạn thoát, chỉ làm câu trả lời trông tệ hơn.",
@@ -420,7 +420,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
                 f"`curl -s -X POST http://127.0.0.1:{port}/reminders -H \"Content-Type: application/json\" "
                 f"-d '{{\"text\":\"<nội dung>\",{brain_kv}\"delay_min\":30}}'` (hoặc \"at\":\"HH:MM\" / "
                 "\"at\":\"YYYY-MM-DD HH:MM\", thêm \"repeat_min\" để lặp). Giữ nguyên field \"brain\" để nhắc "
-                "thuộc đúng brain. Server tính giờ VN; tới giờ Javis tự báo vào khung Javis Core của brain đó (và Telegram của chủ nếu đã liên kết).",
+                "thuộc đúng brain. Server tính giờ VN; tới giờ TTTOS tự báo vào khung TTTOS Core của brain đó (và Telegram của chủ nếu đã liên kết).",
             ]
     return "\n".join(lines) + "\n"
 
@@ -615,7 +615,7 @@ def collect_turn_files(reply_text: str, written_paths: list, t0: float,
 
     Ứng viên = file agent ghi bằng tool Write (written_paths) + đường dẫn tuyệt đối
     nhắc trong câu trả lời cuối + đường dẫn TƯƠNG ĐỐI trong vault nhúng dạng markdown
-    (![](attachments/x.png) - ảnh Javis tạo) khi có vault_root. Chỉ giữ file THẬT SỰ
+    (![](attachments/x.png) - ảnh TTTOS tạo) khi có vault_root. Chỉ giữ file THẬT SỰ
     vừa thay đổi trong lượt (mtime >= t0) - nhắc tới file cũ sẽ không spam gửi lại; muốn
     gửi file cũ thì agent gọi endpoint /telegram/send-file. exclude = set path (normcase)
     đã gửi trong lượt qua endpoint, tránh gửi trùng.
@@ -630,7 +630,7 @@ def collect_turn_files(reply_text: str, written_paths: list, t0: float,
         except Exception:
             continue
     cands += extract_paths(reply_text)
-    # Ảnh/tệp Javis tạo trong lượt thường được NHÚNG dạng path tương đối trong vault
+    # Ảnh/tệp TTTOS tạo trong lượt thường được NHÚNG dạng path tương đối trong vault
     # (![](attachments/x.png)); resolve về gốc vault để tự đính kèm về ĐÚNG phiên chat.
     cands += resolve_vault_relative(reply_text, vault_root)
 
@@ -664,7 +664,7 @@ def collect_turn_files(reply_text: str, written_paths: list, t0: float,
 # ============================================================
 # Hạ khối điều khiển xuống chữ cho kênh không phải web
 # ============================================================
-# Javis nhúng khối điều khiển dạng HTML comment ở cuối câu trả lời cho dashboard
+# TTTOS nhúng khối điều khiển dạng HTML comment ở cuối câu trả lời cho dashboard
 # đọc (hiện chỉ còn JAVIS_ASK - vẽ nút lựa chọn). Kênh chữ thuần như Telegram không
 # hiểu mấy khối này, mà md_to_mdv2 chỉ escape chứ không bóc, nên không lọc là người
 # dùng nhìn thấy nguyên cụm "<\!\-\- JAVIS\_ASK: ...".
@@ -678,7 +678,7 @@ _MAX_ASK_OPTS = 4
 def _ask_to_text(payload: str) -> str:
     """JSON của khối JAVIS_ASK -> câu hỏi + danh sách đánh số. JSON hỏng -> chuỗi rỗng.
 
-    Người dùng Telegram nhắn lại "1" là xong: Javis đọc "1" trong ngữ cảnh câu hỏi
+    Người dùng Telegram nhắn lại "1" là xong: TTTOS đọc "1" trong ngữ cảnh câu hỏi
     vừa hỏi thì tự hiểu, không cần lưu state.
     """
     try:

@@ -1,8 +1,8 @@
 """Security log of the owner account: who signed in, from where, and every change to the account.
 
-Owner incident 2026-11-09: the username, password and 2FA of a VPS Javis were changed by someone who edited
+Owner incident 2026-11-09: the username, password and 2FA of a VPS TTTOS were changed by someone who edited
 settings.json on the server. Nothing recorded when it happened or from where: container logs are lost on every update
-and the only log Javis kept (auth_audit.jsonl) covered API token probes. This module is the missing record.
+and the only log TTTOS kept (auth_audit.jsonl) covered API token probes. This module is the missing record.
 
 - One JSON line per event in STATE_DIR/security_log.jsonl. STATE_DIR is a volume on Docker/Hostinger, so the log
   survives updates and redeploys. Rotated at MAX_BYTES into security_log.1.jsonl (one old file kept).

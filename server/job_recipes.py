@@ -18,11 +18,11 @@ What makes it safe to do unattended:
 
   Read only, and plainly so. Only calls that are DECLARED reads are recorded (the catalogue lists
   them, or the tool's own name says get/list/search/report...), and each is checked again at replay
-  time; anything else stops the replay. A tool nobody described is never repeated by Javis.
+  time; anything else stops the replay. A tool nobody described is never repeated by TTTOS.
 
   Only what it understands. Dates are understood in the form YYYY-MM-DD. A chain whose arguments
   carry a period in any other form (a month "2026-11", a week number, "01/11/2026", a timestamp) is
-  never learned, because Javis could not move it to the next day.
+  never learned, because TTTOS could not move it to the next day.
 
   Self-correcting. If the model calls one of the recipe's own tools again after a replay, the
   prefetch was not what the job needed: that counts against the recipe like a failed replay.
@@ -202,7 +202,7 @@ _PERIOD_TEXT_RES = (
 
 
 def unmovable_period(steps: list) -> str:
-    """"" when every period in the arguments is a YYYY-MM-DD date. Otherwise what was found: a period Javis
+    """"" when every period in the arguments is a YYYY-MM-DD date. Otherwise what was found: a period TTTOS
     cannot recompute for another day, so the chain must not become a recipe."""
     def walk(node, key=""):
         if isinstance(node, dict):
@@ -429,7 +429,7 @@ def finish(vault_root: str, job: str, *, ok: bool, task: str, mode: str, run_day
         "version": VERSION, "job": key, "task_sha": sha, "mode": str(mode or ""), "skeleton": skel,
         "slots": slots, "days": [run_day.isoformat()], "observations": 1, "replays": 0, "fails": 0,
         "recorded_at": int(time.time()),
-        "note": "Read calls Javis repeats for this recurring job before the model starts. Delete this file to "
+        "note": "Read calls TTTOS repeats for this recurring job before the model starts. Delete this file to "
                 "forget it.",
     })
     return "learned" if old is None else "reset"
@@ -511,7 +511,7 @@ def prompt_block(results: list, run_day: Optional[date] = None) -> str:
         "",
         "",
         f"DỮ LIỆU JAVIS ĐÃ LẤY SẴN ({run_day.isoformat()}): đây là các lệnh ĐỌC mà việc này đã tự gọi ở những lần chạy "
-        "trước, Javis vừa chạy lại cho kỳ hiện tại. Dùng luôn, không cần tìm tool hay gọi lại. KIỂM TRA tham số "
+        "trước, TTTOS vừa chạy lại cho kỳ hiện tại. Dùng luôn, không cần tìm tool hay gọi lại. KIỂM TRA tham số "
         "(nhất là ngày) của từng lệnh có khớp việc được giao không; sai kỳ hoặc thiếu dữ liệu thì cứ gọi tool như "
         "bình thường. Mọi hành động ra ngoài (gửi, đăng, tạo) vẫn do bạn quyết định và tự làm.",
     ]

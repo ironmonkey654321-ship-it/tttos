@@ -3,11 +3,11 @@
 Vì sao có một file riêng cho việc "tải một tệp"
 -----------------------------------------------
 Vì đây là chỗ SERVER TỰ ĐI GỌI một địa chỉ, và địa chỉ đó không phải do server nghĩ ra. Đó là
-định nghĩa của SSRF. Javis chạy trên máy của người dùng hoặc trên VPS của họ, tức nó đang đứng
+định nghĩa của SSRF. TTTOS chạy trên máy của người dùng hoặc trên VPS của họ, tức nó đang đứng
 SẴN BÊN TRONG vành đai mạng: một request đi ra từ đây tới `127.0.0.1` hay `10.0.0.5` chạm được
 những thứ mà người ngoài không chạm tới.
 
-Rất cụ thể với Javis: `mcp_hub` đặt hub ở `http://127.0.0.1:7777/hub/mcp`, và hub cầm toàn bộ
+Rất cụ thể với TTTOS: `mcp_hub` đặt hub ở `http://127.0.0.1:7777/hub/mcp`, và hub cầm toàn bộ
 khoá của người dùng. Trên máy ảo đám mây thì `169.254.169.254` trả về credential của chính máy
 đó. Không rào thì "cài gói từ link" thành một cái loa đọc hộ.
 

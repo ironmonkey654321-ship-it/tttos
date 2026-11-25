@@ -49,13 +49,13 @@ BO_QUA = {"inbox", "attachments", "javis", ".git", ".obsidian", ".trash", "node_
           # else is hidden from everyone instead of shared with everyone.
           "rieng-theo-nhom"}
 
-# Javis's own operating folders AT THE BRAIN ROOT (0.172.0): `agents/` holds the bot's own role file and its
+# TTTOS's own operating folders AT THE BRAIN ROOT (0.172.0): `agents/` holds the bot's own role file and its
 # colleagues', `workflows/` the step chains. Searched as documents, the bot quoted its internal rules (and a
 # colleague's) to customers as "our documents", the same leak as CLAUDE.md below. Root only: a user folder
 # such as "products/agents" is still the user's.
 BO_QUA_GOC = {"agents", "workflows"}
 
-# File QUY ƯỚC VẬN HÀNH của chính Javis, seed vào MỌI brain (xem meta_tools.ensure_brain_pattern).
+# File QUY ƯỚC VẬN HÀNH của chính TTTOS, seed vào MỌI brain (xem meta_tools.ensure_brain_pattern).
 # Chúng nằm ở GỐC brain nên danh sách thư mục ở trên không chặn được.
 #
 # Đây là một lỗi đã xảy ra thật, không phải phòng xa: chủ repo hỏi bot "sao lại kỷ luật cửa

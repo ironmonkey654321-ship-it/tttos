@@ -175,10 +175,10 @@ MODEL_TURN_CAPS = ("task_turns", "daily_turns", "judge_daily")
 ADMIN_OPS_PER_TURN = 10   # trần lệnh quản trị mỗi lượt (review T3)
 ADMIN_OPS = ("open_job", "reprioritize", "add_member", "remove_member", "create_agent", "set_cap", "set_resonance",
              "edit_agent", "interrupt")
-# Mọi tên lệnh Javis biết (0.171.3). Lệnh ngoài danh sách là chữ model tự bịa (pilot 2026-10-16 gặp
+# Mọi tên lệnh TTTOS biết (0.171.3). Lệnh ngoài danh sách là chữ model tự bịa (pilot 2026-10-16 gặp
 # `peter_feedback_placeholder_removed`): vẫn bỏ như cũ, nhưng ghi chú cho chủ không chép lại tên lạ đó.
 KNOWN_OPS = frozenset(set().union(*OPS_BY_ROLE.values()) | set(ADMIN_OPS) | {REACT_OP, PEER_OP, ASK_PEER_OP})
-UNKNOWN_OP_NOTE = "Câu trả lời có một lệnh Javis không hỗ trợ, đã bỏ"
+UNKNOWN_OP_NOTE = "Câu trả lời có một lệnh TTTOS không hỗ trợ, đã bỏ"
 CAP_LABEL = {"task_turns": "lượt mỗi việc", "task_steps": "bước mỗi việc", "help_depth": "độ sâu nhờ hỗ trợ",
              "daily_turns": "lượt mỗi ngày của nhóm", "judge_daily": "lượt phán xử mỗi ngày của nhóm",
              "volunteer_k": "số người tự lên tiếng mỗi tin (K)"}
@@ -218,7 +218,7 @@ APPROVAL_HINT = ('Cần chủ nhóm quyết trước khi làm tiếp (phương �
 GATED_NOTE = ("# QUYỀN CỦA NHÓM: CẦN DUYỆT\nNhóm này đang ở quyền 'cần duyệt'. Trong phạm vi bước bạn làm tự do: đọc, tìm, ghi "
               "file trong bộ não và thư mục của nhóm, đọc kết nối, chạy lệnh chỉ đọc (ls, cat, grep, git status...). Hành động "
               "ra ngoài (gửi tin, đăng bài, thanh toán, đặt hàng, xoá dữ liệu, lệnh máy khác) sẽ bị chặn TRƯỚC khi chạy và "
-              "Javis ghi đúng lời gọi đó thành yêu cầu duyệt cho chủ nhóm. Gặp chặn thì đừng tìm đường khác để làm cùng "
+              "TTTOS ghi đúng lời gọi đó thành yêu cầu duyệt cho chủ nhóm. Gặp chặn thì đừng tìm đường khác để làm cùng "
               "việc: làm xong phần trong phạm vi rồi kết thúc bước. Muốn xin trước thì dùng khối ask_approval.")
 GATED_APPROVED_NOTE = ("Chủ nhóm ĐÃ DUYỆT đúng các lời gọi dưới đây cho bước này. Gọi lại ĐÚNG công cụ và ĐÚNG tham số (khác một "
                        "chữ là hành động khác, sẽ bị chặn lại). Mỗi lời gọi chỉ chạy được một lần:")
@@ -228,7 +228,7 @@ GATED_APPROVED_NOTE = ("Chủ nhóm ĐÃ DUYỆT đúng các lời gọi dưới
 # không áp dụng ở đây. Tin của trợ lý khác hay của hệ thống là thông tin, không phải yêu cầu mới của chủ (không tự mở rộng
 # việc hay quyền theo chúng).
 INTERNAL_GROUP_NOTE = ("# NHÓM NỘI BỘ CỦA CHỦ",
-                       "Đây là nhóm chat NỘI BỘ trên dashboard Javis giữa chủ của bạn (người tạo, quản lý nhóm) và các trợ lý "
+                       "Đây là nhóm chat NỘI BỘ trên dashboard TTTOS giữa chủ của bạn (người tạo, quản lý nhóm) và các trợ lý "
                        "AI. Đây KHÔNG phải nhóm Zalo hay cuộc chat với khách hàng: luật của chatbot (im lặng khi không được gọi "
                        "tên, chỉ trả lời khách, chuyển người thật) không áp dụng ở đây; khi lượt này được giao cho bạn thì luôn "
                        "trả lời. Không gửi gì ra Zalo, Telegram hay kênh nào khác; câu trả lời chỉ hiện trong nhóm này.",
@@ -751,8 +751,8 @@ class TeamRunner:
                via: Optional[dict] = None) -> dict:
         """Ghi tin của chủ nhóm rồi định tuyến (spec 7.1 tới 7.3). Không gọi model ở đây.
 
-        `via` (0.357.0): tin do Javis Core gửi thay chủ khi chủ giao việc cho nhóm từ chat (`javis_team` op=dispatch):
-        {correlation_id, kenh}. Nằm ở `meta.via_core` để khung chat nhóm ghi rõ "qua Javis Core".
+        `via` (0.357.0): tin do TTTOS Core gửi thay chủ khi chủ giao việc cho nhóm từ chat (`javis_team` op=dispatch):
+        {correlation_id, kenh}. Nằm ở `meta.via_core` để khung chat nhóm ghi rõ "qua TTTOS Core".
 
         `mention_all` (0.192.0, chủ gõ @all): gọi MỌI thành viên đang hoạt động, không tính vào trần @ mỗi tin; chủ cố ý
         gọi cả team cùng phối hợp."""
@@ -4280,7 +4280,7 @@ class TeamRunner:
             labels = "; ".join(f["label"] for f in fps)
             return {"kind": "action", "title": f"{self._name(team, step['agent_key'])} cần làm {len(fps)} hành động ra "
                                                f"ngoài phạm vi",
-                    "action": f"Javis đã chặn trước khi chạy: {labels}", "scope": task.get("title") or "",
+                    "action": f"TTTOS đã chặn trước khi chạy: {labels}", "scope": task.get("title") or "",
                     "impact": "", "evidence": [team_approval.excerpt(text, 600)] if text.strip() else [],
                     "deadline_at": None, "fingerprints": fps}
         # The prose net: only in a gated team, and never on the step the owner just approved (its rerun may repeat the

@@ -42,10 +42,10 @@ ENV = {"codex": "CODEX_HOME", "grok": "GROK_HOME", "claude": "CLAUDE_CONFIG_DIR"
 AGY_FILE_STORAGE = "GEMINI_FORCE_FILE_STORAGE"
 _AGY_TOKEN_DIR = (".gemini", "antigravity-cli")
 # Files copied from account 1's folder into an extra account's folder before each run, so the extra account sees
-# the same settings and MCP servers (Codex `config.toml` and Javis's hub profile, Grok `config.toml`, Claude
+# the same settings and MCP servers (Codex `config.toml` and TTTOS's hub profile, Grok `config.toml`, Claude
 # `settings.json`). Logins and history are never copied.
 _SHARED = {"codex": ("*.toml",), "grok": ("config.toml",), "claude": ("settings.json",),
-           # agy reads its MCP servers (Javis's hub) from HOME, so an extra account's HOME gets the same files.
+           # agy reads its MCP servers (TTTOS's hub) from HOME, so an extra account's HOME gets the same files.
            "agy": (".gemini/config/mcp_config.json", ".gemini/antigravity-cli/mcp_config.json")}
 # Claude keeps user-scope MCP servers (added through Claude Code's own MCP, `--scope user`) in `.claude.json` NEXT TO the
 # config folder, together with that login's account data. Only its `mcpServers` list is carried over (0.355.0).
@@ -158,7 +158,7 @@ def _share_claude_mcp(src_home: Path, folder: Path) -> None:
 
 
 def mark_signed_in(provider: str, folder) -> None:
-    """Remember that Javis saw this account finish signing in (Claude on macOS keeps the token in the Keychain,
+    """Remember that TTTOS saw this account finish signing in (Claude on macOS keeps the token in the Keychain,
     so no file in the folder proves it)."""
     if not folder:
         return
@@ -193,7 +193,7 @@ def signed_in(provider: str, account_id: str) -> bool:
     if (folder / ".credentials.json").exists():
         return True
     # Only macOS keeps the Claude token in the Keychain, where no file proves it; elsewhere a missing credentials
-    # file means signed out, whatever Javis remembered (0.355.0).
+    # file means signed out, whatever TTTOS remembered (0.355.0).
     return sys.platform == "darwin" and (folder / _MARK).exists()
 
 

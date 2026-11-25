@@ -1,5 +1,5 @@
 """
-web_security.py - Chống CSRF + DNS-rebinding cho web API cục bộ của Javis.
+web_security.py - Chống CSRF + DNS-rebinding cho web API cục bộ của TTTOS.
 
 Vì sao cần: dashboard nghe ở localhost:7777. Khi CHƯA đặt mật khẩu (chạy cá nhân trên máy),
 một trang web độc bất kỳ trong trình duyệt của user có thể:
@@ -120,7 +120,7 @@ def host_kieu_local(h: str) -> bool:
     """Host NHƯ NGƯỜI DÙNG THẤY có vẻ là máy gần họ không: loopback, hoặc IP private/link-local
     (nhà/LAN). Dùng cho cảnh báo connector cần trình duyệt TRÊN MÁY CHẠY JAVIS (vd
     workspace-mcp với callback localhost:8000): domain public thì luồng đăng nhập đó chắc chắn
-    đứt, còn LAN thì máy chạy Javis thường là desktop có màn hình nên vẫn đi được.
+    đứt, còn LAN thì máy chạy TTTOS thường là desktop có màn hình nên vẫn đi được.
 
     CHỈ dùng cho cảnh báo/UX - đây là suy đoán từ header client gửi lên, không phải căn cứ
     cấp quyền (quyết định quyền vẫn phải theo request.client.host thật, xem external_base)."""

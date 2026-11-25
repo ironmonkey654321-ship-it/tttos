@@ -1,4 +1,4 @@
-"""Suggest the owner's next message once Javis has answered (2026-11-07).
+"""Suggest the owner's next message once TTTOS has answered (2026-11-07).
 
 Owner, 2026-11-07: Claude often shows a ready answer in the empty chat box after it replies ("ok làm theo đề xuất cho
 cả 2 PR đi"), and Tab drops it into the box; "em xem có thêm được vào javis không?".
@@ -11,7 +11,7 @@ How it runs:
     page, in an empty folder with no tools and no MCP (the sandbox of the group chat judge). A suggestion is a side
     job, so it never spends the main brain.
   - A suggestion is only a guess the owner can take or ignore: it is never sent on its own. Anything odd (empty, too
-    long, a reply in Javis's voice, "KHONG") gives no suggestion rather than a wrong one.
+    long, a reply in TTTOS's voice, "KHONG") gives no suggestion rather than a wrong one.
   - Switched off with `settings.chat.suggest_next = false` (the "+" menu of the composer).
   - Logs carry only measurements (length, source), never the owner's words.
 """
@@ -116,7 +116,7 @@ def clean(text) -> str:
     if len(t) >= 2 and t[0] == t[-1] and t[0] in "\"'`":
         t = t[1:-1].strip()
     t = t.strip("“”").strip()
-    # The owner bans the long dash in every text Javis writes.
+    # The owner bans the long dash in every text TTTOS writes.
     t = re.sub(r"\s*[\u2014\u2013]\s*", ", ", t)
     t = " ".join(t.split())
     if t.lower().rstrip(".!") in _NONE:
@@ -145,7 +145,7 @@ async def suggest(cfg: dict, context) -> dict:
     if not enabled(cfg):
         return {"text": "", "source": "", "off": True}
     ctx = shape_context(context)
-    # Nothing to go on until Javis has said something.
+    # Nothing to go on until TTTOS has said something.
     if not ctx or ctx[-1]["role"] != "assistant":
         return {"text": "", "source": ""}
     key = hashlib.sha1(repr(ctx).encode("utf-8")).hexdigest()

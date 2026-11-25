@@ -66,7 +66,7 @@ def cancel_all(tag=None):
             else:
                 # Every registrant starts its child with start_new_session, so the child leads its own process group:
                 # signal the whole group so a CLI's own children (agy, codex tools) do not outlive Stop. Checked first,
-                # because a child sharing Javis's group would take Javis down with it.
+                # because a child sharing TTTOS's group would take TTTOS down with it.
                 import signal as _signal
                 if os.getpgid(p.pid) == p.pid:
                     os.killpg(p.pid, _signal.SIGTERM)
@@ -151,11 +151,11 @@ _THU_MUC_BIN_THEM = (
 # WINDOWS: y hệt câu chuyện trên nhưng đau hơn một bậc, vì PATH trên Windows nằm trong
 # REGISTRY và bị ghi bởi mọi installer. Ba đường hỏng thật, chủ dự án gặp đủ cả ba khi cài
 # mới trên Windows (16/09):
-#   1. Server chạy nền (start-javis.vbs / JAVIS OS.bat) giữ PATH của LÚC NÓ BẬT. Cài CLI sau
+#   1. Server chạy nền (start-javis.vbs / TTTOS.bat) giữ PATH của LÚC NÓ BẬT. Cài CLI sau
 #      đó thì tiến trình đang chạy không thấy, dù gõ trong terminal mới vẫn chạy ngon.
 #   2. `setx PATH ...` CẮT ở 1024 ký tự. Một installer dùng setx trên máy có PATH dài là
 #      PATH người dùng bị cắt cụt vĩnh viễn - đúng lúc cài Antigravity CLI xong thì
-#      `%APPDATA%\npm` bay khỏi PATH và Javis báo cau_thieu_cli("claude", "Claude") cho một CLI vẫn
+#      `%APPDATA%\npm` bay khỏi PATH và TTTOS báo cau_thieu_cli("claude", "Claude") cho một CLI vẫn
 #      đang nằm nguyên trên ổ đĩa.
 #   3. npm global, nvm-windows, volta, scoop, bun, pnpm mỗi thứ một thư mục khác nhau.
 # Nên: soi thêm các thư mục dưới đây, VÀ ghi nhớ chỗ đã từng thấy (xem _nho_binary).
@@ -169,7 +169,7 @@ _THU_MUC_BIN_WINDOWS = (
     r"%LOCALAPPDATA%\Programs\grok",
     # Where the official Windows installers really put them (seen on a clean windows-latest
     # runner, 0.439.0): agy.exe under %LOCALAPPDATA%\agy\bin, grok.exe under ~\.grok\bin. Both
-    # only add themselves to the USER PATH in the registry, which a Javis started right after
+    # only add themselves to the USER PATH in the registry, which a TTTOS started right after
     # the install (setup wizard, "Open now") does not have yet.
     r"%LOCALAPPDATA%\agy\bin",
     r"%USERPROFILE%\.grok\bin",
@@ -257,7 +257,7 @@ _BIN_NHO = {"data": None}
 
 
 def _state_dir() -> Path:
-    """Thư mục state của Javis. Đọc env trực tiếp để claude_cli không phải import config."""
+    """Thư mục state của TTTOS. Đọc env trực tiếp để claude_cli không phải import config."""
     d = os.getenv("JAVIS_STATE_DIR", "").strip()
     return Path(d) if d else Path(__file__).resolve().parent
 
@@ -338,7 +338,7 @@ def native_claude_exe(cli: Optional[str]) -> Optional[str]:
     """The native `claude.exe` to run instead of npm's `claude.cmd` shim on Windows, else `cli` unchanged.
 
     claude-agent-sdk refuses to spawn a .cmd/.bat as the CLI (cmd.exe re-parses the command line,
-    so arguments can inject commands: the "BatBadBut" class). Javis handed the SDK whatever PATH
+    so arguments can inject commands: the "BatBadBut" class). TTTOS handed the SDK whatever PATH
     resolved, and `npm install -g` puts `claude.cmd` there, so once the SDK updated itself every
     Claude turn on such a machine died with "Refusing to execute batch script" (owner, 2026-11-10).
     The executable is nearly always on the machine already: recent npm packages ship it next to
@@ -390,7 +390,7 @@ def claude_cli_for_sdk() -> str:
     return cli
 
 
-_SDK_CLI_ENV = {"set": ""}      # the value Javis itself put in JAVIS_CLAUDE_CLI, never the user's
+_SDK_CLI_ENV = {"set": ""}      # the value TTTOS itself put in JAVIS_CLAUDE_CLI, never the user's
 
 
 def use_native_claude_for_sdk() -> None:
@@ -507,18 +507,18 @@ def cau_thieu_cli(ten: str, nhan: str = "") -> str:
 
 # ---- Danh sách model của gói Claude Code, đọc từ CHÍNH BINARY `claude` ----
 #
-# Vì sao phải có: provider `anthropic-cli` chạy bằng đăng nhập của Claude Code, mà Javis KHÔNG
+# Vì sao phải có: provider `anthropic-cli` chạy bằng đăng nhập của Claude Code, mà TTTOS KHÔNG
 # được đọc token đó (Anthropic cấm - xem claude_auth.py), nên từ 0.26.17 nó không còn nguồn
 # danh sách model nào ngoài `anthropic_api_key`. Phần đông người dùng chạy gói thuê bao và
 # không có key, nên trình chọn model rơi về mấy alias ghi cứng trong config.py - và một khi
 # `settings.json` đã nhớ một danh sách cũ thì danh sách ĐÓ đè luôn bản mặc định mới, tức là
-# nâng cấp Javis cũng không thấy dòng model mới. Đúng lỗi chủ repo báo 05/09: cài xong bản
+# nâng cấp TTTOS cũng không thấy dòng model mới. Đúng lỗi chủ repo báo 05/09: cài xong bản
 # mới vẫn không có Fable 5.1.
 #
 # Nguồn mới ở đây KHÔNG đụng vào bất cứ thứ gì của người dùng: binary `claude` nhúng sẵn danh
 # mục model của chính nó (thử `claude --model tên-bậy` là nó tự nói "isn't described by this
 # version's model catalog"), nên đọc file binary ra là biết bản CLI đang cài hiểu những model
-# nào. Cập nhật Claude Code là danh sách tự mới theo, khỏi sửa code Javis - đúng thứ đường
+# nào. Cập nhật Claude Code là danh sách tự mới theo, khỏi sửa code TTTOS - đúng thứ đường
 # mượn token ngày trước làm được, mà lần này không chạm credential của ai.
 #
 # Đây là HEURISTIC trên dữ liệu nội bộ của CLI, nên nó fail-soft: đọc không ra thì trả None và
@@ -688,11 +688,11 @@ def sort_models(ids) -> list:
 
 
 def merge_models(live, shipped) -> list:
-    """The catalog read from the installed `claude` binary, plus the models this Javis release ships with.
+    """The catalog read from the installed `claude` binary, plus the models this TTTOS release ships with.
 
-    Owner report 2026-11-10: Fable 5.2 was out and Javis did not list it. The binary's catalog was the ONLY list
+    Owner report 2026-11-10: Fable 5.2 was out and TTTOS did not list it. The binary's catalog was the ONLY list
     shown, so a machine whose Claude Code had not updated yet (Docker waits for a new image, the daily updater can
-    fail) never saw a model that the Javis release already knew. The union means either side can bring a new model.
+    fail) never saw a model that the TTTOS release already knew. The union means either side can bring a new model.
     """
     return sort_models(list(live or []) + list(shipped or []))
 
@@ -826,7 +826,7 @@ _AUTH_TTL_LOI = 30.0
 
 
 def _ten_goi_dong(goi: str, email: str = "", folder=None, chi_ten_that: bool = False) -> str:
-    """Name a Claude plan the way Anthropic names it now, never from a table Javis keeps.
+    """Name a Claude plan the way Anthropic names it now, never from a table TTTOS keeps.
 
     `claude auth status` only gives a CODE ("max" covers both Max and the renamed Ultra since
     2026-10-30). The CLI also stores the profile's `plan_display_name` in `.claude.json`; that wins.
@@ -937,7 +937,7 @@ def auth_quen_cache():
 
 # ---- Vệ sĩ credentials (16/08): chống "tự nhiên bị đăng xuất" ----
 # Claude CLI TỰ quản token trong ~/.claude/.credentials.json và tự ghi lại file đó mỗi lần
-# refresh OAuth. Javis chạy nhiều tiến trình claude song song và có watchdog giết tiến trình
+# refresh OAuth. TTTOS chạy nhiều tiến trình claude song song và có watchdog giết tiến trình
 # treo - kill rơi đúng lúc CLI đang ghi là file cụt nửa chừng, lượt sau CLI đọc không ra và
 # coi như chưa đăng nhập. Codex không bao giờ bị vì token ChatGPT do CHÍNH JAVIS giữ và ghi
 # nguyên tử. Vệ sĩ: thấy bản lành thì sao lưu; thấy file HỎNG/MẤT mà có bản sao lưu thì phục
@@ -1112,17 +1112,17 @@ def _login_verify() -> dict:
     if sys.platform == "darwin":
         msg = localefmt.chu(
             "Claude báo đăng nhập xong nhưng không lưu được phiên vào Keychain của Mac, nên máy vẫn chưa đăng nhập. "
-            "Mở Terminal trên máy chạy Javis, gõ: claude auth login (nếu Keychain đang khoá thì mở khoá trước: "
+            "Mở Terminal trên máy chạy TTTOS, gõ: claude auth login (nếu Keychain đang khoá thì mở khoá trước: "
             "security unlock-keychain), xong bấm Kiểm tra lại.",
             "Claude said the sign-in worked but could not save it to the Mac Keychain, so this machine is still "
-            "signed out. Open Terminal on the machine running Javis and run: claude auth login (if the Keychain is "
+            "signed out. Open Terminal on the machine running TTTOS and run: claude auth login (if the Keychain is "
             "locked, unlock it first: security unlock-keychain), then click Check again.")
     else:
         msg = localefmt.chu(
             "Claude báo đăng nhập xong nhưng không lưu được phiên đăng nhập, nên máy vẫn chưa đăng nhập. Mở terminal "
-            "trên máy chạy Javis, gõ: claude auth login, xong bấm Kiểm tra lại.",
+            "trên máy chạy TTTOS, gõ: claude auth login, xong bấm Kiểm tra lại.",
             "Claude said the sign-in worked but could not save it, so this machine is still signed out. Open a "
-            "terminal on the machine running Javis and run: claude auth login, then click Check again.")
+            "terminal on the machine running TTTOS and run: claude auth login, then click Check again.")
     tail = _login_tail()
     return {"ok": False, "error": msg + (f" ({tail})" if tail else "")}
 
@@ -1353,7 +1353,7 @@ def mcp_open_auth_terminal():
         return {"ok": False, "error": cau_thieu_cli("claude", "Claude")}
     try:
         if os.name == "nt":
-            subprocess.Popen('start "Javis - Xac thuc MCP (go /mcp)" cmd /k claude', shell=True)
+            subprocess.Popen('start "TTTOS - Xac thuc MCP (go /mcp)" cmd /k claude', shell=True)
         else:
             for term in ("x-terminal-emulator", "gnome-terminal", "konsole", "xterm"):
                 if shutil.which(term):
@@ -1410,7 +1410,7 @@ def claude_engine(system_prompt=None, cwd=None, tag="chat", allowed_tools=None, 
     except Exception as e:  # noqa: BLE001 - reported, never a broken turn
         print(f"[write scope] Claude hook not installed: {type(e).__name__}: {e}", file=sys.stderr)
     try:
-        # 2026-11-09 (owner incident): every Claude turn refuses tool calls on Javis' secret files (secret_guard.py).
+        # 2026-11-09 (owner incident): every Claude turn refuses tool calls on TTTOS' secret files (secret_guard.py).
         import claude_secret_hook
         claude_secret_hook.install()
     except Exception as e:  # noqa: BLE001 - the guard must never stop a turn
@@ -1462,11 +1462,11 @@ def _compact_window():
 
 
 def javis_claude_settings(settings: str = None) -> str:
-    """Claude Code settings JSON for every Javis run (0.345.0), merged over `settings`.
+    """Claude Code settings JSON for every TTTOS run (0.345.0), merged over `settings`.
 
     - `claudeMdExcludes`: a native install keeps brains under the repo (BRAINS_DIR defaults to
       <repo>/brains), and Claude Code walks up from its cwd loading every CLAUDE.md it meets. The
-      repo one IS the Javis system prompt, which Javis already appends, so each turn paid for it
+      repo one IS the TTTOS system prompt, which TTTOS already appends, so each turn paid for it
       twice (about 12k tokens, measured on a plain "chào em").
     - `autoCompactWindow`: see CLAUDE_COMPACT_WINDOW. Must be a number: "200k" is ignored here.
     - `fastMode` stays explicit false unless the caller set it.
@@ -1529,7 +1529,7 @@ def _home_dir() -> Path:
 
     Không dựa mỗi USERPROFILE: khi server được bật lại bởi tự-cập-nhật, dịch vụ Windows
     hay tác vụ nền, biến này có thể trống - lúc đó home thành Path("") nên mọi đường dẫn
-    ~/.codex/... hoá ra tương đối và không tồn tại, khiến Javis báo nhầm "chưa cài Codex CLI"
+    ~/.codex/... hoá ra tương đối và không tồn tại, khiến TTTOS báo nhầm "chưa cài Codex CLI"
     dù binary vẫn nằm đó. Thử lần lượt các nguồn rồi mới chịu thua.
     """
     cands = [os.environ.get("USERPROFILE"), os.environ.get("HOME")]
@@ -1626,9 +1626,9 @@ def find_codex_cli() -> Optional[str]:
 
 # ---- MCP NATIVE của Codex (kho gốc ~/.codex/config.toml, quản bằng `codex mcp ...`) ----
 # Đối xứng với bộ mcp_native_* của Claude ở trên: Codex cũng có kho MCP gốc riêng (user tự
-# `codex mcp add`, hoặc app khác ghi vào config.toml). Javis chạy `codex exec -p javis` mà
+# `codex mcp add`, hoặc app khác ghi vào config.toml). TTTOS chạy `codex exec -p javis` mà
 # profile chỉ PHỦ THÊM lên config gốc nên kho này vẫn được engine ChatGPT nạp - các hàm dưới
-# cho Javis liệt kê/thêm/gỡ/kiểm tra nó, và mở `codex mcp login <tên>` cho server OAuth.
+# cho TTTOS liệt kê/thêm/gỡ/kiểm tra nó, và mở `codex mcp login <tên>` cho server OAuth.
 def _codex_run(sub_args, timeout=30):
     """Chạy `codex <sub_args...>` trả CompletedProcess; None nếu chưa cài Codex CLI."""
     cli = find_codex_cli()
@@ -1799,7 +1799,7 @@ def codex_mcp_open_login_terminal(name):
         return {"ok": False, "error": localefmt.chu("Tên server không hợp lệ", "Invalid server name")}
     try:
         if os.name == "nt":
-            subprocess.Popen(f'start "Javis - Dang nhap MCP Codex" cmd /k codex mcp login {safe}',
+            subprocess.Popen(f'start "TTTOS - Dang nhap MCP Codex" cmd /k codex mcp login {safe}',
                              shell=True, env=codex_env())
         else:
             for term in ("x-terminal-emulator", "gnome-terminal", "konsole", "xterm"):
@@ -1817,8 +1817,8 @@ def codex_mcp_open_login_terminal(name):
 #
 # Chủ repo báo 2026-08-07 kèm ảnh: loop nền chạy bằng ChatGPT, mọi lệnh đọc/ghi file đều trả
 # `bwrap: Failed to make / slave: Permission denied`, và bản báo cáo gửi về Telegram là một
-# bài dài model tự kể lại nỗi bối rối của nó. Nguyên nhân nằm ngoài Javis: bubblewrap cần tạo
-# được user namespace + đổi propagation của `/`, mà container Javis chạy user thường, không có
+# bài dài model tự kể lại nỗi bối rối của nó. Nguyên nhân nằm ngoài TTTOS: bubblewrap cần tạo
+# được user namespace + đổi propagation của `/`, mà container TTTOS chạy user thường, không có
 # CAP_SYS_ADMIN, và Ubuntu 24.04 còn chặn user namespace không đặc quyền bằng AppArmor.
 #
 # Hệ quả: TRONG DOCKER, hai mức sandbox `read-only` (mode suggest) và `workspace-write` (mode
@@ -1827,14 +1827,14 @@ def codex_mcp_open_login_terminal(name):
 _SANDBOX_HONG = re.compile(r"bwrap:|Failed to make / slave", re.I)
 
 _NOTE_SANDBOX_HONG = (
-    "⚠ Javis tự kiểm: rào sandbox riêng của Codex (ChatGPT) KHÔNG khởi động được trong môi "
+    "⚠ TTTOS tự kiểm: rào sandbox riêng của Codex (ChatGPT) KHÔNG khởi động được trong môi "
     "trường này, nên mọi lệnh đọc/ghi file của nó đều bị chặn ngay từ đầu. Đây là giới hạn của "
     "container chứ không phải lỗi của lượt chạy, và thử lại bao nhiêu lần cũng vậy. Hai lối ra: "
     "đặt biến môi trường JAVIS_CODEX_SANDBOX=off để Codex chạy không có rào riêng (chính "
     "container vẫn là rào), hoặc chuyển việc nền này sang bộ não Claude."
 )
 _NOTE_SANDBOX_HONG_EN = (
-    "⚠ Javis self-check: Codex's own sandbox (ChatGPT) CANNOT start in this "
+    "⚠ TTTOS self-check: Codex's own sandbox (ChatGPT) CANNOT start in this "
     "environment, so every file read/write command it runs is blocked from the start. This is a limit of "
     "the container, not a failure of this run, and retrying will not change it. Two ways out: "
     "set the environment variable JAVIS_CODEX_SANDBOX=off so Codex runs without its own sandbox (the "
@@ -1843,7 +1843,7 @@ _NOTE_SANDBOX_HONG_EN = (
 
 
 def codex_sandbox_cho_mode(mode: str) -> Optional[str]:
-    """Cờ `--sandbox` của Codex cho một mức quyền của Javis. None = không đặt rào riêng.
+    """Cờ `--sandbox` của Codex cho một mức quyền của TTTOS. None = không đặt rào riêng.
 
     `JAVIS_CODEX_SANDBOX=off` bỏ hẳn rào của Codex ở MỌI mức. Cần cho Docker, nơi bubblewrap
     không chạy nổi nên rào đó không phải là "chặt hơn" mà là "chết hẳn". Đánh đổi phải nói rõ:
@@ -1888,7 +1888,7 @@ def codex_windows_sandbox_config(sandbox: Optional[str], codex_home=None) -> lis
     """`-c` overrides that make `--sandbox` mean what it says on Windows (#1133).
 
     On Windows, with no `[windows] sandbox` in config.toml, Codex quietly downgrades `workspace-write` to `read-only`:
-    every background job at `auto` could read but not write, and stopped as if waiting for the owner. Javis asks for the
+    every background job at `auto` could read but not write, and stopped as if waiting for the owner. TTTOS asks for the
     unelevated Windows sandbox (no admin prompt) whenever it sets a sandbox. A choice already made in config.toml of
     that Codex home (for example `elevated`) is kept: an override would beat it. Nothing on other systems, nothing when
     no sandbox is set (full access)."""
@@ -1910,7 +1910,7 @@ def codex_windows_sandbox_config(sandbox: Optional[str], codex_home=None) -> lis
 # WARNING: proceeding, even though we could not create PATH aliases: Could not find home
 # directory". Codex tự tìm home bằng `dirs::home_dir()`: trên Windows hàm đó hỏi thẳng hồ sơ người
 # dùng của Windows (SHGetKnownFolderPath), KHÔNG đọc USERPROFILE, nên hồ sơ hỏng, hồ sơ tạm hay
-# tài khoản không có hồ sơ là Codex mù home, không thấy auth.json, trong khi Javis (đọc
+# tài khoản không có hồ sơ là Codex mù home, không thấy auth.json, trong khi TTTOS (đọc
 # USERPROFILE/HOME qua `_home_dir`) vẫn thấy đăng nhập ChatGPT đầy đủ. Đặt CODEX_HOME thì Codex
 # bỏ qua hẳn bước hỏi Windows, và cả hai bên nhìn cùng một thư mục.
 def _mark_env(env, tag):
@@ -1923,7 +1923,7 @@ def _mark_env(env, tag):
 
 
 def codex_env(codex_home: Optional[str] = None) -> dict:
-    """Biến môi trường cho MỌI tiến trình Codex mà Javis bật.
+    """Biến môi trường cho MỌI tiến trình Codex mà TTTOS bật.
 
     `codex_home`: the folder of an extra ChatGPT account (plan_accounts, 0.353.0). None = account 1, as before."""
     env = dict(os.environ)
@@ -1934,7 +1934,7 @@ def codex_env(codex_home: Optional[str] = None) -> dict:
         return env                      # người dùng tự trỏ chỗ khác: tôn trọng
     home = _home_dir()
     if str(home) in ("", "."):
-        return env                      # Javis cũng không biết home: để Codex tự xoay như cũ
+        return env                      # TTTOS cũng không biết home: để Codex tự xoay như cũ
     codex_home = home / ".codex"
     try:
         # Codex bắt CODEX_HOME phải tồn tại sẵn (nó canonicalize), máy chưa từng đăng nhập thì chưa có.
@@ -1970,29 +1970,29 @@ def codex_error_text(returncode, stderr_lines) -> str:
     hub = next((str(l).strip() for l in stderr_lines if CODEX_REQUIRED_FAIL in str(l)), "")
     if hub:
         return localefmt.chu(
-            "Cổng công cụ của Javis (hub) không lên kịp nên Codex không mở phiên, việc chưa chạy. "
+            "Cổng công cụ của TTTOS (hub) không lên kịp nên Codex không mở phiên, việc chưa chạy. "
             "Chi tiết từ Codex (exit {code}): {ly_do}",
-            "The Javis tool hub did not come up in time, so Codex did not open a session and the job "
+            "The TTTOS tool hub did not come up in time, so Codex did not open a session and the job "
             "did not run. Details from Codex (exit {code}): {ly_do}",
             code=returncode, ly_do=hub[hub.find(CODEX_REQUIRED_FAIL):][:240])
     if any("could not find home directory" in str(l).lower() for l in stderr_lines):
         return localefmt.chu(
             "Codex không tìm thấy thư mục người dùng trên máy này nên không đọc được đăng nhập "
-            "ChatGPT. Hay gặp khi Windows đang dùng hồ sơ tạm hoặc Javis được bật bằng một tài "
+            "ChatGPT. Hay gặp khi Windows đang dùng hồ sơ tạm hoặc TTTOS được bật bằng một tài "
             "khoản khác. Đăng xuất Windows rồi đăng nhập lại (hoặc khởi động lại máy), sau đó bật "
-            "lại Javis bằng chính tài khoản đó.\n\nChi tiết từ Codex (exit "
+            "lại TTTOS bằng chính tài khoản đó.\n\nChi tiết từ Codex (exit "
             + str(returncode) + "):\n" + raw,
             "Codex could not find the user folder on this computer, so it cannot read the ChatGPT "
-            "sign-in. This usually happens when Windows is on a temporary profile or Javis was "
+            "sign-in. This usually happens when Windows is on a temporary profile or TTTOS was "
             "started under another account. Sign out of Windows and back in (or restart), then "
-            "start Javis again from that same account.\n\nDetails from Codex (exit "
+            "start TTTOS again from that same account.\n\nDetails from Codex (exit "
             + str(returncode) + "):\n" + raw)
     return "Codex lỗi (exit " + str(returncode) + "):\n" + raw
 
 
 def _codex_dung_provider_rieng() -> bool:
     """Người dùng tự trỏ Codex sang provider khác (proxy, Ollama...) trong config.toml thì
-    Javis không được giành lấy: provider HTTPS của Javis chỉ thay cho `openai` mặc định."""
+    TTTOS không được giành lấy: provider HTTPS của TTTOS chỉ thay cho `openai` mặc định."""
     try:
         import tomllib
         with open(_codex_home() / "config.toml", "rb") as f:
@@ -2028,7 +2028,7 @@ def codex_transport() -> str:
 
 
 def codex_http_config() -> list:
-    """Các `-c` khai provider HTTPS của Javis và chọn nó."""
+    """Các `-c` khai provider HTTPS của TTTOS và chọn nó."""
     p = f"model_providers.{CODEX_HTTP_PROVIDER}"
     return [f'{p}.name="OpenAI"',
             f'{p}.base_url="https://chatgpt.com/backend-api/codex"',
@@ -2105,7 +2105,7 @@ class CodexCLI:
         self.model = model              # gpt-5.5 / gpt-5.4 ...
         self.instructions = instructions
         self.extra_config = []          # list '-c key=value' (override config, vd thêm mcp_servers)
-        self.profile = None             # tên profile codex (-p) - Javis ghi javis.config.toml để thêm MCP
+        self.profile = None             # tên profile codex (-p) - TTTOS ghi javis.config.toml để thêm MCP
         self.session_id = None          # Codex thread_id; có giá trị → `codex exec resume <id>`
         # Sandbox của Codex: None = toàn quyền (mặc định, giữ nguyên hành vi cũ của chat/workflow).
         # Việc nền đặt 'read-only' / 'workspace-write' để khớp mode suggest/auto của loop -
@@ -2235,7 +2235,7 @@ class CodexCLI:
                 with _PROC_LOCK:
                     _ACTIVE_PROCS[proc] = self.tag
                 # Nhớ pid (= mã nhóm tiến trình) theo tag lượt: hết lượt mà nhóm còn sống là Codex
-                # đã bỏ lại lệnh chạy ngầm, Javis nhận theo dõi (tien_trinh_nen, 0.64.66).
+                # đã bỏ lại lệnh chạy ngầm, TTTOS nhận theo dõi (tien_trinh_nen, 0.64.66).
                 try:
                     import tien_trinh_nen
                     tien_trinh_nen.ghi_nhom(self.tag, proc.pid)
@@ -2370,7 +2370,7 @@ class CodexCLI:
                 yield {"type": "tool_call", "name": "todo_list", "item": it}
             elif t == "item.started":
                 # Codex báo lúc một bước BẮT ĐẦU (đo 08/10, Codex 0.160: lệnh `ping` 5 giây có
-                # item.started ở giây 8,8, item.completed ở giây 14). Trước 0.86.1 Javis chỉ nghe
+                # item.started ở giây 8,8, item.completed ở giây 14). Trước 0.86.1 TTTOS chỉ nghe
                 # item.completed, nên suốt lúc một lệnh dài chạy, khung chat im hẳn và người dùng
                 # tưởng treo (khách báo 08/10). Phát `progress` để trang hiện ngay bước đang chạy;
                 # nơi nào không biết loại này thì bỏ qua, `tool_call` lúc xong vẫn y như cũ.

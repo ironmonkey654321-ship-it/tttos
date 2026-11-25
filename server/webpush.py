@@ -3,10 +3,10 @@
 Vì sao tự viết thay vì cài `pywebpush`
 ======================================
 `pywebpush` kéo theo `http-ece`, mà gói đó chỉ phát hành dạng mã nguồn và phải BIÊN DỊCH
-lúc cài. Javis là app tự cài trên máy người dùng và trên VPS bằng một dòng
+lúc cài. TTTOS là app tự cài trên máy người dùng và trên VPS bằng một dòng
 `pip install -r requirements.txt`; thêm một gói có thể gãy lúc build nghĩa là có máy cài
-Javis không lên được nữa - trả giá quá đắt cho một tính năng phụ. Toàn bộ phép mã hoá dưới
-đây chỉ cần `cryptography`, thứ Javis vốn đã có sẵn trong requirements.
+TTTOS không lên được nữa - trả giá quá đắt cho một tính năng phụ. Toàn bộ phép mã hoá dưới
+đây chỉ cần `cryptography`, thứ TTTOS vốn đã có sẵn trong requirements.
 
 Chuẩn áp dụng
 =============
@@ -14,7 +14,7 @@ Chuẩn áp dụng
 - RFC 8188 (khung dữ liệu aes128gcm: salt | rs | idlen | keyid | ciphertext).
 - RFC 8292 (VAPID): tự giới thiệu với dịch vụ đẩy bằng JWT ES256 ký bằng khoá riêng của
   chính máy này. Khoá sinh MỘT LẦN rồi giữ ở STATE_DIR - đổi khoá là mọi đăng ký cũ chết,
-  nên nó phải sống qua các lần cập nhật Javis.
+  nên nó phải sống qua các lần cập nhật TTTOS.
 
 Bước dẫn khoá (đã đối chiếu với thư viện tham chiếu `http_ece`):
     ecdh   = ECDH(khoá_riêng_tạm, p256dh_của_trình_duyệt)
@@ -23,7 +23,7 @@ Bước dẫn khoá (đã đối chiếu với thư viện tham chiếu `http_ec
     nonce  = HKDF(salt=salt, info=b"Content-Encoding: nonce\\x00",      len=12)(ikm)
 
 Giới hạn thật, nói trước cho khỏi mất công dò:
-- Web Push CHỈ chạy trong secure context: https, hoặc localhost. Javis chạy trần bằng IP
+- Web Push CHỈ chạy trong secure context: https, hoặc localhost. TTTOS chạy trần bằng IP
   qua http trong mạng LAN thì trình duyệt không cho đăng ký, không có cách nào lách.
 - iOS chỉ đẩy được khi người dùng đã "Thêm vào MH chính" (PWA đã cài), từ iOS 16.4.
 """
@@ -362,7 +362,7 @@ async def gui_het(tieu_de: str, than: str, url: str = "/", tag: str = "javis", p
     msg = {"title": tieu_de, "body": than, "url": url, "tag": tag}
     if quiet_if_visible:
         # A notice about something the owner may be watching already (a long chat turn that just ended): the device
-        # where Javis is open and in front of them shows no notification (dashboard/sw.js).
+        # where TTTOS is open and in front of them shows no notification (dashboard/sw.js).
         msg["quiet_if_visible"] = True
     payload = json.dumps(msg, ensure_ascii=False).encode("utf-8")
     import httpx

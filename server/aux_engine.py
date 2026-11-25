@@ -71,7 +71,7 @@ _KEY_FIELD = {
     "anthropic-compat": "anthropic_compat_key",
 }
 
-# mode của Javis -> sandbox của Codex CLI. Bản đồ thật nằm ở `claude_cli.codex_sandbox_cho_mode`
+# mode của TTTOS -> sandbox của Codex CLI. Bản đồ thật nằm ở `claude_cli.codex_sandbox_cho_mode`
 # (nó còn đọc cờ JAVIS_CODEX_SANDBOX); giữ dict này để mã cũ đọc tên mức vẫn chạy.
 _CODEX_SANDBOX = {"suggest": "read-only", "auto": "workspace-write", "full": None}
 
@@ -173,7 +173,7 @@ async def pick_openrouter_free(key: str = "") -> str:
     return best
 
 
-# Tags of the work Javis starts on its own. On an Automatic background model these run on the LIGHT pick;
+# Tags of the work TTTOS starts on its own. On an Automatic background model these run on the LIGHT pick;
 # everything else (reminder, loop, Kanban dispatch, workflow, ingest) is work the owner handed over and runs
 # on the MID pick. See model_routing.background_spec.
 LIGHT_TAGS = ("next-prompt", "learn", "reply-policy", "habit-coach", "web-watch-summary", "incident-triage",
@@ -373,7 +373,7 @@ def availability(spec: dict, settings: dict = None) -> tuple:
         try:
             import antigravity_cli as _a
             if not _a.find_antigravity_cli():
-                return False, "Chưa cài Antigravity CLI (`agy`) trên máy chạy Javis."
+                return False, "Chưa cài Antigravity CLI (`agy`) trên máy chạy TTTOS."
             # Bản NỀN (đọc cache, làm mới bằng thread), KHÔNG phải auth_status(): hàm này chạy
             # ngay trong code async (học sau lượt chat, việc Kanban, nhắc hẹn, loop), mà
             # auth_status() hỏi thẳng `agy models` tới 80 giây. Cả app đứng theo: chủ repo đổi
@@ -508,8 +508,8 @@ class _ApiAuxEngine:
             "\n\n[Sự thật hệ thống - năng lực của phiên này] Bạn đang chạy bằng engine API "
             f"'{self.provider}', KHÔNG phải Claude Code. Bạn có: {_may}tìm và đọc web "
             "(javis_web_search, javis_web_fetch; chưa thấy trong danh sách thì tìm bằng "
-            "javis_search_tools rồi gọi qua javis_run_tool), các tool qua MCP Hub của Javis "
-            "(gồm tool đọc/ghi file trong vault và mọi MCP người dùng đã đấu vào Javis). "
+            "javis_search_tools rồi gọi qua javis_run_tool), các tool qua MCP Hub của TTTOS "
+            "(gồm tool đọc/ghi file trong vault và mọi MCP người dùng đã đấu vào TTTOS). "
             f"{_thieu}các "
             "connector gắn thẳng vào TÀI KHOẢN Claude - Gmail, Google Drive, Google Calendar "
             "gọi bằng tool native `mcp__<tên>__*` chỉ tồn tại trên engine Claude Code. "
@@ -603,7 +603,7 @@ class _ApiAuxEngine:
         Thư mục làm việc là brain của việc. Mỗi lượt một mã phiên riêng (`nen-<tag>-<ngẫu nhiên>`)
         nên thư mục hiện hành, biến môi trường và tiến trình nền của việc này không lẫn sang việc
         khác. Tiến trình chạy nền xong thì báo về khung chat của chủ nếu lượt biết (turn_context),
-        còn không thì về Javis Core của brain (`main._report_route`, nhánh khung chat không tồn tại)."""
+        còn không thì về TTTOS Core của brain (`main._report_route`, nhánh khung chat không tồn tại)."""
         if not self.terminal or not self.vault_root:
             return None
         try:
@@ -723,7 +723,7 @@ _PLAN_CLASS_PROVIDER = {"ClaudeSDK": CLAUDE, "CodexCLI": CODEX, "GrokCLI": GROK_
 
 
 def _note_plan_limit(e, error) -> None:
-    """A plan link was refused for running out of plan quota: the usage ring turns red and Javis's own work waits,
+    """A plan link was refused for running out of plan quota: the usage ring turns red and TTTOS's own work waits,
     exactly as after a refused chat turn (the chat path does this in main._limit_frame). Before, only chat recorded
     it, so background work could run a plan dry while the ring stayed green. Same detector as chat: the plan's own
     sentence, or plain quota words for Grok and Antigravity, which print no fixed sentence. Never raises."""
@@ -949,7 +949,7 @@ def _build_codex(spec, claude_cli_obj, mode, tag, codex_profile=None):
     cc.vault_root = getattr(claude_cli_obj, "javis_vault", None)   # ảnh Codex vẽ về đúng brain
     if codex_profile:
         try:
-            cc.profile = codex_profile()   # profile javis = thấy MCP của Javis (POS, connector...)
+            cc.profile = codex_profile()   # profile javis = thấy MCP của TTTOS (POS, connector...)
         except Exception as e:
             print(f"[aux codex profile] {e}", file=sys.stderr)
     # The turn key (X-Javis-Turn) rides on every query, as on a chat turn (main._apply_codex_hub). Without it a reminder
@@ -1052,7 +1052,7 @@ def _build_grok(spec, claude_cli_obj, mode, tag):
 
     Entry MCP dựng bằng `grok_cli.hub_entry()` chứ KHÔNG viết tay: Grok đọc khoá `url`, còn
     `agy` đọc `serverUrl`. Chép nhầm khoá giữa hai engine là không có lấy một tool nào của
-    Javis mà không một câu lỗi nào - đúng thứ đã xảy ra với `agy` mấy bản liền.
+    TTTOS mà không một câu lỗi nào - đúng thứ đã xảy ra với `agy` mấy bản liền.
     """
     import grok_cli as _g
     muc = mode or getattr(claude_cli_obj, "javis_mode", None) or "full"
@@ -1086,7 +1086,7 @@ def _build_antigravity(spec, claude_cli_obj, mode, tag):
       `antigravity_cli.co_quyen_cho_mode` - nó nói thẳng chuyện này, và rào tiền/đơn/đăng bài
       vẫn nằm ở MCP Hub chứ không ở CLI.
     - **Hình dạng entry MCP khác hẳn.** `agy` đọc khoá `serverUrl`, Grok đọc `url`. Chép nhầm
-      khoá là engine chạy trơn tru mà không có lấy một tool nào của Javis, không một tiếng
+      khoá là engine chạy trơn tru mà không có lấy một tool nào của TTTOS, không một tiếng
       động - đúng thứ đã xảy ra mấy bản liền. Nên dựng entry bằng `antigravity_cli.hub_entry()`
       chứ không viết tay.
     """
@@ -1304,7 +1304,7 @@ def swap(cli, mode: str = None, tag: str = None, spec: dict = None,
         # cost another failed call, so each plan provider appears once.
         for st in model_routing.background_chain(m, conn, first=first, once=(CLAUDE, CODEX, GROK_CLI, ANTIGRAVITY)):
             chain.extend(_links_for_step(st, cli, mode, tag, codex_profile, s, claude_used))
-        # Automatic background model on a plan: the pick is a model Javis chose from the provider's list, and a
+        # Automatic background model on a plan: the pick is a model TTTOS chose from the provider's list, and a
         # plan provider appears only once above. If the provider refuses that model (the plan does not carry it,
         # it was withdrawn), the job must still run: one last link on MAIN's own model, as before Automatic.
         if spec is None and first["provider"] in (CLAUDE, CODEX, GROK_CLI, ANTIGRAVITY) \

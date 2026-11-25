@@ -1,12 +1,12 @@
 """Discord gateway for the owner's control channel (0.85.0).
 
-Why the Gateway (a WebSocket Javis opens OUT to Discord) instead of an Interactions webhook: it
+Why the Gateway (a WebSocket TTTOS opens OUT to Discord) instead of an Interactions webhook: it
 works on a laptop or behind NAT with no public URL, the same way Telegram long-polling and Slack
 Socket Mode do, and it receives ordinary messages, not only slash commands.
 
 One credential: the bot token from the Developer Portal (Bot tab). No privileged intent is needed.
-Javis asks for GUILDS + GUILD_MESSAGES + DIRECT_MESSAGES only, and Discord still delivers the TEXT of
-the messages Javis answers without MESSAGE_CONTENT: direct messages, and server messages that
+TTTOS asks for GUILDS + GUILD_MESSAGES + DIRECT_MESSAGES only, and Discord still delivers the TEXT of
+the messages TTTOS answers without MESSAGE_CONTENT: direct messages, and server messages that
 @mention the bot. Those are exactly the turns the control channel takes, so the owner never has to
 switch on a privileged intent (which also needs review once a bot is in 100+ servers).
 
@@ -349,7 +349,7 @@ class DiscordBot(HangLuot):
                 return       # people talking to each other in a server channel
         if self.chat_ids and meta["user_id"] not in self.chat_ids and chat not in self.chat_ids:
             await self._send(client, chat, localefmt.chu(
-                "Bạn không có quyền dùng bot Javis này.", "You are not allowed to use this Javis bot."))
+                "Bạn không có quyền dùng bot TTTOS này.", "You are not allowed to use this TTTOS bot."))
             return
         text = self._strip_mention(m.get("content"))
         # Discord owns "/" for registered slash commands, so "!stop", "!new"... stand in for the
@@ -403,7 +403,7 @@ class DiscordBot(HangLuot):
         if silent and not str(reply or "").strip() and not files:
             return
         if tools and not self.giau_trang_thai:
-            # The tool trail, proof of what Javis touched, as a small line above the answer.
+            # The tool trail, proof of what TTTOS touched, as a small line above the answer.
             reply = f"-# {dong_vet(tools, time.monotonic() - t0)}\n{reply}"
         if str(reply or "").strip() or not files:
             await self._send(client, chat, reply)

@@ -32,7 +32,7 @@ Vì sao thả tay vào đây KHÔNG cần cổng env, còn `<brain>/plugins/` th
 reasoning below explains why packs never needed it.)
 `plugins_host` bắt `JAVIS_ENABLE_USER_PLUGINS` cho plugin trong vault vì **model ghi được vào
 vault**: `javis_write_file` mở đúng cây đó, nên "một thư mục ghi được" ở đấy nghĩa là code chạy
-mà không ai bấm gì. `STATE_DIR/packs/` thì không tool nào của Javis ghi tới; ghi được vào đây
+mà không ai bấm gì. `STATE_DIR/packs/` thì không tool nào của TTTOS ghi tới; ghi được vào đây
 đòi quyền trên hệ tệp của máy chủ, tức đã tương đương quyền sửa mã nguồn - không còn gì để
 cổng đó bảo vệ thêm.
 
@@ -65,7 +65,7 @@ from config import STATE_DIR
 # Bản cũ suy từ STATE_DIR và sai ở mọi bản cài đặt `JAVIS_STATE_DIR`: trên Docker thì
 # `/data/state` ra `/data`, chỗ không có VERSION. Hậu quả không nhẹ chút nào - `_app_version()`
 # trả rỗng, `_hop_compat` so với (0,0,0), nên MỌI gói có khai `compat.app` đều bị từ chối ở
-# bước validate với câu "cần Javis >=x, bản này là " (bỏ trống). Tức là cả kho không cài được
+# bước validate với câu "cần TTTOS >=x, bản này là " (bỏ trống). Tức là cả kho không cài được
 # gì, trên đúng những bản cài mà người dùng thật đang chạy.
 PROJECT_ROOT = Path(__file__).parent.parent
 PACKS_DIR = STATE_DIR / "packs"
@@ -146,7 +146,7 @@ def _hop_compat(dai: str) -> tuple[bool, str]:
         ok = {">=": hien >= moc, "<=": hien <= moc, ">": hien > moc,
               "<": hien < moc, "==": hien == moc, "=": hien == moc}[op]
         if not ok:
-            return False, f"cần Javis {dai}, bản này là {_app_version()}"
+            return False, f"cần TTTOS {dai}, bản này là {_app_version()}"
     return True, ""
 
 
@@ -296,7 +296,7 @@ def _nap_mot(thu_muc, id_da_co, vao_loi=None) -> dict:
         return ban
 
     if str(m.get("format") or "") != FORMAT_MAGIC:
-        ban["error"] = f"không phải gói Javis (thiếu format: {FORMAT_MAGIC})"
+        ban["error"] = f"không phải gói TTTOS (thiếu format: {FORMAT_MAGIC})"
         return ban
     try:
         spec = int(m.get("spec") or 0)
@@ -316,7 +316,7 @@ def _nap_mot(thu_muc, id_da_co, vao_loi=None) -> dict:
         ban["error"] = f"id trong manifest ('{khai_id}') khác tên thư mục ('{pid}')"
         return ban
     if pid in _module_server():
-        ban["error"] = f"id '{pid}' trùng tên một module của Javis, đổi tên gói"
+        ban["error"] = f"id '{pid}' trùng tên một module của TTTOS, đổi tên gói"
         return ban
 
     ok, vi_sao = _hop_compat((m.get("compat") or {}).get("app"))
@@ -425,7 +425,7 @@ def _so_cai_dat() -> dict:
 
 # A signature computed less than this long ago is reused without touching the disk (2026-11-09, see
 # mcp_catalog.CHECK_S for the measurement). `invalidate()` drops it, and every install, removal or consent in
-# pack_install calls that, so a change made through Javis is seen at once.
+# pack_install calls that, so a change made through TTTOS is seen at once.
 SIGNATURE_S = 2.0
 _sig_memo: dict = {"at": 0.0, "dir": None, "value": None}
 

@@ -17,13 +17,13 @@ The spec's names are read too: `type` (`http_forward`, with `redirect_profile: g
 
 Each delivery has a DELIVERY ID that never changes for that (event, action, generation): `dlv_<hash>`. It is sent as
 `Idempotency-Key` and `X-Javis-Delivery`, with `X-Javis-Event-Id`, and inside the body (or, for an Apps Script web app
-that cannot read headers in doPost(e), in the query when the owner chose `delivery_ref: query`). Javis promises no
+that cannot read headers in doPost(e), in the query when the owner chose `delivery_ref: query`). TTTOS promises no
 exactly-once delivery: it records what it knows and never re-sends blindly.
 
 Outcome of one delivery (`run_*` return `Outcome`):
     completed  the receiver confirmed it did the work (2xx; Apps Script receipt ok; plugin "completed")
     accepted   the receiver took it and finishes later on its own (202; plugin "accepted" with its job id): the
-               plugin keeps its own scheduling and waiting; Javis does not chase it
+               plugin keeps its own scheduling and waiting; TTTOS does not chase it
     retry      certainly NOT done: the request never left (connect/DNS error) or the receiver said so (429), or the
                owner declared the receiver idempotent (`retry_safety`) and the answer was ambiguous
     unknown    it may have been done (timeout after sending, a 5xx, a dropped connection, a plugin that hung)

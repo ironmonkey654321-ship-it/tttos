@@ -1,6 +1,6 @@
-"""Trang Công cụ: phần "công cụ tuỳ chọn" - thứ Javis dùng được nhưng không nhét sẵn vào bản cài.
+"""Trang Công cụ: phần "công cụ tuỳ chọn" - thứ TTTOS dùng được nhưng không nhét sẵn vào bản cài.
 
-Hiện chỉ có một mục: trình duyệt cho Javis tự kiểm thử giao diện. Lý do tách thành một tầng
+Hiện chỉ có một mục: trình duyệt cho TTTOS tự kiểm thử giao diện. Lý do tách thành một tầng
 riêng thay vì nhét thẳng vào ảnh nằm ở `server/optional_tools.py`.
 
 Xác thực: theo đúng luật của trang Gói (`routes/packs.py`). Cài một công cụ là tải mã lạ về máy

@@ -31,7 +31,7 @@ _PATTERNS = (
     "not authenticated",
     # Antigravity CLI (antigravity_cli._la_loi_chua_dang_nhap; with no session it opens its sign-in menu instead)
     "not signed in", "login required", "unauthenticated", "select login method",
-    # Javis's own sentences for a ChatGPT turn with no usable token (engine.py, the bot paths in main.py)
+    # TTTOS's own sentences for a ChatGPT turn with no usable token (engine.py, the bot paths in main.py)
     "chưa đăng nhập được chatgpt", "chưa đăng nhập chatgpt", "not signed in to chatgpt",
 )
 # The ChatGPT backend's refusal as engine.ev_loi_http writes it: "ChatGPT 401: ...".

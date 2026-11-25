@@ -33,8 +33,8 @@ _task = None
 _EN = {
     "Hết phiên đăng nhập - bấm Kết nối lại để đăng nhập lại.":
         "Signed out - click Reconnect to sign in again.",
-    "Không khởi động được trình kết nối trên máy chạy Javis.":
-        "Could not start the connector on the machine running Javis.",
+    "Không khởi động được trình kết nối trên máy chạy TTTOS.":
+        "Could not start the connector on the machine running TTTOS.",
     "Dịch vụ không phản hồi - có thể do mạng hoặc máy chủ dịch vụ.":
         "The service is not responding - possibly the network or the service's server.",
     "Lỗi không rõ": "Unknown error",
@@ -58,16 +58,16 @@ _EN = {
         "Still starting (a first run may be downloading its package) - not an error yet. Wait a "
         "moment, then click Check.",
     "Gói cài đặt của trình kết nối bị thiếu file (cài dở). Chờ khoảng hai phút rồi bấm Kiểm tra "
-    "để Javis dọn bản hỏng và cài lại.":
+    "để TTTOS dọn bản hỏng và cài lại.":
         "The connector's installed package is missing files (an interrupted install). Wait about "
-        "two minutes, then click Check and Javis removes the broken copy and installs it again.",
-    "Composio từ chối consumer key mà Javis đang dùng. Vào Composio "
+        "two minutes, then click Check and TTTOS removes the broken copy and installs it again.",
+    "Composio từ chối consumer key mà TTTOS đang dùng. Vào Composio "
     "For You → Connect my agent, lấy key ck_*, nhập vào thẻ Composio "
-    "trong Javis rồi bấm Kết nối hoặc Kết nối lại. Kết nối lại riêng "
+    "trong TTTOS rồi bấm Kết nối hoặc Kết nối lại. Kết nối lại riêng "
     "Calendar không thay đổi key này.":
-        "Composio rejected the consumer key Javis is using. In Composio go to "
+        "Composio rejected the consumer key TTTOS is using. In Composio go to "
         "For You → Connect my agent, get a ck_* key, enter it on the Composio card "
-        "in Javis, then click Connect or Reconnect. Reconnecting only "
+        "in TTTOS, then click Connect or Reconnect. Reconnecting only "
         "Calendar does not change this key.",
 }
 
@@ -124,9 +124,9 @@ def classify_error(err: str, conn=None) -> tuple[str, str]:
     low = (err or "").lower()
     if (conn or {}).get("connector_id") == "composio" and (
             _has_status(low, "401") or "bearer token rejected" in low):
-        message = ("Composio từ chối consumer key mà Javis đang dùng. Vào Composio "
+        message = ("Composio từ chối consumer key mà TTTOS đang dùng. Vào Composio "
                    "For You → Connect my agent, lấy key ck_*, nhập vào thẻ Composio "
-                   "trong Javis rồi bấm Kết nối hoặc Kết nối lại. Kết nối lại riêng "
+                   "trong TTTOS rồi bấm Kết nối hoặc Kết nối lại. Kết nối lại riêng "
                    "Calendar không thay đổi key này.")
         return "auth", message
     if _has_status(low, "401") or any(s in low for s in _AUTH_HINTS):
@@ -138,9 +138,9 @@ def classify_error(err: str, conn=None) -> tuple[str, str]:
         # "Wait about two minutes": npx_cache leaves a folder touched in the last QUIET_SECONDS
         # alone (it may still be mid-install), so a Check right away would repair nothing.
         return "install", ("Gói cài đặt của trình kết nối bị thiếu file (cài dở). Chờ khoảng hai "
-                           "phút rồi bấm Kiểm tra để Javis dọn bản hỏng và cài lại.")
+                           "phút rồi bấm Kiểm tra để TTTOS dọn bản hỏng và cài lại.")
     if any(s in low for s in _SPAWN_HINTS):
-        return "spawn", "Không khởi động được trình kết nối trên máy chạy Javis."
+        return "spawn", "Không khởi động được trình kết nối trên máy chạy TTTOS."
     if _has_status(low, *_NET_STATUS) or any(s in low for s in _NET_HINTS):
         return "net", "Dịch vụ không phản hồi - có thể do mạng hoặc máy chủ dịch vụ."
     return "unknown", (err or "Lỗi không rõ").strip()[:160]
@@ -169,12 +169,12 @@ async def check_one(conn, pool=None) -> dict:
                 rec.update(kind="auth",
                            message="Thiếu quyền: " + ", ".join(oauth_mcp.short_scopes(missing))
                                    + " - bấm Kết nối lại và tick đủ mọi ô quyền. Google không"
-                                   " hiện ô tick nào (quyền cũ đã cấp) thì gỡ Javis tại"
+                                   " hiện ô tick nào (quyền cũ đã cấp) thì gỡ TTTOS tại"
                                    " myaccount.google.com/permissions rồi kết nối lại.",
                            message_en="Missing permissions: "
                                       + ", ".join(oauth_mcp.short_scopes(missing))
                                       + " - click Reconnect and tick every permission box. If Google"
-                                      " shows no boxes (old permissions already granted), remove Javis at"
+                                      " shows no boxes (old permissions already granted), remove TTTOS at"
                                       " myaccount.google.com/permissions and reconnect.")
                 _state[conn["id"]] = rec
                 return rec
@@ -292,12 +292,12 @@ ENGINE_FIX = {
     "claude": "Vào trang Models để kết nối lại.",
     "codex": "Vào trang Models để kết nối lại ChatGPT.",
 }
-ENGINE_FIX_DEFAULT = "Vào trang Models để kết nối và sử dụng Javis."
+ENGINE_FIX_DEFAULT = "Vào trang Models để kết nối và sử dụng TTTOS."
 ENGINE_FIX_EN = {
     "claude": "Go to the Models page to reconnect.",
     "codex": "Go to the Models page to reconnect ChatGPT.",
 }
-ENGINE_FIX_DEFAULT_EN = "Go to the Models page to connect and use Javis."
+ENGINE_FIX_DEFAULT_EN = "Go to the Models page to connect and use TTTOS."
 
 
 _ENGINE_NOTICE_FILE = "engine_down_notified.json"   # in STATE_DIR (0.402.0)
@@ -310,7 +310,7 @@ def _engine_notice_path():
 
 def _engine_notified_saved() -> dict:
     """{engine name: time} of the down notices already sent and not yet followed by a recovery (0.402.0). Kept on disk
-    so a restart while an engine is still down does not send the same "Javis is not usable" notice again."""
+    so a restart while an engine is still down does not send the same "TTTOS is not usable" notice again."""
     try:
         d = json.loads(_engine_notice_path().read_text(encoding="utf-8"))
         return d if isinstance(d, dict) else {}
@@ -350,7 +350,7 @@ def _set_engine(name, ok, message="", source="probe"):
     if not ok and not rec["notified"] and on_engine_down:
         # Chỉ báo Telegram khi bộ não này ĐANG là Main Model. Đèn của bộ não khác (vd lượt
         # chạy việc nền bằng Claude phát hiện mất đăng nhập trên máy Main Codex) vẫn được
-        # ghi lại, nhưng câu "Javis chưa dùng được" là SAI với người dùng đó - việc nền đã
+        # ghi lại, nhưng câu "TTTOS chưa dùng được" là SAI với người dùng đó - việc nền đã
         # tự chạy tiếp bằng bộ não chat (_FallbackChain, 0.43.3).
         try:
             if name not in engines_in_use():
@@ -360,15 +360,15 @@ def _set_engine(name, ok, message="", source="probe"):
         rec["notified"] = True
         _engine_notified_set(name, True)
         try:
-            # Nói theo góc NGƯỜI DÙNG: với họ chỉ có một sự thật là chưa dùng được Javis,
+            # Nói theo góc NGƯỜI DÙNG: với họ chỉ có một sự thật là chưa dùng được TTTOS,
             # và một việc phải làm. Tên engine để trong ngoặc cho ai cần đi tra, không đặt
             # lên đầu câu.
             import localefmt
             coro = on_engine_down(localefmt.chu(
-                "⚠ Javis chưa dùng được: chưa kết nối được Model AI. "
+                "⚠ TTTOS chưa dùng được: chưa kết nối được Model AI. "
                 + ENGINE_FIX.get(name, ENGINE_FIX_DEFAULT)
                 + f" (chi tiết: {name} - {message})",
-                "⚠ Javis is not usable yet: no AI model is connected. "
+                "⚠ TTTOS is not usable yet: no AI model is connected. "
                 + ENGINE_FIX_EN.get(name, ENGINE_FIX_DEFAULT_EN)
                 + f" (details: {name} - {_EN.get(message) or message})"))
             if asyncio.iscoroutine(coro):
@@ -383,7 +383,7 @@ def flag_engine_auth_error(name, raw) -> bool:
 
     0.402.0: only a short error line counts (`looks_like_error_line`). The engine passes the result of every turn, so
     a normal answer that quoted "not logged in" or "invalid api key" used to light the red light and tell the owner
-    that Javis is not usable. The check lives here, not in the engine: `claude_sdk_engine.py` is part of the pinned
+    that TTTOS is not usable. The check lives here, not in the engine: `claude_sdk_engine.py` is part of the pinned
     improvement profile (`improvement_claude.PROFILE_SOURCES`)."""
     if not looks_like_error_line(raw):
         return False
@@ -472,7 +472,7 @@ def engines_in_use() -> set:
 
     Model việc nền KHÔNG soi ở đây nữa (0.47.4). Từ 0.43.3 việc nền có _FallbackChain:
     Claude không sẵn sàng thì nó tự chạy bằng chính bộ não chat - tức 'model việc nền
-    chưa đăng nhập' KHÔNG còn nghĩa là 'Javis chưa dùng được'. Trong khi đó banner đọc
+    chưa đăng nhập' KHÔNG còn nghĩa là 'TTTOS chưa dùng được'. Trong khi đó banner đọc
     đúng nghĩa đen như vậy, và trong một ngày (27/08) đã hai lần bắt oan máy Main Model
     Codex chỉ vì cấu hình việc nền còn trỏ một model Claude (bản đầu lọc mỗi ca
     'anthropic-cli + model rỗng' của nút Về mặc định - vẫn sót ca chọn hẳn haiku theo
@@ -686,9 +686,9 @@ async def startup_smoke(version: str = "", pool=None, retry_after: float | None 
                            for f in failed[:5])
             try:
                 coro = notify(localefmt.chu(
-                    f"⚠ Sau khi Javis khởi động lại{ban}, {len(failed)} kết nối chưa chạy: {vi}. "
+                    f"⚠ Sau khi TTTOS khởi động lại{ban}, {len(failed)} kết nối chưa chạy: {vi}. "
                     "Mở trang Kết nối và bấm Kiểm tra.",
-                    f"⚠ After Javis restarted{ver}, {len(failed)} connection(s) are not working: "
+                    f"⚠ After TTTOS restarted{ver}, {len(failed)} connection(s) are not working: "
                     f"{en}. Open the Connections page and click Check."))
                 if asyncio.iscoroutine(coro):
                     await coro

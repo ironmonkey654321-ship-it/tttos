@@ -22,9 +22,9 @@
                 // 0.408.0 (owner: "read notices must hide, Mark all read must clear them"): both tabs list unread only;
                 // `xemDaDoc` is the "Show N read" link at the bottom, for this opening of the panel only.
                 xemDaDoc: false, an: new Set(), flash: "" };
-  // 0.403.0, Javis Core as the notification commander (docs/dev/2026-10-javis-core-chi-huy-thong-bao.md): notices
+  // 0.403.0, TTTOS Core as the notification commander (docs/dev/2026-10-javis-core-chi-huy-thong-bao.md): notices
   // its rules kept quiet are `filtered` and live under "Filtered"; every card takes the owner's feedback in the
-  // two buttons, "Needed" / "Not needed" (owner, 2026-10-29: emoji go on the notice once it is opened in Javis Core's
+  // two buttons, "Needed" / "Not needed" (owner, 2026-10-29: emoji go on the notice once it is opened in TTTOS Core's
   // chat, where every answer already takes the six reactions); the "Filter" view sets each group's mode, undoes changes.
   var GROUPS = ["reminder", "question", "chatbot", "connection", "incident", "job", "agent", "team", "cost", "update", "other"];
   var MODES = ["all", "important", "urgent", "off"];
@@ -220,7 +220,7 @@
   }
   // Bấm một mẩu thư = quay về ĐÚNG hội thoại đã hỏi. Mở hội thoại MỚI ở đây là sai: toàn bộ
   // ngữ cảnh nằm trong hội thoại cũ, hỏi tiếp ở chỗ khác là phải kể lại từ đầu.
-  // 0.188.0 (Javis Core spec 9): an item of another brain switches the dashboard to that brain FIRST (only on this
+  // 0.188.0 (TTTOS Core spec 9): an item of another brain switches the dashboard to that brain FIRST (only on this
   // click, never when a report arrives), so the chat opens in the right brain and what you type goes there.
   // Returns true when it switched (the caller then waits for the pages to redraw on the new brain).
   function chuyenBrainNeuCan(item) {
@@ -235,8 +235,8 @@
   function moThu(item) {
     item.read = true;
     docThu({ id: item.id }).then(render);
-    // 0.191.0 (owner, 16/10/2026): a notice with no chat of its own opens in Javis Core (copied there with its source
-    // and time, once); a notice that answers a chat opens that chat. No separate "Ask Javis Core" button.
+    // 0.191.0 (owner, 16/10/2026): a notice with no chat of its own opens in TTTOS Core (copied there with its source
+    // and time, once); a notice that answers a chat opens that chat. No separate "Ask TTTOS Core" button.
     // 0.335.0: "Store has updates" opens the TTTOS Store, whose banner lists what can be updated.
     if (item.channel === "store:updates" && (window.JavisPacks || window.JavisNapCham)) {
       closePanel();
@@ -284,7 +284,7 @@
     } catch (e) {}
     try { if (window.JavisSessions) window.JavisSessions.open(item.session_id); } catch (e) {}
   }
-  // Javis Core (0.187.0, spec 7.3): the notice goes into this person's own Javis Core chat, with its source and time,
+  // TTTOS Core (0.187.0, spec 7.3): the notice goes into this person's own TTTOS Core chat, with its source and time,
   // and the chat opens there. The shared notice itself never changes.
   async function hoiCore(src, id) {
     var brain = "brain";
@@ -318,7 +318,7 @@
       state.note[item.id] = [window.t("noti.react_saved")].concat(r.messages || []).join(" ");
       state.policy = null;
       // 0.408.0 (owner: "I pressed Not needed and it still shows"): Not needed also reads this notice, so it leaves
-      // the list at once. Its card is gone, so what Javis Core learned shows above the list instead.
+      // the list at once. Its card is gone, so what TTTOS Core learned shows above the list instead.
       if (body.axis === "not_needed") {
         state.flash = state.note[item.id];
         delete state.note[item.id];
@@ -334,7 +334,7 @@
   function theThu(item) {
     var chua = !item.read ? " unread" : "";
     var why = item.filtered ? (item.why === "repeat" ? "noti.why_repeat" : item.why === "muted" ? "noti.why_muted" : "noti.why_mode") : "";
-    // Where a press takes you: the chat it answers, or Javis Core for a notice with no chat of its own (0.191.0).
+    // Where a press takes you: the chat it answers, or TTTOS Core for a notice with no chat of its own (0.191.0).
     var phu = window.t(item.channel === "store:updates" ? "noti.open_store"
       : !item.session_id || item.channel === "agent:javis-core" ? "noti.open_core" : "noti.reopen_chat");
     return '<article class="noti-card' + chua + '" tabindex="0" role="button" data-thu-id="' + esc(item.id) + '">' +
@@ -425,7 +425,7 @@
     saveRead(moi ? [id] : null);
     render();
   }
-  // The "Filter" view: each group's mode, the per-kind rules, Javis Core's recent changes (each can be undone).
+  // The "Filter" view: each group's mode, the per-kind rules, TTTOS Core's recent changes (each can be undone).
   async function taiBoLoc() {
     try { state.policy = await (await fetch("/notify/policy", { cache: "no-store" })).json(); } catch (e) { state.policy = { ok: false }; }
     render();

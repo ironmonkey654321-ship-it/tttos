@@ -15,6 +15,9 @@ SUDO=""; [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1 && SUDO="sudo"
 if [ -z "${JAVIS_NAME:-}" ] && [ -f .env ]; then
   JAVIS_NAME="$(sed -n 's/^[[:space:]]*JAVIS_NAME[[:space:]]*=[[:space:]]*//p' .env | tail -1)"
 fi
+# TTTOS: install.sh moi ghi JAVIS_NAME=tttos vao .env. Ban cai cu khong co dong do thi
+# nhan tttos.service neu co, khong thi javis.service nhu truoc.
+if [ -z "${JAVIS_NAME:-}" ] && [ -f /etc/systemd/system/tttos.service ]; then JAVIS_NAME=tttos; fi
 NAME="${JAVIS_NAME:-javis}"
 
 # A root install runs Javis as a regular account that owns this whole folder (install.sh, 2026-11-12). Root then pulls

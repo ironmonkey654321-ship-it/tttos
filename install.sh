@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # ============================================================================
-# Javis OS - Linux/macOS native installer (no Docker)
+# TTTOS - Linux/macOS native installer (no Docker)
 #   ./install.sh
 # Installs python3 + node + Claude Code CLI, creates a venv, installs deps,
 # seeds .env, and registers a systemd service (or falls back to nohup).
 #
-# NHIEU BAN TREN CUNG MOT MAY: clone vao THU MUC KHAC roi dat hai bien truoc khi chay.
-#   JAVIS_NAME=javis-shop JAVIS_PORT=7778 ./install.sh
-# JAVIS_NAME dat ten dich vu systemd (javis-shop.service); JAVIS_PORT la cong nghe.
-# Bo trong ca hai = javis.service + cong 7777, y het truoc day.
+# TTTOS mac dinh: dich vu tttos.service, cong 7779, tai khoan chay 'tttos'.
+# Nho vay cai chung may voi Javis (javis.service, cong 7777/7778) khong de len nhau.
+# Doi khi can:  JAVIS_NAME=tttos2 JAVIS_PORT=7780 ./install.sh
+# Mo cho may khac trong LAN vao thang (khong qua tunnel):  JAVIS_BIND=0.0.0.0 ./install.sh
 # ============================================================================
 set -euo pipefail
 
@@ -23,8 +23,15 @@ cd "$APP_DIR"
 
 # Ten dich vu + cong cua BAN NAY. Truoc day ca hai deu dong cung, nen cai ban thu hai la ghi de
 # /etc/systemd/system/javis.service cua ban thu nhat va hai ban tranh nhau cong 7777.
-SVC="${JAVIS_NAME:-javis}"
-PORT="${JAVIS_PORT:-7777}"
+SVC="${JAVIS_NAME:-tttos}"
+PORT="${JAVIS_PORT:-7779}"
+BIND="${JAVIS_BIND:-127.0.0.1}"
+case "$PORT" in
+  ""|*[!0-9]*) err "JAVIS_PORT must be a number (got: $PORT)"; exit 1;;
+esac
+case "$BIND" in
+  ""|*[!0-9.]*) err "JAVIS_BIND must be an IPv4 address such as 127.0.0.1 or 0.0.0.0 (got: $BIND)"; exit 1;;
+esac
 case "$SVC" in
   *[!A-Za-z0-9._-]*) err "JAVIS_NAME may only contain letters, digits, '.', '_' and '-' (got: $SVC)"; exit 1;;
 esac
@@ -42,7 +49,7 @@ SUDO=""; [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1 && SUDO="sudo"
 # An install that ALREADY exists is never moved to another account: its Claude sign-in, brains and state live under
 # the account it has run as. The unit's User= (or, with no unit, the owner of .env) decides, so a second run of this
 # script keeps whatever the first one chose.
-#   JAVIS_USER=name        the account to create or use (default: javis)
+#   JAVIS_USER=name        the account to create or use (default: tttos)
 #   JAVIS_INSTALL_DIR=/x   where to move a clone the account cannot reach, e.g. one under /root (default: /opt/<folder>)
 #   JAVIS_RUN_AS_ROOT=1    keep the old behaviour and run as root
 RUN_AS=""                               # set = root installs on behalf of this regular account
@@ -64,7 +71,7 @@ pick_run_user() {
   elif [ -f "$UNIT_FILE" ]; then want="$(sed -n 's/^User=//p' "$UNIT_FILE" | head -1)"; want="${want:-root}"
   elif [ -f .env ]; then want="$(stat -c %U .env 2>/dev/null || echo root)"
   else
-    want="${JAVIS_USER:-javis}"; fresh=1
+    want="${JAVIS_USER:-tttos}"; fresh=1
     case "$want" in
       *[!a-z0-9_-]*|[!a-z_]*|"") err "JAVIS_USER must be a plain account name such as 'javis' (got: $want)"; exit 1;;
     esac
@@ -323,7 +330,10 @@ if [ -t 0 ]; then
     fi
   fi
 fi
-grep -q '^JAVIS_HOST=' .env || echo "JAVIS_HOST=127.0.0.1" >> .env
+grep -q '^JAVIS_HOST=' .env || echo "JAVIS_HOST=$BIND" >> .env
+# Ghi ten dich vu + cong vao .env: update.sh va nut khoi dong lai doc tu day, khong doan 'javis'.
+if grep -q '^JAVIS_NAME=' .env; then sed -i "s|^JAVIS_NAME=.*|JAVIS_NAME=$SVC|" .env; else echo "JAVIS_NAME=$SVC" >> .env; fi
+if grep -q '^JAVIS_PORT=' .env; then sed -i "s|^JAVIS_PORT=.*|JAVIS_PORT=$PORT|" .env; else echo "JAVIS_PORT=$PORT" >> .env; fi
 own .env
 
 # --- 7b. Tài khoản quản trị: ĐẶT SẴN ngay lúc cài ---
@@ -453,7 +463,7 @@ elif command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
   log "Installing systemd service ($SVC.service, port $PORT)..."
   $SUDO tee "/etc/systemd/system/$SVC.service" >/dev/null <<UNIT
 [Unit]
-Description=Javis OS ($SVC)
+Description=TTTOS ($SVC)
 After=network-online.target
 Wants=network-online.target
 StartLimitIntervalSec=0
@@ -462,11 +472,12 @@ StartLimitIntervalSec=0
 Type=simple
 User=$RUN_USER
 WorkingDirectory=$APP_DIR/server
-Environment="JAVIS_HOST=127.0.0.1"
+Environment="JAVIS_HOST=$BIND"
 Environment="JAVIS_PORT=$PORT"
+Environment="JAVIS_NAME=$SVC"
 Environment="JAVIS_STATE_DIR=$APP_DIR/server"
 Environment="PATH=$APP_DIR/.venv/bin:/usr/local/bin:/usr/bin:/bin"
-ExecStart=$PY -m uvicorn main:app --host 127.0.0.1 --port $PORT
+ExecStart=$PY -m uvicorn main:app --host $BIND --port $PORT
 Restart=always
 RestartSec=5
 KillSignal=SIGTERM
@@ -490,18 +501,19 @@ else
     # own output going nowhere, so `./install.sh | tee` still ends. The log redirect sits inside the account's own
     # shell: javis.log is not left owned by root.
     DETACH=""; command -v setsid >/dev/null 2>&1 && DETACH="setsid"
-    ( cd "$APP_DIR/server" && export JAVIS_STATE_DIR="$APP_DIR/server" JAVIS_PORT="$PORT" && \
+    ( cd "$APP_DIR/server" && export JAVIS_STATE_DIR="$APP_DIR/server" JAVIS_PORT="$PORT" JAVIS_NAME="$SVC" && \
       exec $DETACH runuser -u "$RUN_AS" -- env HOME="$RUN_HOME" USER="$RUN_AS" LOGNAME="$RUN_AS" \
-        bash -c 'exec nohup "$0" -m uvicorn main:app --host 127.0.0.1 --port "$1" > "$2" 2>&1' \
-        "$PY" "$PORT" "$APP_DIR/server/javis.log" ) </dev/null >/dev/null 2>&1 &
+        bash -c 'exec nohup "$0" -m uvicorn main:app --host "$3" --port "$1" > "$2" 2>&1' \
+        "$PY" "$PORT" "$APP_DIR/server/javis.log" "$BIND" ) </dev/null >/dev/null 2>&1 &
   else
-    ( cd "$APP_DIR/server" && JAVIS_STATE_DIR="$APP_DIR/server" JAVIS_PORT="$PORT" nohup "$PY" -m uvicorn main:app --host 127.0.0.1 --port "$PORT" > "$APP_DIR/server/javis.log" 2>&1 & )
+    ( cd "$APP_DIR/server" && JAVIS_STATE_DIR="$APP_DIR/server" JAVIS_PORT="$PORT" JAVIS_NAME="$SVC" nohup "$PY" -m uvicorn main:app --host "$BIND" --port "$PORT" > "$APP_DIR/server/javis.log" 2>&1 & )
   fi
   ok "Started. Logs: $APP_DIR/server/javis.log"
 fi
 
 echo ""
-ok "Javis OS is up at: http://127.0.0.1:$PORT"
+ok "TTTOS is up at: http://127.0.0.1:$PORT"
+if [ "$BIND" = "0.0.0.0" ]; then warn "Listening on every network card: other machines open http://<this-machine-ip>:$PORT (plain http, LAN only)."; fi
 if [ -n "$RUN_AS" ]; then log "Installed in $APP_DIR, running as the regular account '$RUN_AS' (not root). Update later with: $APP_DIR/update.sh"; fi
 log "Remote access (SSH tunnel): ssh -L $PORT:localhost:$PORT $(whoami)@<vps-ip>"
 

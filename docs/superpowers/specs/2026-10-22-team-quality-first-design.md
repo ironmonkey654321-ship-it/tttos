@@ -2,7 +2,7 @@
 
 - Ngày: 22/10/2026, Asia/Saigon.
 - Trạng thái: bản đề xuất hoàn chỉnh để chủ sản phẩm xem xét; chưa triển khai mã, chưa chạy pilot.
-- Nền đã khảo sát: Javis OS **0.281.0**, `d678140467211000681805d3e2f82968a499b111` trên `origin/main`.
+- Nền đã khảo sát: TTTOS **0.281.0**, `d678140467211000681805d3e2f82968a499b111` trên `origin/main`.
 - Bản nguồn đối chiếu trên máy: `exports/team-swot-20261022-d6781404/`. Nhánh làm việc hiện tại cũ hơn nền này; khi triển khai phải bắt đầu từ main mới và đối chiếu lại các điểm tích hợp.
 - Chủ sản phẩm và người nghiệm thu nghiệp vụ: anh. Tài liệu này đề xuất hành vi sản phẩm, dữ liệu, kiểm thử và điều kiện phát hành; không phải lệnh tự chạy model, đổi model, triển khai hay gửi ra kênh ngoài.
 
@@ -20,7 +20,7 @@ Yêu cầu trực tiếp của chủ: **không để việc eo hẹp chi phí �
 4. Tối ưu chỉ được bật khi có bằng chứng không làm giảm chất lượng và không bỏ qua công việc cần thực hiện.
 5. Giữ cổng quyền, giới hạn tài nguyên máy, điều kiện dừng của chủ, chống lặp và hạn mức thực của provider. Các cơ chế này phải có lý do riêng, không được trình bày thành một trần tiết kiệm tiền.
 
-Các con số về thời gian và tỷ lệ trong spec là **mục tiêu thử nghiệm**, chưa phải kết quả Javis đã đạt. Hai nghiệp vụ pilot được chọn làm phạm vi khởi đầu, không giả định dữ liệu bán hàng của chủ đã kết nối.
+Các con số về thời gian và tỷ lệ trong spec là **mục tiêu thử nghiệm**, chưa phải kết quả TTTOS đã đạt. Hai nghiệp vụ pilot được chọn làm phạm vi khởi đầu, không giả định dữ liệu bán hàng của chủ đã kết nối.
 
 ## 2. Hiện trạng đã xác minh và khoảng trống
 

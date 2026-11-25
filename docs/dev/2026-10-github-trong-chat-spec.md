@@ -3,7 +3,7 @@
 Trạng thái: **ĐÃ CHỐT MỘT PHẦN ngày 27/10/2026** (chính sách merge và các giới hạn mặc định, xem
 mục 17). Các mục còn nhãn [ĐỀ XUẤT] vẫn chờ duyệt. Chưa có dòng code nào theo spec này.
 
-Nguồn: bản brainstorm "Javis - Brainstorm tích hợp GitHub vào chat" (28/10/2026, phiên Codex),
+Nguồn: bản brainstorm "TTTOS - Brainstorm tích hợp GitHub vào chat" (28/10/2026, phiên Codex),
 cộng bản đánh giá đối chiếu với mã nguồn `javis-os` ngày 27/10/2026 (phiên Claude Code). Spec
 này thay bản brainstorm làm tài liệu triển khai, không cần đọc lại bản kia.
 
@@ -18,11 +18,11 @@ Quy ước đánh dấu trong tài liệu:
 ## 1. Mục tiêu
 
 Người dùng bấm **+ → Repo GitHub** trong khung chat, chọn một hoặc nhiều repo, giao việc bằng
-lời. Javis sửa code trên nhánh riêng, tự kiểm tra, đẩy lên, mở PR, theo dõi CI, sửa khi CI đỏ,
+lời. TTTOS sửa code trên nhánh riêng, tự kiểm tra, đẩy lên, mở PR, theo dõi CI, sửa khi CI đỏ,
 và báo trạng thái bằng biểu tượng gọn cạnh cuộc trò chuyện. Người dùng không phải tự quản lý
 cửa sổ terminal, nhánh hay trang Actions nào.
 
-Thước đo thành công không phải "Javis push được" mà là **code Javis đẩy lên thường xanh ngay
+Thước đo thành công không phải "TTTOS push được" mà là **code TTTOS đẩy lên thường xanh ngay
 lần đầu và không xanh giả**. Vì vậy mục 7 (cổng chất lượng) quan trọng ngang phần GitHub.
 
 ## 2. Yêu cầu đã chốt [CHỐT]
@@ -37,7 +37,7 @@ lần đầu và không xanh giả**. Vì vậy mục 7 (cổng chất lượng)
 8. Bốn biểu tượng trạng thái: đang làm (kèm số việc song song), sẵn sàng merge, đã merge,
    merge gãy cần làm lại. Hình vẽ, màu, chuyển động chưa chốt.
 
-## 3. Javis đã có gì: tái dùng, không xây lại
+## 3. TTTOS đã có gì: tái dùng, không xây lại
 
 Bản brainstorm viết khi chưa đọc mã. Thực tế phần nền đã có khá nhiều:
 
@@ -72,7 +72,7 @@ vào "Để lần sau". Spec này là lần sau đó, nên mọi quyết định
 
 ### 4.1. Lớp GitHub độc lập với engine [ĐỀ XUẤT]
 
-Mọi thứ liên quan GitHub (clone, push, PR, đọc CI, merge, biểu tượng) là **mã của Javis**, chạy
+Mọi thứ liên quan GitHub (clone, push, PR, đọc CI, merge, biểu tượng) là **mã của TTTOS**, chạy
 phía server, đọc sự thật từ git và API GitHub. Engine (Claude Code hay bất kỳ engine API nào)
 chỉ làm một việc: sửa code và chạy lệnh trong worktree được giao.
 
@@ -83,7 +83,7 @@ Vì sao:
 - Đổi engine không làm mất trạng thái PR, CI.
 
 Hệ quả: model **không tự gọi `git push` hay `gh pr merge`**. Nó commit trong worktree (hoặc để
-Javis commit hộ, xem mục 8), rồi kết thúc lượt. Bước đẩy và mọi bước sau do Javis làm.
+TTTOS commit hộ, xem mục 8), rồi kết thúc lượt. Bước đẩy và mọi bước sau do TTTOS làm.
 
 ### 4.2. Claude Agent SDK cho model ngoài Claude: thử nghiệm, không phải trục chính [ĐỀ XUẤT]
 
@@ -93,7 +93,7 @@ hoặc gateway. Spec này **hạ hướng đó xuống thành thử nghiệm m�
 Vì sao:
 
 1. Spec coding cũ mục 11 đã chốt không ép model chỉ có API chạy qua Codex CLI làm vỏ, vì runtime
-   Javis chạy thật còn vỏ kia là giả định chưa kiểm chứng. Dùng Claude SDK làm vỏ cho DeepSeek là
+   TTTOS chạy thật còn vỏ kia là giả định chưa kiểm chứng. Dùng Claude SDK làm vỏ cho DeepSeek là
    đúng giả định đó với nhà khác.
 2. Anthropic không hỗ trợ chính thức định tuyến Claude Code sang model ngoài Claude. SDK gửi
    thinking, cache, model phụ cho sub-agent; endpoint "tương thích" hay thiếu một phần, và mỗi
@@ -135,7 +135,7 @@ có cả `owner` để hai repo cùng tên khác chủ không đè nhau.
 
 ### 5.1. Đăng nhập
 
-**[CHỐT 27/10/2026] Kết nối GitHub dựng sẵn trong lõi Javis.** Thẻ GitHub luôn có trên trang Kết
+**[CHỐT 27/10/2026] Kết nối GitHub dựng sẵn trong lõi TTTOS.** Thẻ GitHub luôn có trên trang Kết
 nối của mọi bản cài, không phải cài gói Store, không qua MCP ngoài. Mã nằm trong `server/`, chạy
 cả khi người dùng tắt hết gói mở rộng. Brain đã có token sao lưu GitHub (`git_brain`) thì thẻ đề
 nghị dùng chung token đó: kiểm quyền trước, thiếu quyền nào thì nói đúng quyền đó và cách thêm,
@@ -153,12 +153,12 @@ Phần dưới là [ĐỀ XUẤT]:
 - Token chỉ đi vào lệnh git theo cách của `git_brain._auth_url` (một lần, không lưu remote) và
   vào header API. Mọi log, lỗi, tin chat đi qua `secret_redact` trước khi hiện.
 - **ĐÃ LÀM 0.430.0 (chủ repo chốt 01/11/2026):** nút **Đăng nhập bằng GitHub** qua GitHub App
-  `Javis OS` (`github.com/apps/javis-os`, Client ID `Iv23limeL0BsyXptmTz2`), luồng Device Flow
-  (`server/github_oauth.py`). Không dùng luồng chuyển trang như Claude vì mỗi bản Javis một địa
+  `TTTOS` (`github.com/apps/javis-os`, Client ID `Iv23limeL0BsyXptmTz2`), luồng Device Flow
+  (`server/github_oauth.py`). Không dùng luồng chuyển trang như Claude vì mỗi bản TTTOS một địa
   chỉ (không có callback cố định) và repo công khai không giữ được client secret. Người dùng bấm
-  nút, dán mã ở `github.com/login/device`, bấm Authorize; sau đó cài app vào repo muốn cho Javis
+  nút, dán mã ở `github.com/login/device`, bấm Authorize; sau đó cài app vào repo muốn cho TTTOS
   thấy. App tạo token không hết hạn (đã tắt "Expire user authorization tokens"); nếu sau này bật
-  lại thì Javis giữ refresh token và thử làm mới, từ chối thì coi như đã đăng xuất. Ô dán token
+  lại thì TTTOS giữ refresh token và thử làm mới, từ chối thì coi như đã đăng xuất. Ô dán token
   vẫn giữ cho ai thích cách cũ. Fork tự đăng ký app khác thì đặt `JAVIS_GITHUB_CLIENT_ID` và
   `JAVIS_GITHUB_APP_SLUG`.
 
@@ -182,7 +182,7 @@ Chọn repo **không** chạy script, không cài phụ thuộc. Cài phụ thu�
 | Xoá repo trên GitHub | Không có trong tính năng này | |
 
 Mâu thuẫn cần gỡ: hiện nay "xoá thư mục khỏi sổ KHÔNG đụng đĩa" (`coding_store.py`, ranh giới
-có chủ ý). Cách giải: **chỉ xoá đĩa với bản clone do chính Javis tạo** (cờ `nguon: github`, nằm
+có chủ ý). Cách giải: **chỉ xoá đĩa với bản clone do chính TTTOS tạo** (cờ `nguon: github`, nằm
 trong `STATE_DIR/repos`). Thư mục người dùng tự thêm bằng tay giữ nguyên quy tắc cũ.
 
 ## 6. Việc, nhánh và worktree
@@ -190,7 +190,7 @@ trong `STATE_DIR/repos`). Thư mục người dùng tự thêm bằng tay giữ 
 - Một **việc code** là một bản ghi gắn với một chat, có một hoặc nhiều repo. Mỗi repo trong việc
   có **một nhánh và một worktree riêng**. [ĐỀ XUẤT]
 - Tên nhánh: `javis/<slug-ngắn>-<id 6 ký tự>`, slug sinh từ nội dung việc, không dấu. Giữ tiền tố
-  `javis/` như hiện nay để người dùng nhận ra nhánh do Javis tạo.
+  `javis/` như hiện nay để người dùng nhận ra nhánh do TTTOS tạo.
 - Mở rộng `coding_store` để worktree bám **từng repo** chứ không chỉ thư mục chính. Việc một repo
   vẫn đi đúng đường cũ.
 - Sửa code chạy song song được. Giới hạn số việc chạy đồng thời mỗi brain, mặc định **3**. [CHỐT]
@@ -205,17 +205,17 @@ Lượt sửa chạy ở đâu:
 - Lượt đầu chạy ngay trong chat (người dùng thấy tiến độ như mọi lượt code hiện nay).
 - Các vòng sau (sửa CI đỏ, việc kế tiếp) chạy thành việc Kanban với `chat_id` là
   `web:<phiên chat>`, cùng worktree, cùng engine đã chọn. Kết quả tự về đúng chat và inbox.
-  Đúng luật của Javis: không hứa "lát em báo", việc nền tự đẩy kết quả.
+  Đúng luật của TTTOS: không hứa "lát em báo", việc nền tự đẩy kết quả.
 
 ## 7. Cổng chất lượng trước khi push [ĐỀ XUẤT]
 
 Đây là phần quyết định code tốt hay dở. Mọi bước chạy **trong worktree, trước khi push**, do
-Javis điều khiển chứ không trông vào model tự nhớ.
+TTTOS điều khiển chứ không trông vào model tự nhớ.
 
 ### 7.1. Mọi engine đều đọc luật của repo
 
 Claude Code đã tự nạp `CLAUDE.md` của repo. Engine API thì chưa. Thêm bước: khi một lượt code chạy
-trong worktree, Javis nạp vào ngữ cảnh (theo thứ tự, có trần độ dài) `AGENTS.md`, `CLAUDE.md`,
+trong worktree, TTTOS nạp vào ngữ cảnh (theo thứ tự, có trần độ dài) `AGENTS.md`, `CLAUDE.md`,
 `CONTRIBUTING.md` ở gốc repo, cộng bài học theo repo ở mục 13.1. Không có file nào thì bỏ qua.
 
 ### 7.2. Chạy đúng bộ kiểm tra của CI trước khi push
@@ -225,7 +225,7 @@ trong worktree, Javis nạp vào ngữ cảnh (theo thứ tự, có trần độ
 2. Kết hợp với tín hiệu quen thuộc (`package.json` scripts `lint`, `test`, `typecheck`, `build`;
    `pyproject.toml`; `Makefile`) để ra danh sách **lệnh kiểm tra cục bộ** của repo.
 3. Danh sách này được **lưu theo repo và hiện cho người dùng sửa** ở bảng chi tiết repo. Lần đầu
-   Javis đề xuất, người dùng (hoặc lượt chat) chỉnh, những lần sau dùng lại.
+   TTTOS đề xuất, người dùng (hoặc lượt chat) chỉnh, những lần sau dùng lại.
 4. Trước mỗi push, chạy danh sách đó. Đỏ thì giao lại cho đúng phiên sửa, không push.
 5. Lệnh không chạy được ở máy (thiếu runtime, cần dịch vụ ngoài) thì ghi rõ "bỏ qua ở máy, chờ
    CI", không coi là xanh.
@@ -236,7 +236,7 @@ Có trần thời gian cho bước này (mặc định 10 phút, chỉnh đượ
 
 Quét diff sắp commit bằng bộ mẫu của `secret_redact` cộng các mẫu phổ biến (khoá riêng, token
 dạng `ghp_`, `sk-`, `AKIA`...). Phát hiện thì **dừng, không commit**, báo dòng nào. Spec coding
-cũ đã ghi phần này phải vào cùng lúc Javis bắt đầu đẩy code ra ngoài.
+cũ đã ghi phần này phải vào cùng lúc TTTOS bắt đầu đẩy code ra ngoài.
 
 ### 7.4. Rào chống "ăn gian cho CI xanh"
 
@@ -254,16 +254,16 @@ những việc này để qua CI; luật này cũng nằm trong lời nhắc c�
 
 Với việc được phân loại là sửa lỗi, và với mọi vòng sửa CI đỏ: lời nhắc yêu cầu **tái hiện lỗi
 trước** (một test đỏ, hoặc chạy lại đúng lệnh CI đã đỏ ở máy), sửa, rồi chứng minh cùng lệnh đó
-xanh. Javis ghi lại cả hai lần chạy vào bản ghi việc làm bằng chứng.
+xanh. TTTOS ghi lại cả hai lần chạy vào bản ghi việc làm bằng chứng.
 
 ### 7.6. Diff nhỏ, một PR một việc
 
-Ngưỡng mặc định 400 dòng đổi [CHỐT], không tính lockfile và file sinh tự động. Vượt ngưỡng thì Javis
+Ngưỡng mặc định 400 dòng đổi [CHỐT], không tính lockfile và file sinh tự động. Vượt ngưỡng thì TTTOS
 đề xuất tách việc, nối bằng `deps` trên Kanban. Người dùng vẫn được chọn giữ nguyên.
 
 ## 8. Commit, push, PR
 
-1. Cổng chất lượng xanh thì Javis commit (nếu model chưa commit), message theo quy ước repo nếu
+1. Cổng chất lượng xanh thì TTTOS commit (nếu model chưa commit), message theo quy ước repo nếu
    đọc được từ luật repo, không thì dạng ngắn gọn tiếng Anh.
 2. Push nhánh việc lên `origin` bằng token theo cách của `git_brain._auth_url`.
 3. Ghi **SHA thực tế đã push**. Mọi trạng thái CI về sau bám SHA này.
@@ -273,7 +273,7 @@ Ngưỡng mặc định 400 dòng đổi [CHỐT], không tính lockfile và fil
 5. PR tạo ở dạng **draft** cho tới khi CI xanh và review chéo (mục 10) xong, rồi chuyển thành
    sẵn sàng review. [ĐỀ XUẤT]
 
-Javis không bao giờ force-push lên nhánh không phải do Javis tạo, không rebase nhánh người khác.
+TTTOS không bao giờ force-push lên nhánh không phải do TTTOS tạo, không rebase nhánh người khác.
 
 ## 9. Theo dõi CI
 
@@ -303,13 +303,13 @@ buộc, và cho người dùng chỉnh danh sách theo repo.
 | CI đỏ | Lấy log của job đỏ (cắt phần liên quan), giao lại cho đúng phiên sửa thành một việc Kanban. Theo mục 7.5: tái hiện trước rồi mới sửa |
 | Lỗi có vẻ chập chờn | Chạy lại job đúng **một lần**. Đỏ lần hai là lỗi thật |
 | Đỏ cả trên nhánh đích | Không phải lỗi của việc này. Báo người dùng, không sửa lan sang phạm vi khác |
-| Javis khởi động lại | Đọc bản ghi đã lưu, đối chiếu GitHub, rồi mới làm tiếp |
+| TTTOS khởi động lại | Đọc bản ghi đã lưu, đối chiếu GitHub, rồi mới làm tiếp |
 | Sự kiện lặp, timeout chưa rõ kết quả | Kiểm trạng thái thật trước khi thử lại. Mọi bước ghi dấu đã làm để không tạo trùng commit, PR, merge hay việc kế tiếp |
 
 ### 9.4. Giới hạn [CHỐT]
 
 Mặc định, chỉnh được theo repo: tối đa **3 vòng sửa CI** mỗi việc, chờ CI tối đa **60 phút** mỗi
-SHA, ngân sách token mỗi việc theo cấu hình hiện có của Javis. Vượt giới hạn thì trạng thái **kẹt**
+SHA, ngân sách token mỗi việc theo cấu hình hiện có của TTTOS. Vượt giới hạn thì trạng thái **kẹt**
 kèm nguyên nhân, gửi về chat và inbox. Không lặp vô hạn.
 
 ## 10. Review chéo bằng model khác [ĐỀ XUẤT]
@@ -317,11 +317,11 @@ kèm nguyên nhân, gửi về chat và inbox. Không lặp vô hạn.
 > **Cập nhật 08/11/2026 (chủ repo): review chéo do người dùng quyết.** Mặc định TẮT. Bật theo từng repo
 > (thẻ GitHub, dấu ba chấm, Review chéo), hoặc bấm **Review ngay** trên bảng chi tiết PR, hoặc nhắn trong chat
 > (tool `javis_github` op=review). Model review mặc định là chính model đang chat, không bắt buộc khác hãng;
-> chọn model khác theo repo hay mỗi lần review. Phát hiện KHÔNG tự gửi về tác giả: Javis dừng merge và chờ
+> chọn model khác theo repo hay mỗi lần review. Phát hiện KHÔNG tự gửi về tác giả: TTTOS dừng merge và chờ
 > người dùng chọn **Sửa các lỗi này** hoặc **Bỏ qua, merge**. Commit mới làm phát hiện cũ hết hiệu lực.
 > Phần dưới là thiết kế ban đầu, giữ để tham khảo.
 
-Sau khi CI xanh, Javis giao diff cho **một engine khác với engine đã viết** (người dùng chọn ở cài
+Sau khi CI xanh, TTTOS giao diff cho **một engine khác với engine đã viết** (người dùng chọn ở cài
 đặt repo; mặc định: viết bằng Claude thì review bằng engine API đầu tiên đã kết nối, và ngược lại).
 
 - Vai trò: người soi lỗi. Chỉ được nêu lỗi có **đường gây hỏng cụ thể** (đầu vào nào, ra kết quả
@@ -331,7 +331,7 @@ Sau khi CI xanh, Javis giao diff cho **một engine khác với engine đã vi�
 - Review chéo không chặn được mãi: hết giới hạn vòng thì hiện các phát hiện còn mở cho người dùng.
 - Chỉ có một engine đã kết nối thì bỏ bước này, ghi rõ trên PR "chưa review chéo".
 
-Đây là chỗ "nhiều engine" của Javis thành lợi thế: mỗi model có điểm mù riêng.
+Đây là chỗ "nhiều engine" của TTTOS thành lợi thế: mỗi model có điểm mù riêng.
 
 ## 11. Merge và việc kế tiếp
 
@@ -352,7 +352,7 @@ Anh Quý chốt: "xanh merge luôn, auto merge theo repo".
 ### 11.2. Việc kế tiếp
 
 - Chỉ chạy việc **người dùng đã giao**. CI xanh không sinh việc mới. Một bước tiếp theo do model
-  tự nghĩ ra chỉ được nói trong câu trả lời, không được xếp hàng (đúng luật điều phối của Javis).
+  tự nghĩ ra chỉ được nói trong câu trả lời, không được xếp hàng (đúng luật điều phối của TTTOS).
 - Việc kế tiếp nối bằng `deps` của `task_store`. Việc cần code đã vào nhánh chính thì phụ thuộc vào
   mốc **đã merge và kiểm tra sau merge xanh** (nếu repo có kiểm tra trên `main`).
 - Việc mẹ bị kẹt thì việc con đứng chờ, và báo cáo kẹt liệt kê việc con đang chờ (`waiting_on`
@@ -401,7 +401,7 @@ Chạy lại kiểm tra, Dừng việc.
 
 ### 13.1. Bài học theo repo
 
-Mỗi lần CI đỏ rồi sửa xanh, hoặc review chéo bắt được lỗi thật, Javis rút **một dòng bài học**
+Mỗi lần CI đỏ rồi sửa xanh, hoặc review chéo bắt được lỗi thật, TTTOS rút **một dòng bài học**
 gắn với repo (ví dụ "chạy `npm run build` trước test", "đổi chữ giao diện phải sửa cả hai file
 dịch"). Lưu trong brain (`Javis/learned/repos/<owner>__<repo>.md`), không ghi vào repo của người
 dùng. Nạp ở bước 7.1.
@@ -440,7 +440,7 @@ Mỗi giai đoạn là một hoặc vài PR, mỗi PR mang số phiên bản ri�
 
 | Giai đoạn | Nội dung | Xong khi |
 |---|---|---|
-| G1. Kết nối và clone | Thẻ GitHub dựng sẵn trên trang Kết nối (mục 5.1), liệt kê repo, clone vào `STATE_DIR/repos`, gắn vào chat, ba thao tác gỡ | Chọn repo trong chat, Javis sửa được trong worktree như thư mục thường |
+| G1. Kết nối và clone | Thẻ GitHub dựng sẵn trên trang Kết nối (mục 5.1), liệt kê repo, clone vào `STATE_DIR/repos`, gắn vào chat, ba thao tác gỡ | Chọn repo trong chat, TTTOS sửa được trong worktree như thư mục thường |
 | G2. Cổng chất lượng | 7.1 luật repo cho engine API, 7.2 lệnh kiểm tra cục bộ, 7.3 quét secret, 7.4 rào ăn gian | Một việc đỏ ở máy không bao giờ được push |
 | G3. Push, PR, CI một repo | Mục 8, 9; vòng CI đỏ thì sửa; restart giữa chừng | Một repo đi hết vòng tới sẵn sàng merge, kể cả ca CI đỏ rồi sửa |
 | G4. Biểu tượng, merge | Mục 11, 12 | Bốn biểu tượng đúng bằng chứng, merge theo chính sách, việc kế tiếp chạy đúng phụ thuộc |
@@ -490,7 +490,7 @@ từng bước, mở bảng chi tiết, merge.
 - **Ép mọi model qua một vỏ engine duy nhất** (Claude SDK hay Codex). Xem 4.2 và spec coding cũ mục 11.
 - **Thêm OpenCode.** [CHỐT]
 - **Xoá repo trên GitHub.** Ngoài phạm vi. [CHỐT]
-- **Model tự push, tự merge bằng lệnh của nó.** Mọi thao tác ra GitHub do lớp Javis làm, có chống lặp.
+- **Model tự push, tự merge bằng lệnh của nó.** Mọi thao tác ra GitHub do lớp TTTOS làm, có chống lặp.
 - **Coi lời model tự báo là trạng thái.** Biểu tượng chỉ tính từ git và API GitHub.
 - **Tự sinh việc mới khi CI xanh.** Chỉ chạy việc người dùng đã giao.
 - **Bỏ qua, tắt hay cách ly test để có CI xanh.** Không bao giờ, kể cả khi người dùng bật Toàn quyền.
@@ -510,7 +510,7 @@ TRƯỚC KHI CODE
 - Đọc CLAUDE.md, docs/quy-uoc-dev.md, spec trên và docs/dev/2026-09-coding-workspace-spec.md.
 - Mục [CHỐT] làm đúng nguyên văn. Mục [ĐỀ XUẤT] làm theo đúng đề xuất trong spec, không tự
   đổi thiết kế. Thấy spec sai so với mã thật thì sửa spec trong cùng PR và ghi lý do.
-- Kết nối GitHub DỰNG SẴN trong lõi Javis (mục 5.1): thẻ GitHub luôn có trên trang Kết nối,
+- Kết nối GitHub DỰNG SẴN trong lõi TTTOS (mục 5.1): thẻ GitHub luôn có trên trang Kết nối,
   không qua gói Store, không qua MCP ngoài.
 - Dùng lại hạ tầng có sẵn (bảng mục 3), không dựng bộ điều phối thứ hai.
 

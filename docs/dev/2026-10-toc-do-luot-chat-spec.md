@@ -1,6 +1,6 @@
 # Tốc độ lượt chat Claude Code và Codex (0.382.0)
 
-Spec này viết ngày 28/10/2026, sau khi khách phàn nàn Javis chậm hơn chạy Claude Code hay Codex trực tiếp.
+Spec này viết ngày 28/10/2026, sau khi khách phàn nàn TTTOS chậm hơn chạy Claude Code hay Codex trực tiếp.
 Mọi con số dưới đây đo thật trên máy Windows của chủ repo (Claude Code 2.1.310, Codex 0.160.0).
 
 ## 1. Vì sao chậm
@@ -14,7 +14,7 @@ Mọi con số dưới đây đo thật trên máy Windows của chủ repo (Cla
 | Danh sách tool của hub hết hạn cứng sau 60 s | khách nghỉ quá một phút là lượt sau dò lại mọi nguồn |
 | Codex trên Linux: hết lượt đợi 2 s ân hạn vì nhóm tiến trình còn sống | +2 s trước `turn_done` |
 
-Phần Javis tự làm trước engine (dựng system prompt khoảng 70 đến 80 ms, recall, ghi SQLite) nhẹ, không phải thủ phạm.
+Phần TTTOS tự làm trước engine (dựng system prompt khoảng 70 đến 80 ms, recall, ghi SQLite) nhẹ, không phải thủ phạm.
 
 ## 2. Nguyên tắc
 
@@ -56,7 +56,7 @@ Một kho dùng chung cho cả Claude và Codex, theo hội thoại:
 ### 3.3 Khoá lượt cho tiến trình ấm (`turn_context.Lane`)
 
 Engine CLI gọi hub qua HTTP với header `X-Javis-Turn`. Trước đây mỗi lượt một khoá, chết theo lượt. Tiến trình ấm nối MCP
-MỘT lần nên header cố định: ô giữ một **khoá làn** cố định, đầu mỗi lượt Javis gắn khoá đó vào lượt hiện tại, hết lượt
+MỘT lần nên header cố định: ô giữ một **khoá làn** cố định, đầu mỗi lượt TTTOS gắn khoá đó vào lượt hiện tại, hết lượt
 thì gỡ. Giữa hai lượt khoá làn giải ra "không ai" (None), đúng tính chất cũ "khoá chết theo lượt".
 
 Claude Agent SDK chạy hook và tool plugin in-process trong task nền tạo lúc `connect()`, nên chúng thừa hưởng ngữ cảnh của
@@ -82,7 +82,7 @@ theo từng lượt, nên `turn_context.current()` trong plugin luôn thấy lư
 2. **Chỉ dẫn hệ thống gửi một lần**: `developerInstructions` ở `thread/start`, không ghép vào tin nhắn nữa. Đo thật: tắt
    tiến trình, mở tiến trình mới, `thread/resume` không gửi lại chỉ dẫn, model vẫn trả đúng "mã bí mật" trong chỉ dẫn. Luồng
    cũ (tạo bằng `codex exec` hay bản trước) chỉ mang chỉ dẫn ở tin nhắn đầu, mà Codex tự nén hội thoại sớm hơn ngưỡng
-   xoay mạch 1 triệu token của Javis, nên luồng nào KHÔNG có trong sổ `codex_instr_threads.json` (luồng mở bằng
+   xoay mạch 1 triệu token của TTTOS, nên luồng nào KHÔNG có trong sổ `codex_instr_threads.json` (luồng mở bằng
    `developerInstructions`) vẫn được ghép chỉ dẫn vào đầu mỗi tin như trước. Đã thử: `thread/resume` kèm chỉ dẫn mới không
    thay được chỉ dẫn cũ. Đường dự phòng `codex exec` vẫn ghép như cũ vì exec không có trường này.
 3. **Giữ ấm**: ô Codex giữ `app-server` và luồng đã mở; lượt sau gửi thẳng `turn/start`, không spawn, không resume. Lượt

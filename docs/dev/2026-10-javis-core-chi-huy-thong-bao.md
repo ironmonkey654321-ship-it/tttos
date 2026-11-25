@@ -1,9 +1,9 @@
-# Javis Core: chọn model và chỉ huy thông báo
+# TTTOS Core: chọn model và chỉ huy thông báo
 
 Chủ repo chốt ngày 29/10/2026. Hai việc:
 
-1. Javis Core chọn được model như một cuộc chat: mặc định theo model chính, chọn model khác thì ghim cho cả Core.
-2. Javis Core thành **chỉ huy thông báo**: mỗi thông báo có nhóm và mức, người dùng chọn nhóm nào báo tới mức nào, và
+1. TTTOS Core chọn được model như một cuộc chat: mặc định theo model chính, chọn model khác thì ghim cho cả Core.
+2. TTTOS Core thành **chỉ huy thông báo**: mỗi thông báo có nhóm và mức, người dùng chọn nhóm nào báo tới mức nào, và
    bộ phán xử của Core tự chỉnh theo phản hồi emoji của người dùng (cùng bộ emoji của Cộng hưởng).
 
 Hai quyết định của chủ repo:
@@ -14,7 +14,7 @@ Hai quyết định của chủ repo:
 
 Mục lục khung chat Core: bỏ, không làm (chủ repo 29/10/2026).
 
-## 1. Model của Javis Core
+## 1. Model của TTTOS Core
 
 Trước bản này: Core không có model riêng. Thanh model trong chat Core chỉ ghim cho CHAT đó, và lượt đầu tiên của mọi
 chat tự đóng dấu model đang chạy làm ghim. Kết quả: chat Core mặc định bị đóng băng ở model chính của ngày nó được tạo,
@@ -35,7 +35,7 @@ Luật mới, giống cơ chế ghim của hội thoại nhưng cho cả Core:
 Bốn nguồn báo lặp dù mọi thứ vẫn chạy:
 
 1. **Đèn não dò chữ trong cả câu trả lời thành công.** `flag_engine_auth_error` chạy trên kết quả mọi lượt Claude, nên
-   một câu trả lời có cụm "not logged in" thắp đèn đỏ và gửi "Javis chưa dùng được". Sửa: chỉ dò khi lượt kết thúc
+   một câu trả lời có cụm "not logged in" thắp đèn đỏ và gửi "TTTOS chưa dùng được". Sửa: chỉ dò khi lượt kết thúc
    lỗi, hoặc khi cả kết quả là một dòng ngắn (lỗi đăng nhập thật luôn ngắn).
    Cờ "đã báo" của đèn não ghi xuống đĩa, nên khởi động lại không báo lại cùng một lần hỏng.
 2. **Bàn sự cố mở sự cố mới cho mỗi lần hỏng sau khi đã báo "cần bạn".** Sửa: sự cố đang "cần bạn" cũng gom các lần
@@ -51,7 +51,7 @@ Bốn nguồn báo lặp dù mọi thứ vẫn chạy:
 |---|---|---|
 | `info` | bình thường, chỉ để lưu | việc chạy xong, kết nối đã nối lại, có gói mới |
 | `important` | đáng chú ý, có thứ hỏng hoặc đáng xem | loop lỗi và tự dừng, sự cố cần bạn, kết nối hỏng sau khởi động |
-| `urgent` | khẩn, cần người ngay | nhắc lịch, câu hỏi đang chờ bạn, khách gọi người thật, bot chatbot đang lỗi, Javis không dùng được |
+| `urgent` | khẩn, cần người ngay | nhắc lịch, câu hỏi đang chờ bạn, khách gọi người thật, bot chatbot đang lỗi, TTTOS không dùng được |
 
 Nơi sinh tin truyền `level` khi biết rõ. Không truyền thì: `quiet=True` là `info`, còn lại là `important`.
 
@@ -94,8 +94,8 @@ Luật an toàn: **Core không bao giờ làm im tin khẩn.** Chỉ người d�
 ### 4.1 Phản hồi
 
 Chủ repo chốt lại 29/10/2026: thẻ thông báo trên chuông chỉ có hai nút **Nên báo** / **Không cần báo**
-(`POST /inbox/react`, trục `needed` / `not_needed`). Emoji không nằm trên chuông: bấm **Mở trong Javis Core** thì thông báo
-thành một tin trong chat Javis Core (có dấu ẩn `javis-cite:inbox:<mã thư>`), người dùng thả emoji của Cộng hưởng
+(`POST /inbox/react`, trục `needed` / `not_needed`). Emoji không nằm trên chuông: bấm **Mở trong TTTOS Core** thì thông báo
+thành một tin trong chat TTTOS Core (có dấu ẩn `javis-cite:inbox:<mã thư>`), người dùng thả emoji của Cộng hưởng
 (`reaction_values.REACTION_EMOJI`: 👍 ❤️ 😂 😮 😢 😡) lên tin đó như mọi câu trả lời. Route reaction của chat
 (`POST /sessions/{id}/messages/{mid}/reaction`) thấy dấu đó trên một chat Core thì chuyển emoji cho bộ phán xử của Core;
 trục "Đáng lẽ nên nói" / "Nên im" của chat được hiểu là Nên báo / Không cần báo. Thông báo tự đổ vào chat Core cũng
@@ -123,7 +123,7 @@ Chạy ngay sau mỗi phản hồi, và mỗi khi một tin bị chặn vì lặ
    và Core không nói gì trong chat.
 
 Mỗi lần chỉnh: một dòng trong nhật ký thay đổi (`notify_policy` giữ 100 dòng gần nhất) với lý do, ai chỉnh (`core` /
-`owner`) và nút **Hoàn tác**, và một câu ngắn trong chat Javis Core của brain đang dùng. Ví dụ: "Em vừa chuyển nhóm
+`owner`) và nút **Hoàn tác**, và một câu ngắn trong chat TTTOS Core của brain đang dùng. Ví dụ: "Em vừa chuyển nhóm
 Kết nối và đăng nhập sang Chỉ tin khẩn. Hoàn tác ở Bộ lọc thông báo của chuông."
 
 Thông báo hệ thống không gắn brain thì Core nói trong chat Core của brain mặc định.

@@ -1,4 +1,4 @@
-# Javis Resonance: tiến độ và hướng triển khai hiện hành
+# TTTOS Resonance: tiến độ và hướng triển khai hiện hành
 
 Cập nhật 08/10/2026. MVP M1–M5 đã phát hành trong 0.86.0 qua PR #587; main khi rà là 0.86.1 (`09f254d0`). Hướng tiếp theo theo yêu cầu chủ dự án: Cộng hưởng dành cho từng agent, có công tắc riêng, heartbeat thích nghi và học từ phản hồi.
 
@@ -22,7 +22,7 @@ Tiến độ 12/10/2026: A1 đã phát hành 0.87.0 (`fdfec7c5`, [biên bản](.
 - [Kế hoạch M1–M5](plans/2026-10-06-resonance-00-mvp.md).
 - [Đối chiếu các bản cũ](specs/2026-10-06-resonance-revised-package-review.md).
 - Review nội dung pilot 5 (`exports/reviews/PR-579-pilot5-content-review.md`, ngoài git, chỉ có trên máy chủ dự án).
-- [PR phát hành #587](https://github.com/blogminhquy/javis-os/pull/587).
+- [PR phát hành #587](https://github.com/ironmonkey654321-ship-it/tttos/pull/587).
 
 Không chạy lại M1 chỉ vì checklist lịch sử chưa đánh dấu. Một mẫu pilot đã đạt không chứng minh mọi engine/kênh đều hỗ trợ; xác nhận cuối mô phỏng và phạm vi đó được giữ nguyên trong hồ sơ.
 

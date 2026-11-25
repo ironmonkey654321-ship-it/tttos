@@ -1,6 +1,6 @@
 # Security Policy
 
-Javis runs an AI brain with full rights on the machine it is installed on, so security reports matter a great deal to us. Thank you for taking the time.
+TTTOS runs an AI brain with full rights on the machine it is installed on, so security reports matter a great deal to us. Thank you for taking the time.
 
 ## Reporting a vulnerability
 
@@ -9,12 +9,12 @@ Javis runs an AI brain with full rights on the machine it is installed on, so se
 1. Liên hệ bản **tttos** qua số **0989174185**, hoặc mở báo cáo riêng tại **[Security → Report a vulnerability](https://github.com/ironmonkey654321-ship-it/tttos/security/advisories/new)**.
 2. If that page is not available, open a normal issue that says only "I have a security report, please give me a private contact", with no details, and the maintainer will reply with one.
 
-Useful things to include: the version (shown under **Settings → Updates**, or in the `VERSION` file), how Javis is deployed (Docker, VPS, local), the steps to reproduce, and what an attacker could do.
+Useful things to include: the version (shown under **Settings → Updates**, or in the `VERSION` file), how TTTOS is deployed (Docker, VPS, local), the steps to reproduce, and what an attacker could do.
 
 ## What to expect
 
 - An acknowledgement within a few days.
-- A fix released as a new version as soon as it is ready. Javis updates itself through the Updates page, so fixes reach users quickly.
+- A fix released as a new version as soon as it is ready. TTTOS updates itself through the Updates page, so fixes reach users quickly.
 - Credit in the changelog if you would like it.
 
 ## Supported versions

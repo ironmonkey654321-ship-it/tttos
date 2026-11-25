@@ -1,33 +1,33 @@
 <!-- translated-from: QUICKSTART.en.md sha256:2f4928f341af -->
-# Javis OS - Mulai cepat
+# TTTOS - Mulai cepat
 
 *[English](../../../QUICKSTART.en.md) · [Tiếng Việt](../../../QUICKSTART.md) · [简体中文](../zh/QUICKSTART.md) · [Español](../es/QUICKSTART.md) · [日本語](../ja/QUICKSTART.md) · [हिन्दी](../hi/QUICKSTART.md) · [Português](../pt-BR/QUICKSTART.md) · [한국어](../ko/QUICKSTART.md) · [Русский](../ru/QUICKSTART.md) · [Deutsch](../de/QUICKSTART.md) · [Français](../fr/QUICKSTART.md) · **Bahasa Indonesia***
 
 > Ini adalah terjemahan otomatis dari panduan mulai cepat berbahasa Inggris.
 
-Jalankan Javis OS dalam beberapa menit. Panduan lengkap: [docs/en/](../../../docs/en/README.md).
+Jalankan TTTOS dalam beberapa menit. Panduan lengkap: [docs/en/](../../../docs/en/README.md).
 
 ## Komputer pribadi (Windows, macOS) - unduh penginstal
 
-Pasang Javis seperti aplikasi biasa: unduh satu file, buka, lalu Anda punya ikon JAVIS OS untuk diklik setiap hari. Penginstal memeriksa apa yang belum ada di komputer (Git, Python, Node, otak AI) dan hanya memasang itu.
+Pasang TTTOS seperti aplikasi biasa: unduh satu file, buka, lalu Anda punya ikon TTTOS untuk diklik setiap hari. Penginstal memeriksa apa yang belum ada di komputer (Git, Python, Node, otak AI) dan hanya memasang itu.
 
-- **Windows 10/11:** unduh [JavisOS-Setup.exe](https://github.com/blogminhquy/javis-os/releases/download/desktop/JavisOS-Setup.exe), klik dua kali, lalu tekan Next sampai selesai. Jendela hitam menampilkan kemajuan pemasangan (beberapa menit). Setelah selesai ada ikon JAVIS OS di Desktop dan menu Start.
-- **macOS 11 atau lebih baru:** unduh [JavisOS-macOS.dmg](https://github.com/blogminhquy/javis-os/releases/download/desktop/JavisOS-macOS.dmg), buka, seret **JAVIS OS** ke **Applications**, lalu buka dari Launchpad. Pertama kali, Terminal terbuka untuk memasang (mungkin meminta Anda membuat akun admin Javis dan kata sandi Mac sekali).
+- **Windows 10/11:** unduh [JavisOS-Setup.exe](https://github.com/ironmonkey654321-ship-it/tttos/releases/download/desktop/JavisOS-Setup.exe), klik dua kali, lalu tekan Next sampai selesai. Jendela hitam menampilkan kemajuan pemasangan (beberapa menit). Setelah selesai ada ikon TTTOS di Desktop dan menu Start.
+- **macOS 11 atau lebih baru:** unduh [JavisOS-macOS.dmg](https://github.com/ironmonkey654321-ship-it/tttos/releases/download/desktop/JavisOS-macOS.dmg), buka, seret **TTTOS** ke **Applications**, lalu buka dari Launchpad. Pertama kali, Terminal terbuka untuk memasang (mungkin meminta Anda membuat akun admin TTTOS dan kata sandi Mac sekali).
 
-Mengklik ikon membuka Javis di jendelanya sendiri (tanpa bilah alamat), Javis berjalan bersama komputer, dan tombol **Update** di aplikasi berfungsi seperti biasa. Data Anda ada di folder `JavisOS` dalam folder pengguna; mencopot aplikasi tetap menyimpan folder itu.
+Mengklik ikon membuka TTTOS di jendelanya sendiri (tanpa bilah alamat), TTTOS berjalan bersama komputer, dan tombol **Update** di aplikasi berfungsi seperti biasa. Data Anda ada di folder `JavisOS` dalam folder pengguna; mencopot aplikasi tetap menyimpan folder itu.
 
 Kedua penginstal belum ditandatangani kode, jadi komputer akan bertanya sekali:
 - Windows menampilkan "Windows protected your PC": klik **More info**, lalu **Run anyway**.
-- macOS bilang tidak bisa membuka aplikasi: buka **System Settings → Privacy & Security**, gulir ke bawah, klik **Open Anyway**, lalu buka JAVIS OS lagi.
+- macOS bilang tidak bisa membuka aplikasi: buka **System Settings → Privacy & Security**, gulir ke bawah, klik **Open Anyway**, lalu buka TTTOS lagi.
 
 ## Opsi 1 - VPS Hostinger (Docker Manager, sekali klik)
 
-> 🛒 **Belum punya VPS?** [Sewa VPS Hostinger di sini](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). Docker Manager sudah tersedia, jadi Javis terpasang sekali klik. Setelah siap, kembali ke langkah di bawah.
+> 🛒 **Belum punya VPS?** [Sewa VPS Hostinger di sini](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). Docker Manager sudah tersedia, jadi TTTOS terpasang sekali klik. Setelah siap, kembali ke langkah di bawah.
 
 1. hPanel → VPS → **Docker Manager** → **Compose** → **Compose from URL**.
 2. Tempel URL ini:
    ```
-   https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.hostinger.yml
+   https://raw.githubusercontent.com/ironmonkey654321-ship-it/tttos/main/docker-compose.hostinger.yml
    ```
 3. (Opsional, untuk HTTPS + domain) isi ini di kotak **Environment**:
    ```

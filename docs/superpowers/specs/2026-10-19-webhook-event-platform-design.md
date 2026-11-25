@@ -1,8 +1,8 @@
-# Đề xuất nâng cấp webhook Javis thành cửa nhận và xử lý sự kiện
+# Đề xuất nâng cấp webhook TTTOS thành cửa nhận và xử lý sự kiện
 
 Ngày: 19/10/2026. Trạng thái: đề xuất để review và chia mốc triển khai.
 
-Mục tiêu là cho POSCake, form, hệ thống thanh toán và các dịch vụ khác gửi sự kiện vào một cửa chung của Javis. Javis lưu bền trước, lọc và định tuyến bằng code, sau đó mới chạy hành động cần thiết. Chỉ những hành động được cấu hình dùng AI mới được gọi model.
+Mục tiêu là cho POSCake, form, hệ thống thanh toán và các dịch vụ khác gửi sự kiện vào một cửa chung của TTTOS. TTTOS lưu bền trước, lọc và định tuyến bằng code, sau đó mới chạy hành động cần thiết. Chỉ những hành động được cấu hình dùng AI mới được gọi model.
 
 Luồng ưu tiên của anh Quý: POSCake → lưu sự kiện → lọc đơn phù hợp → chống trùng → chuyển sang Apps Script và/hoặc plugin poscake-zalo. Những việc có thời gian chờ như hẹn 15 phút, kiểm danh sách chờ duyệt vẫn do plugin quản lý bằng trạng thái bền; webhook không trở thành một workflow engine mới.
 
@@ -32,7 +32,7 @@ Nhận định cần chỉnh nhẹ so với mô tả ban đầu: webhook hiện 
 
 | Phương án | Điểm mạnh | Đánh đổi |
 | --- | --- | --- |
-| **SQLite trong STATE_DIR, worker trong Javis** | Phù hợp kiến trúc hiện tại; giao dịch chung cho event, dedup, delivery; truy vấn và replay đơn giản | Cần quản lý dung lượng, lease, backup và giới hạn writer |
+| **SQLite trong STATE_DIR, worker trong TTTOS** | Phù hợp kiến trúc hiện tại; giao dịch chung cho event, dedup, delivery; truy vấn và replay đơn giản | Cần quản lý dung lượng, lease, backup và giới hạn writer |
 | File JSONL append-only kèm index | Dễ đọc thủ công, tiện xuất nhật ký | Phải tự giải quyết ghi dở, đồng bộ index, khoá nhiều worker, dedup và replay |
 | Broker ngoài như Redis/RabbitMQ hoặc hàng đợi managed | Hợp triển khai nhiều máy và tải lớn | Thêm dịch vụ, vận hành và chi phí; chưa cần cho luồng hiện tại |
 
@@ -66,7 +66,7 @@ flowchart TD
 ## 3. Các bảo đảm cần giữ
 
 - Chỉ trả 202 sau khi giao dịch lưu event commit thành công. Hết đĩa hoặc kho lỗi phải trả lỗi có thể retry; không báo đã nhận.
-- Không giữ khoá chống trùng cho một sự kiện mà Javis chưa nhận bền. Sửa lỗi 429/dedup hiện tại ngay ở mốc đầu.
+- Không giữ khoá chống trùng cho một sự kiện mà TTTOS chưa nhận bền. Sửa lỗi 429/dedup hiện tại ngay ở mốc đầu.
 - Thiết kế giao ít nhất một lần và chống tác động trùng theo khả năng từng bên nhận. Không hứa exactly-once cho thao tác bên ngoài.
 - Một sự kiện có nhiều delivery độc lập. Nhánh chuyển tiếp đã thành công không chạy lại chỉ vì workflow hoặc plugin lỗi.
 - Cấu hình dùng để xử lý được chụp theo revision. Retry không tự đổi URL, tool, filter hoặc plugin do cấu hình vừa được sửa.
@@ -159,7 +159,7 @@ Sau khi filter khớp mới tính khoá nghiệp vụ, rồi trong một giao d�
 - Event bị filter loại không chiếm khoá nghiệp vụ, nhưng vẫn có biên nhận delivery để nhận biết gửi lặp.
 - Trùng nội dung toàn body chỉ là chế độ fallback ngắn hạn có chủ đích; không dùng mặc định để thay ID nghiệp vụ.
 
-FIFO trong Javis chỉ là thứ tự nhận, không chứng minh thứ tự sự kiện ở nguồn. Stripe cũng không bảo đảm thứ tự giao. [S2] Trạng thái đơn đảo chiều không được bị lõi tự suy luận là lỗi. Plugin nghiệp vụ có thể so version nguồn, đối soát API hoặc thực thi transition hợp lệ.
+FIFO trong TTTOS chỉ là thứ tự nhận, không chứng minh thứ tự sự kiện ở nguồn. Stripe cũng không bảo đảm thứ tự giao. [S2] Trạng thái đơn đảo chiều không được bị lõi tự suy luận là lỗi. Plugin nghiệp vụ có thể so version nguồn, đối soát API hoặc thực thi transition hợp lệ.
 
 ## 7. Worker bền và retry từng hành động
 
@@ -199,7 +199,7 @@ Dashboard **Chạy lại** mặc định chỉ retry action lỗi/chưa rõ sau 
 - `body_mode=raw` gửi nguyên bytes đã nhận và content type tương ứng. Chế độ JSON mapping là lựa chọn riêng, không được ghi là nguyên văn.
 - Chỉ chuyển các header được phép. Không tự mang Authorization, cookie, token nhận hoặc header proxy của request nguồn sang đích.
 - Có outbound credential riêng, timeout và giới hạn response. Gửi stable `Idempotency-Key`/`X-Javis-Event-Id` nếu đích hỗ trợ, nhưng header không làm đích tự nhiên có khả năng chống trùng.
-- Đích public phải HTTPS, kiểm TLS. Kiểm URL, IP sau DNS và mỗi redirect; không để payload dùng Javis gọi địa chỉ metadata hoặc dịch vụ nội bộ không được cấp. Đích private chỉ dùng cấu hình LAN rõ ràng của chủ.
+- Đích public phải HTTPS, kiểm TLS. Kiểm URL, IP sau DNS và mỗi redirect; không để payload dùng TTTOS gọi địa chỉ metadata hoặc dịch vụ nội bộ không được cấp. Đích private chỉ dùng cấu hình LAN rõ ràng của chủ.
 - Mặc định không follow redirect tuỳ ý. Hồ sơ Apps Script cho phép redirect có giới hạn từ `script.google.com` sang `script.googleusercontent.com`, kiểm host/IP từng chặng và không mang credential sang host mới.
 
 **Apps Script:** Content Service chuyển response sang URL một lần trên `script.googleusercontent.com`. [S6] Cần test cả redirect và nội dung response. Không gửi lại POST ban đầu chỉ vì đọc response redirect thất bại: `doPost` có thể đã chạy. Bên nhận phải có hợp đồng chống trùng và biên nhận; web app trả trang đăng nhập hoặc HTTP 200 kèm `{"ok":false}` không được coi là thành công nghiệp vụ.
@@ -228,7 +228,7 @@ poscake-zalo giữ việc chờ duyệt, hẹn, quét API và chống gửi Zalo
 
 ### 8.3 Gọi tool trực tiếp
 
-Gọi qua đường dispatch/tool guard chung của Javis: plugin enabled, schema, `min_mode`, scope brain và check readiness. Không gọi thẳng Python handler để bỏ qua hàng rào hiện có.
+Gọi qua đường dispatch/tool guard chung của TTTOS: plugin enabled, schema, `min_mode`, scope brain và check readiness. Không gọi thẳng Python handler để bỏ qua hàng rào hiện có.
 
 Tool và tài khoản/đích phải được chủ chọn trong cấu hình. Payload chỉ điền các tham số đã mở. Mẫu `{{payload.bill_full_name}}` là đường dẫn dữ liệu; không có hàm, import, shell, đọc secret hoặc template engine tuỳ ý. Mảng/object giữ kiểu khi toàn trường là một biểu thức. Trường thiếu báo lỗi, không tự dùng rỗng cho người nhận tin, số tiền hoặc ID.
 
@@ -257,7 +257,7 @@ Các trường `shop_id`, `id`, `status`, `items[*].name` và ý nghĩa `status=
   "schema_version": 2,
   "id": "wh_orders_example",
   "revision": 1,
-  "name": "Đơn có sản phẩm Javis",
+  "name": "Đơn có sản phẩm TTTOS",
   "brain": "<brain hiện hữu do chủ chọn>",
   "enabled": true,
   "source": "poscake",
@@ -454,7 +454,7 @@ Các câu hỏi này không ngăn viết M1/M2 bằng fixture. Chúng là điề
 
 ## 18. Nguồn kỹ thuật
 
-Đối chiếu ngày 19/10/2026. Mã nguồn Javis được chốt ở short SHA `f0cbff7b`; khi triển khai phải fetch và kiểm diff mới hơn.
+Đối chiếu ngày 19/10/2026. Mã nguồn TTTOS được chốt ở short SHA `f0cbff7b`; khi triển khai phải fetch và kiểm diff mới hơn.
 
 - Mã nguồn đã đọc: `server/webhook_triggers.py`, phần wiring webhook trong `server/main.py`, `server/plugins_host.py`, `server/secrets_store.py`, `server/incident_desk.py`; test hiện có `tests/python/test_webhook_triggers_0198.py`, `tests/js/test_webhooks_ui_0198.js`.
 - [S1 SQLite synchronous](https://www.sqlite.org/pragma.html#pragma_synchronous), [SQLite WAL và backup](https://www.sqlite.org/wal.html).

@@ -1,7 +1,7 @@
 # Automatic learning from chat (skills, agents, workflows)
 
-Date 26/10/2026. Owner decision in chat, 26/10: Javis improves itself while the owner talks to it. A judge reviews
-the work, finds where Javis was wrong, writes the test cases itself and improves the skill, agent or workflow that
+Date 26/10/2026. Owner decision in chat, 26/10: TTTOS improves itself while the owner talks to it. A judge reviews
+the work, finds where TTTOS was wrong, writes the test cases itself and improves the skill, agent or workflow that
 caused it. The owner does not need to know it is happening and approves nothing. The owner also asked for agents
 and workflows, not only skills. Users install nothing extra.
 
@@ -11,7 +11,7 @@ and workflows, not only skills. Users install nothing extra.
 - Detect mistakes without the owner saying anything special: a judge reads the turn, the owner's next message
   (a correction, a redo, a complaint) and any reaction on the answer.
 - Improve the target with the 0.333.0 loop (Harness² sequential recursion, baseline wins ties, sealed paired
-  verdict, sign test, regression gate). The cases and their grading criteria are written by Javis.
+  verdict, sign test, regression gate). The cases and their grading criteria are written by TTTOS.
 - Apply a passing result on its own, keep the old version and a way back.
 
 ## Non-goals
@@ -47,7 +47,7 @@ and workflows, not only skills. Users install nothing extra.
    - Cap: 40 judgments per brain per day.
 3. **Learning run**, which starts when a target has at least 3 open mistakes, its cool-down (3 days) has passed,
    and the brain has had no run today (cap 1 per day).
-   - Javis writes 16 to 24 cases, each with a prompt and grading criteria. They come from the mistakes (each one a
+   - TTTOS writes 16 to 24 cases, each with a prompt and grading criteria. They come from the mistakes (each one a
      family, plus variants) and from turns judged ok (protection against regressions). Every case must be
      answerable without tools. If the writer says the work cannot be tested without tools, the target is skipped
      for 14 days.
@@ -67,7 +67,7 @@ and workflows, not only skills. Users install nothing extra.
    Models page. The earlier points below still hold.
    - It is on by default, a call made by Claude. It follows the brain's improvement policy: mode `off` stops it.
    - The caps above are fixed constants; nothing is added to Settings.
-   - A small "Javis đã tự học" list in the improvement panel shows what changed, with undo. There are no
+   - A small "TTTOS đã tự học" list in the improvement panel shows what changed, with undo. There are no
      notifications.
 
 ## Not covered yet (known gaps)

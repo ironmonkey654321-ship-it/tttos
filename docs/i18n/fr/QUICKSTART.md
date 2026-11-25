@@ -1,33 +1,33 @@
 <!-- translated-from: QUICKSTART.en.md sha256:2f4928f341af -->
-# Javis OS - Démarrage rapide
+# TTTOS - Démarrage rapide
 
 *[English](../../../QUICKSTART.en.md) · [Tiếng Việt](../../../QUICKSTART.md) · [简体中文](../zh/QUICKSTART.md) · [Español](../es/QUICKSTART.md) · [日本語](../ja/QUICKSTART.md) · [हिन्दी](../hi/QUICKSTART.md) · [Português](../pt-BR/QUICKSTART.md) · [한국어](../ko/QUICKSTART.md) · [Русский](../ru/QUICKSTART.md) · [Deutsch](../de/QUICKSTART.md) · **Français** · [Bahasa Indonesia](../id/QUICKSTART.md)*
 
 > Ceci est une traduction automatique du guide de démarrage rapide anglais.
 
-Faites tourner Javis OS en quelques minutes. Guides complets : [docs/en/](../../../docs/en/README.md).
+Faites tourner TTTOS en quelques minutes. Guides complets : [docs/en/](../../../docs/en/README.md).
 
 ## Ordinateur personnel (Windows, macOS) - télécharger l'installeur
 
-Installez Javis comme n'importe quelle application : téléchargez un fichier, ouvrez-le, et vous avez une icône JAVIS OS à cliquer chaque jour. L'installeur vérifie ce qui manque à l'ordinateur (Git, Python, Node, les cerveaux IA) et n'installe que cela.
+Installez TTTOS comme n'importe quelle application : téléchargez un fichier, ouvrez-le, et vous avez une icône TTTOS à cliquer chaque jour. L'installeur vérifie ce qui manque à l'ordinateur (Git, Python, Node, les cerveaux IA) et n'installe que cela.
 
-- **Windows 10/11 :** téléchargez [JavisOS-Setup.exe](https://github.com/blogminhquy/javis-os/releases/download/desktop/JavisOS-Setup.exe), double-cliquez et appuyez sur Next jusqu'au bout. Une fenêtre noire affiche la progression (quelques minutes). À la fin, une icône JAVIS OS apparaît sur le Bureau et dans le menu Démarrer.
-- **macOS 11 ou plus récent :** téléchargez [JavisOS-macOS.dmg](https://github.com/blogminhquy/javis-os/releases/download/desktop/JavisOS-macOS.dmg), ouvrez-le, glissez **JAVIS OS** dans **Applications**, puis ouvrez-le depuis le Launchpad. La première fois, le Terminal s'ouvre pour installer (il peut demander une fois de créer un compte administrateur Javis et le mot de passe du Mac).
+- **Windows 10/11 :** téléchargez [JavisOS-Setup.exe](https://github.com/ironmonkey654321-ship-it/tttos/releases/download/desktop/JavisOS-Setup.exe), double-cliquez et appuyez sur Next jusqu'au bout. Une fenêtre noire affiche la progression (quelques minutes). À la fin, une icône TTTOS apparaît sur le Bureau et dans le menu Démarrer.
+- **macOS 11 ou plus récent :** téléchargez [JavisOS-macOS.dmg](https://github.com/ironmonkey654321-ship-it/tttos/releases/download/desktop/JavisOS-macOS.dmg), ouvrez-le, glissez **TTTOS** dans **Applications**, puis ouvrez-le depuis le Launchpad. La première fois, le Terminal s'ouvre pour installer (il peut demander une fois de créer un compte administrateur TTTOS et le mot de passe du Mac).
 
-Un clic sur l'icône ouvre Javis dans sa propre fenêtre (sans barre d'adresse), Javis démarre avec l'ordinateur et le bouton **Update** de l'application fonctionne comme d'habitude. Vos données sont dans le dossier `JavisOS` de votre dossier utilisateur ; désinstaller l'application conserve ce dossier.
+Un clic sur l'icône ouvre TTTOS dans sa propre fenêtre (sans barre d'adresse), TTTOS démarre avec l'ordinateur et le bouton **Update** de l'application fonctionne comme d'habitude. Vos données sont dans le dossier `JavisOS` de votre dossier utilisateur ; désinstaller l'application conserve ce dossier.
 
 Les deux installeurs ne sont pas encore signés, l'ordinateur demande donc une fois :
 - Windows affiche "Windows protected your PC" : cliquez sur **More info**, puis sur **Run anyway**.
-- macOS indique qu'il ne peut pas ouvrir l'application : allez dans **System Settings → Privacy & Security**, faites défiler, cliquez sur **Open Anyway**, puis rouvrez JAVIS OS.
+- macOS indique qu'il ne peut pas ouvrir l'application : allez dans **System Settings → Privacy & Security**, faites défiler, cliquez sur **Open Anyway**, puis rouvrez TTTOS.
 
 ## Option 1 - VPS Hostinger (Docker Manager, en un clic)
 
-> 🛒 **Pas encore de VPS ?** [Prenez un VPS Hostinger ici](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). Docker Manager est intégré, donc Javis s'installe en un clic. Une fois prêt, revenez aux étapes ci-dessous.
+> 🛒 **Pas encore de VPS ?** [Prenez un VPS Hostinger ici](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). Docker Manager est intégré, donc TTTOS s'installe en un clic. Une fois prêt, revenez aux étapes ci-dessous.
 
 1. hPanel → VPS → **Docker Manager** → **Compose** → **Compose from URL**.
 2. Collez cette URL :
    ```
-   https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.hostinger.yml
+   https://raw.githubusercontent.com/ironmonkey654321-ship-it/tttos/main/docker-compose.hostinger.yml
    ```
 3. (Facultatif, pour le HTTPS + un domaine) définissez ceci dans le champ **Environment** :
    ```

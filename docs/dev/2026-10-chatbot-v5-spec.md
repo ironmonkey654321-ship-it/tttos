@@ -8,7 +8,7 @@ Mục tiêu một câu: **nhìn là biết cuộc chat nào A.I. đang xử lý,
 
 ## 1. Luật chữ trên màn hình
 
-- Gọi người dùng là **"bạn"**, không "anh". Màn hình này dùng cho mọi người dùng Javis.
+- Gọi người dùng là **"bạn"**, không "anh". Màn hình này dùng cho mọi người dùng TTTOS.
 - Viết **"A.I."** (có dấu chấm) trong chữ tiếng Việt của trang này, để không đọc lẫn với chữ "ai" (người nào).
   Bản tiếng Anh vẫn viết "AI".
 - Các nút người dùng tự bấm để ngôi thứ nhất: "Tôi trả lời", "A.I. soạn, tôi duyệt".
@@ -124,7 +124,7 @@ cũ (wizard) vẫn dùng để tạo bot mới cho tới khi trang mới làm đ
 
 ## 9. Tab Thống kê
 
-Kỳ chọn bằng bộ chọn ngày (chọn nhanh hoặc hai ngày trên lịch, nhớ trong trình duyệt). Bốn ô: A.I. đã trả lời (tin `ai`), Bạn đã trả lời (tin `human` gửi từ Javis; số lần tiếp
+Kỳ chọn bằng bộ chọn ngày (chọn nhanh hoặc hai ngày trên lịch, nhớ trong trình duyệt). Bốn ô: A.I. đã trả lời (tin `ai`), Bạn đã trả lời (tin `human` gửi từ TTTOS; số lần tiếp
 quản không được ghi lại nên không đếm được), Khách chờ trung bình (từ tin khách đầu tiên chưa ai đáp tới câu trả lời đầu
 tiên, một chuỗi tin khách liền nhau tính một lần chờ), Đang chờ bạn (bấm vào là mở Hội thoại ở Cần bạn). Thanh ngang
 một màu: A.I. trả lời theo kênh và theo bot, số ghi ở cuối thanh. Tính từ kho hội thoại, so với kỳ trước cùng độ dài.

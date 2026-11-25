@@ -1,4 +1,4 @@
-# Kiểm tra bộ sửa Javis Resonance của Claude
+# Kiểm tra bộ sửa TTTOS Resonance của Claude
 
 Ngày: 06/10/2026.
 

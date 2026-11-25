@@ -13,7 +13,7 @@
 3. Bằng chứng nằm sẵn trong repo: việc đặt lịch **có tool riêng** nên chỉ tốn ~600 ký tự
    prose; việc tạo agent **không có tool** nên tốn 2.875 ký tự cho một việc đơn giản hơn.
 4. Nên hướng đi là: **biến luật thành tool và code**, không phải nén luật cho khéo hơn.
-5. Ba hằng số giữ cho nó không trôi lại: nhân chỉ chứa thứ thuộc về **tính cách** Javis, trần
+5. Ba hằng số giữ cho nó không trôi lại: nhân chỉ chứa thứ thuộc về **tính cách** TTTOS, trần
    nhân **đóng băng không vay được**, và mỗi luật phải khai **ai đang thi hành nó**.
 
 ---
@@ -60,7 +60,7 @@ nhưng 33.577 ký tự vẫn tốn y nguyên thời gian xử lý mỗi lượt.
 
 Dòng thứ ba trong kết quả test ở trên đáng chú ý: đường biên dịch **đã chứng minh** một prompt
 lõi 740 ký tự chạy được. Nó chỉ áp cho engine API. Bản kế hoạch này không đi theo hướng
-CORE_CONTRACT (bỏ hẳn `CLAUDE.md` là bỏ luôn tính cách Javis), nhưng con số đó là bằng chứng
+CORE_CONTRACT (bỏ hẳn `CLAUDE.md` là bỏ luôn tính cách TTTOS), nhưng con số đó là bằng chứng
 rằng phần lớn 33.577 ký tự kia **không phải thứ bắt buộc phải có mặt ở mọi lượt**.
 
 ---
@@ -103,7 +103,7 @@ Lập luận "chi phí mỗi lượt là O(top-k) nên tổng số luật tăng 
 **k không phải hằng số**.
 
 Số luật liên quan tới MỘT hành động tăng theo độ phức tạp hệ thống. Hôm nay tạo một agent cần
-biết 6 luật. Khi Javis có 20 engine, 50 connector, 5 kênh thì cần biết 6 luật đó **cộng** các
+biết 6 luật. Khi TTTOS có 20 engine, 50 connector, 5 kênh thì cần biết 6 luật đó **cộng** các
 luật tương tác: engine này ghi file khác engine kia, kênh này không hiện markdown, connector
 kia cần quyền khác. Số cặp tương tác tăng theo bình phương bề mặt.
 
@@ -276,7 +276,7 @@ rẻ**, không phải vì "đang mất trí nhớ". Xếp lại ưu tiên cho đ
 
 **Kết luận: bỏ việc "nhân đúc sẵn theo chữ ký" khỏi lộ trình.** Lý do CPU đã hết. Lý do còn
 lại (tiền tố byte-identical cho prompt cache) tự nó không đủ để dựng thêm một tầng cache có
-chữ ký, nhất là khi đường CLI không dùng prompt cache của Javis.
+chữ ký, nhất là khi đường CLI không dùng prompt cache của TTTOS.
 
 Bài học chung, đáng ghi hơn cả bản vá: **một mốc nghiệm thu trong file bench không phải một số
 đo.** Đọc nhầm hai thứ đó là dựng cả một hạng mục công việc trên một con số không ai từng đo.
@@ -300,7 +300,7 @@ Bài học chung, đáng ghi hơn cả bản vá: **một mốc nghiệm thu tro
 
 **Kết luận: bỏ việc "bật cache 1 giờ" khỏi lộ trình dưới dạng một dòng sửa.** TTL 1 giờ chỉ
 đúng cho khoảng cách 5 tới 60 phút giữa hai lượt. Muốn làm cho đúng thì phải CHỌN theo khoảng
-cách thật của từng phiên (Javis biết được: kho phiên có thời điểm lượt trước), và đó là một
+cách thật của từng phiên (TTTOS biết được: kho phiên có thời điểm lượt trước), và đó là một
 tính năng có thiết kế riêng, không phải một tham số mặc định.
 
 Bài học: `5m` mặc định hiện tại **đang đúng** cho ca phổ biến nhất. Một nhánh code viết sẵn mà
@@ -321,7 +321,7 @@ một vòng inference, tức **30 tới 60 giây**.
 
 Chênh lệch giữa hai loại là **hơn 200 lần**. Nên:
 
-> Hiệu suất của Javis nằm ở chỗ đứng đúng bên của vài cái vách, không ở chỗ gọt từng nghìn
+> Hiệu suất của TTTOS nằm ở chỗ đứng đúng bên của vài cái vách, không ở chỗ gọt từng nghìn
 > ký tự trên dốc.
 
 Bốn cái vách trong hệ thống:
@@ -349,12 +349,12 @@ thư viện, model hay thuật toán nào, nên chúng sống lâu được.
 
 ## Hằng số 1: Đường phân đôi tính cách và bề mặt
 
-> **Nhân prompt chỉ chứa thứ tỉ lệ với TÍNH CÁCH của Javis. Mọi thứ tỉ lệ với BỀ MẶT của
-> Javis nằm cùng carrier của nó.**
+> **Nhân prompt chỉ chứa thứ tỉ lệ với TÍNH CÁCH của TTTOS. Mọi thứ tỉ lệ với BỀ MẶT của
+> TTTOS nằm cùng carrier của nó.**
 
 | | Tính cách | Bề mặt |
 |---|---|---|
-| Nội dung | Javis là ai, xưng hô, cách trình bày, thang quyết định, khi nào hỏi lại | Engine, connector, định dạng file, quy trình vận hành, sự cố |
+| Nội dung | TTTOS là ai, xưng hô, cách trình bày, thang quyết định, khi nào hỏi lại | Engine, connector, định dạng file, quy trình vận hành, sự cố |
 | Tốc độ tăng | Gần như đứng yên | Tăng siêu tuyến tính |
 | Bằng chứng | Thang quyết định không đổi từ đầu repo | Gemini CLI bị gỡ, Antigravity thêm vào, Grok thêm vào |
 | Nơi ở | `kernel.md` (trần đóng băng) | Tool contract, skill body, code, connector metadata |
@@ -446,7 +446,7 @@ từ ~80% (model nhớ luật) lên 100% (code ép).
 
 ## Đường trải nhựa, không phải cái lồng
 
-Thu hẹp giao diện làm giảm linh hoạt, mà linh hoạt là điểm bán của Javis. Nên thiết kế là hai
+Thu hẹp giao diện làm giảm linh hoạt, mà linh hoạt là điểm bán của TTTOS. Nên thiết kế là hai
 lớp:
 
 - **Đường trải nhựa:** `javis_create_agent(...)` làm đúng mọi thứ, là đường dễ nhất nên model
@@ -527,7 +527,7 @@ Nên trong lộ trình, việc hook phủ quyết **chặn cứng** mọi việc
 khác hẳn nhau:
 
 1. **Claude Code làm việc trên repo `javis-os`** đọc nó làm project file (tự động theo cwd)
-2. **Mọi người dùng cuối của Javis** nhận nó làm system prompt, mọi lượt chat
+2. **Mọi người dùng cuối của TTTOS** nhận nó làm system prompt, mọi lượt chat
 
 Đây là nguyên nhân **cấu trúc** của việc phình: mỗi lần thêm một quy ước dev là mọi khách hàng
 trả tiền cho nó ở mọi lượt. Mục "Dev conventions" (1.005 ký tự) chỉ là phần nhìn thấy được;
@@ -546,7 +546,7 @@ system/prompt/policies/*.md  luật theo carrier skill (Hợp đồng 2)
 ### Mục lục cố định của nhân
 
 ```
-1. Javis là ai                      ~1.200   tính cách, bộ não thay được
+1. TTTOS là ai                      ~1.200   tính cách, bộ não thay được
 2. Hợp đồng đầu ra                  ~1.500   ngôn ngữ, xưng hô, định dạng, cấm em dash
 3. Thang quyết định                   ~700   5 dòng, không phải 8.888 ký tự
 4. Khi nào hỏi lại                  ~1.200   phán đoán thật, giữ
@@ -713,7 +713,7 @@ tức **có thể vẫn trên ngưỡng, nhưng không chắc với mọi model*
 lượt liên tiếp. Bằng 0 nghĩa là cache không chạy.
 
 **Ba: phạm vi.** Toàn bộ lập luận cache chỉ áp cho engine API. Với Claude Code, Codex và `agy`,
-Javis không điều khiển cache, CLI và nhà cung cấp tự lo. Với đúng những bộ não hay bị than là
+TTTOS không điều khiển cache, CLI và nhà cung cấp tự lo. Với đúng những bộ não hay bị than là
 chậm, thứ quyết định là Vách 1 (trần argv), không phải cache.
 
 ## Hợp đồng 6: nhân đúc sẵn theo chữ ký
@@ -860,7 +860,7 @@ Ghi lại vì mỗi cái đều từng được cân nhắc rồi bị loại c�
 | Mục | Ký tự | Đích | Ghi chú |
 |---|---:|---|---|
 | Orchestration | 8.888 | Tool + nhân | Thang quyết định 5 dòng vào nhân (~700). Báo kết quả → server tự gắn `chat_id`. Ba mức quyền → tham số tool. Luật Zalo → mô tả `zalo_send_message`. Hứa suông → `background_status` đã ép |
-| What Javis is | 4.071 | Nhân + dữ liệu | Tính cách giữ ~1.200. Bảng 10 engine là **dữ liệu**, sinh từ `PROVIDERS`, không viết tay |
+| What TTTOS is | 4.071 | Nhân + dữ liệu | Tính cách giữ ~1.200. Bảng 10 engine là **dữ liệu**, sinh từ `PROVIDERS`, không viết tay |
 | Response principles | 3.812 | Nhân + kênh | Tính cách giữ ~1.500. Phần theo kênh đã có `channel_context` |
 | Creating Agents/Workflows | 2.875 | Tool | `javis_create_agent`, `javis_create_workflow`. Còn 0 |
 | Long-term memory | 2.297 | Tool | `javis_remember`. Còn 0 |

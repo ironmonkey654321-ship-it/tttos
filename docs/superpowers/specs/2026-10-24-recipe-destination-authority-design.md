@@ -20,7 +20,7 @@ Immutable evidence: 2026-10-24-recipe-archive-views.json,
 SHAd632b12330bce64cdb4537f6963d6c2644a6065d8a2cb928f8d1aeedd7fa4196.
 The actual Harness² Library component9e098a52 is a checked derived serializer;
 canonical encrypted archive, source rights and immutable Trial history remain
-owned by Javis. PROFILE_SOURCES98 is UNQUALIFIED and registries remain closed.
+owned by TTTOS. PROFILE_SOURCES98 is UNQUALIFIED and registries remain closed.
 
 Actual source constraints:
 

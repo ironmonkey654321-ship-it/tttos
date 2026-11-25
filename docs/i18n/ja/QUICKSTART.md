@@ -1,33 +1,33 @@
 <!-- translated-from: QUICKSTART.en.md sha256:2f4928f341af -->
-# Javis OS - クイックスタート
+# TTTOS - クイックスタート
 
 *[English](../../../QUICKSTART.en.md) · [Tiếng Việt](../../../QUICKSTART.md) · [简体中文](../zh/QUICKSTART.md) · [Español](../es/QUICKSTART.md) · **日本語** · [हिन्दी](../hi/QUICKSTART.md) · [Português](../pt-BR/QUICKSTART.md) · [한국어](../ko/QUICKSTART.md) · [Русский](../ru/QUICKSTART.md) · [Deutsch](../de/QUICKSTART.md) · [Français](../fr/QUICKSTART.md) · [Bahasa Indonesia](../id/QUICKSTART.md)*
 
 > このページは英語版クイックスタートの自動翻訳です。
 
-数分で Javis OS を動かせます。詳しいガイド：[docs/en/](../../../docs/en/README.md)。
+数分で TTTOS を動かせます。詳しいガイド：[docs/en/](../../../docs/en/README.md)。
 
 ## パソコン（Windows、macOS）- インストーラーをダウンロード
 
-Javis を普通のアプリのようにインストールできます。ファイルを 1 つダウンロードして開けば、毎日クリックする JAVIS OS アイコンができます。インストーラーはパソコンに足りないもの（Git、Python、Node、AI ブレイン）を確認し、足りない分だけをインストールします。
+TTTOS を普通のアプリのようにインストールできます。ファイルを 1 つダウンロードして開けば、毎日クリックする TTTOS アイコンができます。インストーラーはパソコンに足りないもの（Git、Python、Node、AI ブレイン）を確認し、足りない分だけをインストールします。
 
-- **Windows 10/11:** [JavisOS-Setup.exe](https://github.com/blogminhquy/javis-os/releases/download/desktop/JavisOS-Setup.exe) をダウンロードし、ダブルクリックして最後まで Next を押します。黒いウィンドウに進行状況が表示されます（数分）。完了するとデスクトップとスタートメニューに JAVIS OS アイコンができます。
-- **macOS 11 以降:** [JavisOS-macOS.dmg](https://github.com/blogminhquy/javis-os/releases/download/desktop/JavisOS-macOS.dmg) をダウンロードして開き、**JAVIS OS** を **Applications** にドラッグしてから Launchpad で開きます。初回はターミナルが開いてインストールします（Javis の管理者アカウントの設定と、Mac のパスワードを一度求められることがあります）。
+- **Windows 10/11:** [JavisOS-Setup.exe](https://github.com/ironmonkey654321-ship-it/tttos/releases/download/desktop/JavisOS-Setup.exe) をダウンロードし、ダブルクリックして最後まで Next を押します。黒いウィンドウに進行状況が表示されます（数分）。完了するとデスクトップとスタートメニューに TTTOS アイコンができます。
+- **macOS 11 以降:** [JavisOS-macOS.dmg](https://github.com/ironmonkey654321-ship-it/tttos/releases/download/desktop/JavisOS-macOS.dmg) をダウンロードして開き、**TTTOS** を **Applications** にドラッグしてから Launchpad で開きます。初回はターミナルが開いてインストールします（TTTOS の管理者アカウントの設定と、Mac のパスワードを一度求められることがあります）。
 
-アイコンをクリックすると Javis は専用ウィンドウ（アドレスバーなし）で開き、パソコンの起動時に自動で動き、アプリ内の **Update** ボタンも通常どおり使えます。データはユーザーフォルダ内の `JavisOS` フォルダにあり、アプリをアンインストールしてもこのフォルダは残ります。
+アイコンをクリックすると TTTOS は専用ウィンドウ（アドレスバーなし）で開き、パソコンの起動時に自動で動き、アプリ内の **Update** ボタンも通常どおり使えます。データはユーザーフォルダ内の `JavisOS` フォルダにあり、アプリをアンインストールしてもこのフォルダは残ります。
 
 どちらのインストーラーもまだコード署名されていないため、初回に確認が表示されます:
 - Windows で「Windows protected your PC」と出たら、**More info** を押してから **Run anyway** を押します。
-- macOS で開けないと表示されたら、**System Settings → Privacy & Security** を開き、下にスクロールして **Open Anyway** を押し、もう一度 JAVIS OS を開きます。
+- macOS で開けないと表示されたら、**System Settings → Privacy & Security** を開き、下にスクロールして **Open Anyway** を押し、もう一度 TTTOS を開きます。
 
 ## 方法 1 - Hostinger VPS（Docker Manager、ワンクリック）
 
-> 🛒 **VPS をまだお持ちでない方へ：** [Hostinger VPS はこちら](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN)。Docker Manager が標準搭載なので、Javis はワンクリックで入ります。準備ができたら下の手順に戻ってください。
+> 🛒 **VPS をまだお持ちでない方へ：** [Hostinger VPS はこちら](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN)。Docker Manager が標準搭載なので、TTTOS はワンクリックで入ります。準備ができたら下の手順に戻ってください。
 
 1. hPanel → VPS → **Docker Manager** → **Compose** → **Compose from URL**。
 2. 次の URL を貼り付けます。
    ```
-   https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.hostinger.yml
+   https://raw.githubusercontent.com/ironmonkey654321-ship-it/tttos/main/docker-compose.hostinger.yml
    ```
 3. （任意。HTTPS + ドメインを使う場合）**Environment** 欄に次を設定します。
    ```

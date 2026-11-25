@@ -77,7 +77,7 @@
 
 ## Reuse decision before code
 
-Pinned Harness² remains1cfe254e8d25b15f37048c3730134686abe60335. prompts.compose_round is already actual unchanged vendor code; recursion.py _run_stage/run_sequential (blobdda6b98cd5af100b8941f33cbb079462299c5280) has benchmark filesystem ownership, retries and accounting, but no Javis owner-session API, revocable consent, browser lifetime or durable stop/replay contract. Adapt the existing Javis owner/API/panel around the actual composer rather than importing a second executor or benchmarking controller. Preserve upstream provenance/license, all new-content checks and the explicit source-profile qualification gap. This plan adds no new upstream copy and makes no quality/token savings claim.
+Pinned Harness² remains1cfe254e8d25b15f37048c3730134686abe60335. prompts.compose_round is already actual unchanged vendor code; recursion.py _run_stage/run_sequential (blobdda6b98cd5af100b8941f33cbb079462299c5280) has benchmark filesystem ownership, retries and accounting, but no TTTOS owner-session API, revocable consent, browser lifetime or durable stop/replay contract. Adapt the existing TTTOS owner/API/panel around the actual composer rather than importing a second executor or benchmarking controller. Preserve upstream provenance/license, all new-content checks and the explicit source-profile qualification gap. This plan adds no new upstream copy and makes no quality/token savings claim.
 
 ## Open gates after this plan
 

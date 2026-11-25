@@ -40,7 +40,7 @@ unimplemented tasks complete. See docs/handoffs/claude-opus-5-5/HANDOFF.md.
 
 Pinned core/library.py is already used directly through RecipeSnapshot9e098a52;
 this unit does not replace its serializer or create another plaintext authority.
-Javis HostContextRecords._decode, actual Dashboard _capture, BrainFileFixtures,
+TTTOS HostContextRecords._decode, actual Dashboard _capture, BrainFileFixtures,
 TrialResults.read and archive immutable helpers already own the required source
 and history checks. Reusing those plus one fresh-source contract costs less than
 normalizing catalog/target/directory exceptions or adding a second permission

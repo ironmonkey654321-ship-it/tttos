@@ -19,9 +19,9 @@ Tài liệu cho người sửa lõi.
 
 ## 1. Vì sao
 
-Javis đã chạy được Claude Code, Codex, Grok Build, Antigravity qua CLI thật, cộng sáu engine
+TTTOS đã chạy được Claude Code, Codex, Grok Build, Antigravity qua CLI thật, cộng sáu engine
 API qua `server/engine.py`. Cái thiếu không phải năng lực coding mà là **một chỗ để làm việc
-coding**: hôm nay muốn sai Javis sửa một repo thì phải nói trong khung chat chung, không chỗ
+coding**: hôm nay muốn sai TTTOS sửa một repo thì phải nói trong khung chat chung, không chỗ
 nào ghi đang làm ở repo nào nhánh nào quyền tới đâu, và mở hai việc song song trên cùng repo
 là giẫm chân nhau.
 
@@ -54,7 +54,7 @@ Nên bề mặt mã THẬT SỰ mới chỉ còn ba thứ: **sổ repo**, **hàn
 Luật này không mới, nó đã nằm trong `console.js` từ lần làm tab Thư mục:
 
 > Không dựng lại cây thứ hai. Bản đầu của tính năng này viết hẳn một module cây riêng, và chủ
-> repo chỉ ra ngay: "sao không bê nguyên cái cây y hệt bên Javis sang mà phải dựng lại". Đúng
+> repo chỉ ra ngay: "sao không bê nguyên cái cây y hệt bên TTTOS sang mà phải dựng lại". Đúng
 > [...] Dựng bản thứ hai là chép lại từng đó thứ rồi để hai bản trôi lệch nhau.
 
 Bảng dưới là **khế ước**. Không viết bản thứ hai của bất kỳ dòng nào bên phải.
@@ -111,7 +111,7 @@ Nằm ngay TRÊN ô nhập, không phải ở header. Đây là chỗ điều kh
 [ javis-os ▾ ]  [ main ▾ ]  [ ☑ worktree ]  [ Bypass ▾ ]  [ Claude Code · Opus ▾ ]
 ```
 
-Chip Engine mở thẳng `model-picker.js` đang có. Chip Mức quyền dùng lại ba mức của Javis
+Chip Engine mở thẳng `model-picker.js` đang có. Chip Mức quyền dùng lại ba mức của TTTOS
 (`suggest` / `auto` / `full`), không đặt tên mới. Đổi giữa chừng được, áp dụng từ lượt sau.
 
 ### 4.4 Chạy engine trong repo
@@ -266,12 +266,12 @@ Giữ lại vì lý do từ chối bền hơn thứ bị từ chối:
 - **Một tầng Handoff Layer riêng.** `conversation_state.py` đã là Working State. Chữ "handoff"
   cũng giữ nghĩa cũ (bot bàn giao cho người, `chatbot_store` / `chatbot_runtime`); việc đổi
   engine gọi là bàn giao phiên.
-- **Ép model chỉ có API qua Codex CLI.** v0.1 xếp đây là đường ưu tiên và runtime Javis là
-  fallback. Đảo lại: runtime Javis đang chạy thật, Codex-as-harness là giả định chưa kiểm
+- **Ép model chỉ có API qua Codex CLI.** v0.1 xếp đây là đường ưu tiên và runtime TTTOS là
+  fallback. Đảo lại: runtime TTTOS đang chạy thật, Codex-as-harness là giả định chưa kiểm
   chứng, hạ xuống một thử nghiệm một ngày.
 - **IDE, editor phức tạp, terminal UI nặng.** Đã có `file-editor.js` và Terminal.
 - **Sao chép toàn bộ transcript làm bản bàn giao.**
-- **Self-improve / ASA trong tài liệu này.** Javis đã có trang `selfimprove` riêng. Nếu làm,
+- **Self-improve / ASA trong tài liệu này.** TTTOS đã có trang `selfimprove` riêng. Nếu làm,
   ràng buộc cứng: chỉ chạy trong worktree riêng, chỉ mở PR, không tự merge, không tự deploy
   `javis-os`.
 
@@ -279,7 +279,7 @@ Giữ lại vì lý do từ chối bền hơn thứ bị từ chối:
 
 ## 12. North Star
 
-> Một Javis. Nhiều engine. Người dùng chọn engine, Javis lo phần còn lại.
+> Một TTTOS. Nhiều engine. Người dùng chọn engine, TTTOS lo phần còn lại.
 
 ---
 

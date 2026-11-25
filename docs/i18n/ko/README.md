@@ -1,9 +1,9 @@
 <!-- translated-from: README.md sha256:2e10ad3d2a86 -->
 <div align="center">
 
-<a href="https://javisos.com"><img src="../../assets/social-preview.png" width="100%" alt="Javis OS: Your AI Workforce. Never miss the best AI."></a>
+<a href="https://javisos.com"><img src="../../assets/social-preview.png" width="100%" alt="TTTOS: Your AI Workforce. Never miss the best AI."></a>
 
-# Javis OS
+# TTTOS
 
 ### 당신의 AI 팀. 최고의 AI를 놓치지 마세요.
 
@@ -11,11 +11,11 @@ Javis OS는 **Claude, ChatGPT, Gemini, Grok** 그리고 직접 고른 모델을 
 
 **🌐 웹사이트: [javisos.com](https://javisos.com)** · 오픈 소스 · 셀프 호스팅 · 14개 AI 제공자
 
-[![GitHub stars](https://img.shields.io/github/stars/blogminhquy/javis-os?style=flat&logo=github&label=stars)](https://github.com/blogminhquy/javis-os/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/blogminhquy/javis-os?style=flat&logo=github&label=stars)](https://github.com/ironmonkey654321-ship-it/tttos/stargazers)
 [![License: MIT](https://img.shields.io/badge/license-MIT-22c55e)](../../../LICENSE)
-[![Last commit](https://img.shields.io/github/last-commit/blogminhquy/javis-os?color=f97316)](https://github.com/blogminhquy/javis-os/commits/main)
+[![Last commit](https://img.shields.io/github/last-commit/blogminhquy/javis-os?color=f97316)](https://github.com/ironmonkey654321-ship-it/tttos/commits/main)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-3776ab?logo=python&logoColor=white)](../../../requirements.txt)
-[![Docker](https://img.shields.io/badge/docker-ghcr.io-2496ed?logo=docker&logoColor=white)](https://github.com/blogminhquy/javis-os/pkgs/container/javis-os)
+[![Docker](https://img.shields.io/badge/docker-ghcr.io-2496ed?logo=docker&logoColor=white)](https://github.com/ironmonkey654321-ship-it/tttos/pkgs/container/javis-os)
 [![MCP](https://img.shields.io/badge/tools-Model%20Context%20Protocol-8b5cf6)](https://modelcontextprotocol.io)
 
 <!-- flags:start -->
@@ -42,7 +42,7 @@ Javis OS는 **Claude, ChatGPT, Gemini, Grok** 그리고 직접 고른 모델을 
 
 <br>
 
-<img src="../../../docs/assets/screenshots/graph.jpg" alt="노트 1,633개와 링크 2,413개로 이루어진 실제 Brain에서 실행 중인 Javis OS 대시보드: 왼쪽에는 파일 트리, 가운데에는 지식 그래프, 아래에는 채팅 입력창" width="100%">
+<img src="../../../docs/assets/screenshots/graph.jpg" alt="노트 1,633개와 링크 2,413개로 이루어진 실제 Brain에서 실행 중인 TTTOS 대시보드: 왼쪽에는 파일 트리, 가운데에는 지식 그래프, 아래에는 채팅 입력창" width="100%">
 
 </div>
 
@@ -52,13 +52,13 @@ Javis OS는 **Claude, ChatGPT, Gemini, Grok** 그리고 직접 고른 모델을 
 
 ## ⚡ 빠른 시작
 
-**가장 쉬운 방법: 사용 중인 AI에게 설치를 맡기세요.** 컴퓨터에 있는 Claude Code나 Codex에 이 저장소 링크를 주고 *"Javis OS 설치해 줘"* 라고 말하면 됩니다. 실행할 명령은 하나뿐입니다.
+**가장 쉬운 방법: 사용 중인 AI에게 설치를 맡기세요.** 컴퓨터에 있는 Claude Code나 Codex에 이 저장소 링크를 주고 *"TTTOS 설치해 줘"* 라고 말하면 됩니다. 실행할 명령은 하나뿐입니다.
 
 | 환경 | 명령 하나로 전부 설치 |
 |---|---|
 | **Linux / macOS** | `git clone https://github.com/ironmonkey654321-ship-it/tttos.git javis && cd javis && chmod +x install.sh && ./install.sh` |
 | **Windows** | `git clone https://github.com/ironmonkey654321-ship-it/tttos.git javis; cd javis; powershell -ExecutionPolicy Bypass -File install.ps1` |
-| **Docker** | `curl -fsSLO https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.yml && docker compose up -d` |
+| **Docker** | `curl -fsSLO https://raw.githubusercontent.com/ironmonkey654321-ship-it/tttos/main/docker-compose.yml && docker compose up -d` |
 
 그런 다음 **http://localhost:7777** 을 엽니다. 설치 프로그램이 Python, 구독형 CLI 브레인 네 가지(`claude`, `codex`, `agy`, `grok`), `.env` 를 준비한 뒤 서버를 시작합니다. 각 브레인 로그인은 **대시보드의 Models 페이지에서** 하므로 더 이상 명령을 입력할 필요가 없습니다.
 
@@ -105,13 +105,13 @@ Javis에서 모델은 교체할 수 있는 부품입니다. 쌓아 온 모든 �
 
 - **새 모델이 나왔나요? Models 페이지에서 바꾸고 그대로 이어 가세요.** 같은 메모리를 읽고, 같은 Skill, Agent, Workflow를 실행하고, MCP Hub를 통해 같은 연결을 호출합니다. 옮길 것도, 다시 만들 것도 없습니다.
 - **여러 브레인을 동시에 쓰세요.** 대화에는 강력한 모델, 백그라운드 작업에는 더 저렴한 모델, 개인 노트에는 로컬 Ollama 모델을 쓰면서 모두 같은 Brain 위에서 일하게 할 수 있습니다.
-- **Javis 없이도 읽을 수 있습니다.** Brain은 마크다운 폴더입니다. Obsidian이나 어떤 편집기로든 열어 보세요. 내일 Javis가 사라지더라도 지식은 일반 텍스트로 그대로 남아 있습니다.
+- **TTTOS 없이도 읽을 수 있습니다.** Brain은 마크다운 폴더입니다. Obsidian이나 어떤 편집기로든 열어 보세요. 내일 Javis가 사라지더라도 지식은 일반 텍스트로 그대로 남아 있습니다.
 - **버전 관리와 이식성.** 학습 한 번이 git 커밋 하나이므로 한 번의 탭으로 되돌릴 수 있고, Brain 전체를 내 비공개 GitHub 저장소와 동기화해 노트북과 VPS가 함께 쓸 수 있습니다.
-- **데이터는 내 하드웨어에 머뭅니다.** 중간에 Javis 클라우드는 없습니다. 요청은 그 작업에 고른 모델 제공자에게만 전달되고, 로컬 Ollama 모델을 쓰면 아예 컴퓨터 밖으로 나가지 않습니다.
+- **데이터는 내 하드웨어에 머뭅니다.** 중간에 TTTOS 클라우드는 없습니다. 요청은 그 작업에 고른 모델 제공자에게만 전달되고, 로컬 Ollama 모델을 쓰면 아예 컴퓨터 밖으로 나가지 않습니다.
 
-### 일반 챗봇과 나란히 놓고 본 Javis
+### 일반 챗봇과 나란히 놓고 본 TTTOS
 
-| | 일반 챗봇 | **Javis OS** |
+| | 일반 챗봇 | **TTTOS** |
 |---|---|---|
 | **브레인** | 하나의 모델에 묶여 있고, 메시지마다 상태 없는 API 호출 한 번 | **교체 가능**: 12개 제공자, 각각 도구, MCP, Skill, 세션을 모두 사용 가능. Ollama로 내 컴퓨터에서 실행하는 모델도 포함 |
 | **메모리** | 세션이 끝나면 모두 잊음 | 사용자를 기억하고 대화할수록 두터워지는 **살아 있는 Second Brain** |
@@ -134,7 +134,7 @@ Javis에서 모델은 교체할 수 있는 부품입니다. 쌓아 온 모든 �
 **Models** 페이지에서 브레인을 고르고 언제든 바꿀 수 있습니다. Javis는 현재 **12개 제공자** 를 지원합니다.
 
 <p align="center">
-<img src="../../../docs/assets/diagrams/swappable-brain.svg" width="100%" alt="애니메이션 다이어그램: 가운데의 Javis 코어를 툴킷(MCP Hub, Skills, Second Brain, Tasks, Schedules, Plugins)이 둘러싸고 있고, 12개 브레인이 번갈아 연결되는 동안에도 모든 도구가 계속 켜져 있습니다">
+<img src="../../../docs/assets/diagrams/swappable-brain.svg" width="100%" alt="애니메이션 다이어그램: 가운데의 TTTOS 코어를 툴킷(MCP Hub, Skills, Second Brain, Tasks, Schedules, Plugins)이 둘러싸고 있고, 12개 브레인이 번갈아 연결되는 동안에도 모든 도구가 계속 켜져 있습니다">
 </p>
 
 | 브레인 | 결제 방식 | 셸, 웹, 서브 에이전트 |
@@ -143,15 +143,15 @@ Javis에서 모델은 교체할 수 있는 부품입니다. 쌓아 온 모든 �
 | **ChatGPT** (Codex 경유) | ChatGPT 요금제 | ✅ |
 | **Grok Build** | SuperGrok 또는 X Premium+ 요금제 | ✅ |
 | **Antigravity CLI** | Google 요금제(Antigravity IDE와 같은 모델 라인업, Claude 포함) | 셸 ✅ |
-| **OpenRouter** | API 키(키 하나로 수백 개 모델) | Javis 도구로 |
-| **OpenAI API** · **Anthropic API** · **Google Gemini** · **Groq** | API 키 | Javis 도구로 |
-| **Ollama Cloud** · **이 컴퓨터의 Ollama** | API 키, 또는 내 하드웨어에서 무료 | Javis 도구로 |
-| **OpenAI 호환 엔드포인트 전부** | 해당 엔드포인트가 요구하는 것 | Javis 도구로 |
+| **OpenRouter** | API 키(키 하나로 수백 개 모델) | TTTOS 도구로 |
+| **OpenAI API** · **Anthropic API** · **Google Gemini** · **Groq** | API 키 | TTTOS 도구로 |
+| **Ollama Cloud** · **이 컴퓨터의 Ollama** | API 키, 또는 내 하드웨어에서 무료 | TTTOS 도구로 |
+| **OpenAI 호환 엔드포인트 전부** | 해당 엔드포인트가 요구하는 것 | TTTOS 도구로 |
 
 모든 브레인은 연결된 MCP 서버를 호출하고, Brain을 읽고 쓰고, Skill을 실행하고, Kanban 작업을 대기열에 넣고, Agent, Workflow, Loop, 리마인더를 만들 수 있습니다. CLI 엔진은 여기에 더해 **셸 명령 실행**, **웹 가져오기와 검색**, **병렬 서브 에이전트 생성** 도 할 수 있습니다.
 
 > [!WARNING]
-> **구독 요금제로 백그라운드 작업을 돌리기 전에 참고하세요.** Anthropic은 Claude Pro/Max를 Claude Code의 **일반적인 개인 사용** 으로 한정합니다. 지속적인 백그라운드 실행(Loop, 리마인더, Kanban 작업, 챗봇), VPS에서의 실행, 여러 사람이 한 계정을 함께 쓰는 경우는 모두 이 범위를 벗어나므로 **계정이 잠길** 위험이 있습니다. 다만 지금까지 Javis에서 확인된 사례는 없습니다. 혹시 겪으신다면 [Issues](https://github.com/blogminhquy/javis-os/issues/new/choose)로 개발자에게 알려 주세요. Javis는 로그인 토큰을 절대 읽지 않고 실제 `claude` 바이너리를 실행하지만, 그렇다고 24시간 백그라운드 사용이 정당해지는 것은 아닙니다. 안전하게 쓰려면 Models 페이지에서 Claude Code를 **API 키** 로 실행하도록 설정하거나, **백그라운드 작업용 모델** 을 다른 제공자로 지정하세요. xAI 요금제에도 같은 주의가 적용됩니다. `server/claude_auth.py` 를 참고하세요.
+> **구독 요금제로 백그라운드 작업을 돌리기 전에 참고하세요.** Anthropic은 Claude Pro/Max를 Claude Code의 **일반적인 개인 사용** 으로 한정합니다. 지속적인 백그라운드 실행(Loop, 리마인더, Kanban 작업, 챗봇), VPS에서의 실행, 여러 사람이 한 계정을 함께 쓰는 경우는 모두 이 범위를 벗어나므로 **계정이 잠길** 위험이 있습니다. 다만 지금까지 Javis에서 확인된 사례는 없습니다. 혹시 겪으신다면 [Issues](https://github.com/ironmonkey654321-ship-it/tttos/issues/new/choose)로 개발자에게 알려 주세요. Javis는 로그인 토큰을 절대 읽지 않고 실제 `claude` 바이너리를 실행하지만, 그렇다고 24시간 백그라운드 사용이 정당해지는 것은 아닙니다. 안전하게 쓰려면 Models 페이지에서 Claude Code를 **API 키** 로 실행하도록 설정하거나, **백그라운드 작업용 모델** 을 다른 제공자로 지정하세요. xAI 요금제에도 같은 주의가 적용됩니다. `server/claude_auth.py` 를 참고하세요.
 
 ---
 
@@ -214,10 +214,10 @@ flowchart LR
     subgraph You
         W[Web dashboard<br>voice + graph]
         T[Telegram]
-        C[Javis CLI]
+        C[TTTOS CLI]
         Z[Zalo / bot channels]
     end
-    subgraph Javis["Javis OS (FastAPI, self-hosted)"]
+    subgraph TTTOS["TTTOS (FastAPI, self-hosted)"]
         R[Engine router]
         H[MCP Hub<br>shared toolbox]
         B[(Second Brain<br>Memory + Wiki + Sources)]
@@ -254,7 +254,7 @@ flowchart LR
 Hostinger VPS → **Docker Manager → Compose → URL** → Hostinger용 파일을 붙여 넣고 **Deploy** 를 누릅니다.
 
 ```
-https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.hostinger.yml
+https://raw.githubusercontent.com/ironmonkey654321-ship-it/tttos/main/docker-compose.hostinger.yml
 ```
 
 **Environment** 상자에는 세 가지 항목만 있으면 됩니다: `DOMAIN_NAME`, `JAVIS_ADMIN_USER`, `JAVIS_ADMIN_PASSWORD`. 선택 항목으로 `JAVIS_AUTO_UPDATE` 가 있습니다(`true` 로 설정하면 Javis가 매일 스스로 업데이트합니다).
@@ -282,7 +282,7 @@ Hostinger의 Traefik이 HTTPS 인증서를 발급하도록 `DOMAIN_NAME` 을 설
 ```bash
 # Docker required (don't have it?  curl -fsSL https://get.docker.com | sh)
 mkdir javis && cd javis
-curl -fsSLO https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.yml
+curl -fsSLO https://raw.githubusercontent.com/ironmonkey654321-ship-it/tttos/main/docker-compose.yml
 
 docker compose run --rm javis claude auth login --claudeai   # sign in to Claude once (optional)
 docker compose up -d                                          # pull the image and run
@@ -304,7 +304,7 @@ chmod +x install.sh && ./install.sh
 
 스크립트가 Python, Node, CLI 브레인을 설치하고, venv를 만들고, 부팅 시 시작되는 서비스를 등록한 뒤 접속 주소를 출력합니다.
 
-🍎 **macOS에서 앱처럼 열기:** `JAVIS OS.app`(또는 `Start tttos.command`)을 더블클릭합니다. 로그인 시 자동 시작: `./bin/javis-autostart.sh install`. 자세한 내용: [bin/README.md](../../../bin/README.md).
+🍎 **macOS에서 앱처럼 열기:** `TTTOS.app`(또는 `Start tttos.command`)을 더블클릭합니다. 로그인 시 자동 시작: `./bin/javis-autostart.sh install`. 자세한 내용: [bin/README.md](../../../bin/README.md).
 
 </details>
 
@@ -325,12 +325,12 @@ Stop:                                  stop-javis.bat
 Dashboard:                             http://localhost:7777
 ```
 
-🪟 **앱처럼 열기:** 처음 실행한 뒤에는 **`JAVIS OS.bat`** 을 더블클릭합니다. 서버가 백그라운드에서 시작되고 대시보드가 작업 표시줄 항목을 가진 **별도 창** 으로 열립니다. 로그인 시 자동 시작: `javis-autostart.bat install`(제거: `uninstall`).
+🪟 **앱처럼 열기:** 처음 실행한 뒤에는 **`TTTOS.bat`** 을 더블클릭합니다. 서버가 백그라운드에서 시작되고 대시보드가 작업 표시줄 항목을 가진 **별도 창** 으로 열립니다. 로그인 시 자동 시작: `javis-autostart.bat install`(제거: `uninstall`).
 
 </details>
 
 <details>
-<summary><b>VPS 하나에 Javis 여러 개 실행하기</b></summary>
+<summary><b>VPS 하나에 TTTOS 여러 개 실행하기</b></summary>
 
 Brain, 설정, 계정은 인스턴스마다 완전히 분리됩니다. 인스턴스끼리 다른 값은 `JAVIS_NAME`, `JAVIS_HOST_PORT`, `DOMAIN_NAME` 세 가지뿐입니다.
 
@@ -353,7 +353,7 @@ Javis를 열면 설정 마법사가 브라우저 언어로 차근차근 안내�
 
 ---
 
-## 📖 Javis 사용하기
+## 📖 TTTOS 사용하기
 
 왼쪽 레일은 페이지를 **6개 그룹** 으로 묶습니다. 모든 페이지에는 [docs/en/](../../../docs/en/README.md) 에 안내서가 있습니다.
 
@@ -363,8 +363,8 @@ Javis를 열면 설정 마법사가 브라우저 언어로 차근차근 안내�
 | **Code** | Terminal, Coding | [코드 터미널](../../../docs/en/27-code-terminal.md) |
 | **Capabilities** | Partners (Agent와 Workflow), Chatbot, Skills, Plugins | [Agent와 Workflow](../../../docs/en/07-agents-and-workflows.md) · [챗봇](../../../docs/en/25-chatbots.md) · [고객 대화](../../../docs/en/28-customer-conversations.md) · [Skill](../../../docs/en/06-skills.md) · [Plugin](../../../docs/en/20-plugins.md) |
 | **Work** | Tasks, Scheduled | [Tasks (Kanban)](../../../docs/en/21-kanban-work.md) · [반복 작업과 리마인더](../../../docs/en/08-recurring-jobs.md) |
-| **Connections** | Connections, Javis Store, Channels, Models | [연결과 비즈니스 데이터](../../../docs/en/09-connections-and-business-data.md) · [Telegram](../../../docs/en/11-telegram.md) · [Zalo](../../../docs/en/12-zalo-agent-mcp.md) · [모델과 엔진](../../../docs/en/10-models-and-engines.md) |
-| **System** | Settings, Share links, Account | [시작하기](../../../docs/en/01-getting-started.md) · [보안과 계정](../../../docs/en/14-security-and-accounts.md) · [사용량과 비용](../../../docs/en/23-usage-and-cost.md) · [Javis CLI](../../../docs/en/24-cli.md) |
+| **Connections** | Connections, TTTOS Store, Channels, Models | [연결과 비즈니스 데이터](../../../docs/en/09-connections-and-business-data.md) · [Telegram](../../../docs/en/11-telegram.md) · [Zalo](../../../docs/en/12-zalo-agent-mcp.md) · [모델과 엔진](../../../docs/en/10-models-and-engines.md) |
+| **System** | Settings, Share links, Account | [시작하기](../../../docs/en/01-getting-started.md) · [보안과 계정](../../../docs/en/14-security-and-accounts.md) · [사용량과 비용](../../../docs/en/23-usage-and-cost.md) · [TTTOS CLI](../../../docs/en/24-cli.md) |
 
 더 보기: [Second Brain: 메모리, Wiki, INGEST](../../../docs/en/13-second-brain.md) · [GitHub 백업](../../../docs/en/18-github-backup.md) · [노트 속 Tasks와 Dataview](../../../docs/en/19-tasks-and-dataview.md) · [브랜딩과 사용자 지정 도메인](../../../docs/en/15-branding-and-domains.md) · [문제 해결](../../../docs/en/17-troubleshooting.md)
 
@@ -377,7 +377,7 @@ Javis를 열면 설정 마법사가 브라우저 언어로 차근차근 안내�
 - **음성 사용하기:** 마이크를 누르거나(또는 핸즈프리를 켜고) 말하면 Javis가 소리 내어 답합니다.
 
 <div align="center">
-<img src="../../../docs/assets/screenshots/mobile.jpg" alt="휴대폰에서 실행 중인 Javis OS: 위에는 지식 그래프, 그 아래에는 대화, 맨 아래에는 채팅 입력창" width="300">
+<img src="../../../docs/assets/screenshots/mobile.jpg" alt="휴대폰에서 실행 중인 TTTOS: 위에는 지식 그래프, 그 아래에는 대화, 맨 아래에는 채팅 입력창" width="300">
 <br><sub>휴대폰에서도 동작합니다. 홈 화면에 추가하면 앱처럼 열립니다.</sub>
 </div>
 
@@ -446,7 +446,7 @@ javis-os/
 ├── tests/           # Python + JS test suite (python tests/run.py)
 ├── install.sh · install.ps1 · update.sh
 ├── Dockerfile · docker-compose*.yml
-└── CLAUDE.md        # The system prompt Javis runs on
+└── CLAUDE.md        # The system prompt TTTOS runs on
 ```
 
 ---
@@ -475,20 +475,19 @@ javis-os/
 | [ARCHITECTURE.md](../../../ARCHITECTURE.md) | 구성 요소가 맞물리는 방식과 서버 모듈 지도 |
 | [docs/dev/GLOSSARY.md](../../../docs/dev/GLOSSARY.md) | 코드베이스가 베트남어로 작성되어 있어서, `nhac_hen`(리마인더) 같은 이름을 풀어 줍니다 |
 | [docs/dev/adding-a-language.md](../../../docs/dev/adding-a-language.md) | Javis를 내 언어로 번역하는 단계별 안내 |
-| [이슈 템플릿](https://github.com/blogminhquy/javis-os/issues/new/choose) | 버그 보고, 기능 요청, 번역 제안 |
+| [이슈 템플릿](https://github.com/ironmonkey654321-ship-it/tttos/issues/new/choose) | 버그 보고, 기능 요청, 번역 제안 |
 
 [행동 강령](../../../CODE_OF_CONDUCT.md) 을 지켜 주시고, 보안 문제는 [SECURITY.md](../../../SECURITY.md) 에 설명된 대로 비공개로 알려 주세요.
 
 Javis가 유용하다면 저장소에 ⭐ 를 눌러 주세요. 다른 사람들이 찾는 데 도움이 됩니다.
 
-[![Star History Chart](https://api.star-history.com/svg?repos=blogminhquy/javis-os&type=Date)](https://star-history.com/#blogminhquy/javis-os&Date)
 
 ---
 
 ## 🙏 크레딧
 
 - **브레인:** [Claude Code](https://claude.com/claude-code) 와 [Claude Agent SDK](https://docs.claude.com/en/api/agent-sdk/overview)(Anthropic), [Codex CLI](https://developers.openai.com/codex/cli)(OpenAI), [Grok Build](https://x.ai)(xAI), [Antigravity](https://antigravity.google)(Google), 그리고 [OpenRouter](https://openrouter.ai), OpenAI, [Google Gemini](https://ai.google.dev), Anthropic, [Groq](https://groq.com), [Ollama](https://ollama.com) 의 API.
-- **도구 표준:** [Model Context Protocol](https://modelcontextprotocol.io). Javis 연결 스토어 전체가 이 표준 위에서 동작합니다.
+- **도구 표준:** [Model Context Protocol](https://modelcontextprotocol.io). TTTOS 연결 스토어 전체가 이 표준 위에서 동작합니다.
 - Second Brain과 디지털 Bullet Journal 패턴.
 
 ## 📄 라이선스
@@ -497,7 +496,7 @@ Javis가 유용하다면 저장소에 ⭐ 를 눌러 주세요. 다른 사람들
 
 ---
 
-## ☕ Javis OS 후원하기
+## ☕ TTTOS 후원하기
 
 Javis OS는 무료 오픈 소스이며, 아직 한 사람이 코드를 쓰고 테스트 서버 비용을 내고 있습니다. Javis가 일이나 생활에 도움이 된다면, 작은 후원이 버그 수정과 새 기능에 쓸 시간을 더 만들어 줍니다.
 

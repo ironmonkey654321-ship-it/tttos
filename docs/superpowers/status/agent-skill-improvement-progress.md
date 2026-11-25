@@ -587,7 +587,7 @@ full new migration/role/view validation stayed enabled. Final independent root5
 PASS21.636s/12stablepins/no findings, original reviewer-authored6 excluded from
 self-approval. Report9416129700e71677164fad7ee9b3c77ccc02031c9a2ddc26ae5b9900bfd72ca9.
 
-Early isolated [Linux40058375830](https://github.com/blogminhquy/javis-os/actions/runs/40058375830)
+Early isolated [Linux40058375830](https://github.com/ironmonkey654321-ship-it/tttos/actions/runs/40058375830)
 SUCCESS46/46: migration6/boundaries5/execution13/profile7/view15, exact12rawpins,
 commit4a2877aedbdd45e7978f65aa7d6d1757a543c631. Earlier40058040941 retained
 future-version exception failure after103PASS/104tested; unchanged candidate12/
@@ -631,7 +631,7 @@ new-output/current-ref preserving fix. Independent rootrace4+historical1 PASS5/5
 14.943s,15pins stable/no findings; own original7 excluded self-approval. Report
 e6c9055afaf75487ebdddb7590cc4bea80332dc13b381e7f5766f1433f774422.
 
-Early isolated [Linux40056590938](https://github.com/blogminhquy/javis-os/actions/runs/40056590938)
+Early isolated [Linux40056590938](https://github.com/ironmonkey654321-ship-it/tttos/actions/runs/40056590938)
 SUCCESS33/33 across protocol11,host7,races4,existing byte validator11. Exact8 raw
 source/test/license pins verified on isolated commit50a73cc28262e4bf1a9b9159c0d38e3df3f47890,
 fresh Ubuntu/Python3.12, serial no-real-engine fixtures. One initial dispatch500
@@ -668,7 +668,7 @@ Goal17's first functioning fixture slice now calls actual compose_round at t=k=1
 from the pinned upstream source. Nine extracted definitions/constants match exact
 source segments AND AST; raw original Git blob9ccacf23b64ac15b06a1939f26224960f56d757c
 and Apache2 LICENSE blobd645695673349e3947e8e5ae42332d0ac3164cd7 independently
-verified. Static narrow Javis body surface and context/notes→JSON mapping exclude
+verified. Static narrow TTTOS body surface and context/notes→JSON mapping exclude
 upstream guardrail/plugin surfaces and filesystem access. Existing byte validator
 creates combined UTF8/CRLF bytes, KEEP_BASE or adoption; decisions remain model
 claims, semantics unreviewed, no source authority or inherited pass/activation.
@@ -716,8 +716,8 @@ Owner directive from the same authorized chat is saved in Goal§17. Next safe
 unit after current engineering-product boundaries: inspect exact pinned
 prompts.aggregate/compose_round and recursion compose call/direct dependencies,
 then actually import/vendor functioning independent implementation through a
-narrow Javis adapter. Follow with actual library entry/index/serialization via
-private authorized derived snapshots, retaining Javis immutable encrypted source,
+narrow TTTOS adapter. Follow with actual library entry/index/serialization via
+private authorized derived snapshots, retaining TTTOS immutable encrypted source,
 brain/scope/revocation/retention/trace authority. Assess whole orchestration only
 after those, counting executor/lease/cancel/restart/replay/ledger/migration/tests/
 qualification costs; do not duplicate authoritative runtimes/ledgers. No scaffold
@@ -765,7 +765,7 @@ and the targeted upstream reuse decision. Remaining M0–M8/Phase2 scope unchang
 ## Owner selective replacement update — Goal§16
 
 Direct owner update from the same authorized chat permits replacing existing
-Javis code/structure with pinned upstream when concrete benefits justify total
+TTTOS code/structure with pinned upstream when concrete benefits justify total
 adapter/consumer/migration/backward-compatibility/qualification/test/review cost.
 This supersedes prior blanket no-rewrite restrictions only within that scope;
 database/authority/native lifecycle can also be replaced when justified with a
@@ -776,7 +776,7 @@ Goal§16 SHA-25676e349119bd3f7148204b2e57800d9769aac4f7cb73c271e6f8541ff0a6c5b18
 pre§16 e868339ebd3ad1a73fe9faea13b74e2af959c8b3f8148eb4c2ddbae63ac8fc20,
 all earlier source/evidence lineage preserved. Active code-first plan/reuse map
 carry this rule. Current proposer adaptation already uses real upstream method
-via a small renderer while preserving Javis output/authority validators; no
+via a small renderer while preserving TTTOS output/authority validators; no
 additional infrastructure replacement is justified by this unit. Ongoing serial
 fixture regression ownership is preserved; no account/model or activation starts.
 
@@ -802,7 +802,7 @@ consumer11+root-owned cancellation1:12PASS5.141s,14pins stable; report
 fb8a1670e1f0776c1f1bc61c80fe8f9816c65f8af2a5a75e9a882dd70294883f.
 Own author tests/core are explicitly excluded from self-approval.
 
-Early genuine Linux [40053479314](https://github.com/blogminhquy/javis-os/actions/runs/40053479314)
+Early genuine Linux [40053479314](https://github.com/ironmonkey654321-ship-it/tttos/actions/runs/40053479314)
 succeeded10/10scripts17s on isolatedcfdc8cd181a23b51a9585b22802c988ba5469cf5,
 with nine exact selected raw files and fresh remote HOME/DB/filesystem. This is
 not exact-final-task-head full CI. [Public evidence](../evidence/2026-10-24-m2d2-task-skill-snapshots.json)
@@ -849,8 +849,8 @@ pre§14 f683ff6abba61e110ef8034fe1451d80390d6688866c2def5f2f964ec4fcd356 and
 all older original/spec/lineage hashes remain historical, never replaced.
 [The incremental reuse map](../plans/2026-10-24-harness2-reuse-map.md) records
 the first targeted decision: inspected actual upstream substrate protocols and
-context builder are benchmark staging, lack Javis private live-turn ownership,
-and delete/copy mutable destinations. Keep the narrow Javis task lifecycle using
+context builder are benchmark staging, lack TTTOS private live-turn ownership,
+and delete/copy mutable destinations. Keep the narrow TTTOS task lifecycle using
 its completed M0/runtime/core; no upstream code copied/imported for this unit.
 Upcoming prompt/compose/selection/recipe/bundle units must inspect upstream first.
 
@@ -2801,7 +2801,7 @@ controls and independent whole-D1 review/CI remain open; Task3 is not done.
   limits and missing preparation/navigation. Those boundaries are in the plan;
   actual effort/internal semantic use stay unknown where unobservable.
 - Reserved VERSION/both changelogs in a2f1b074 and attached draft PR800 before
-  implementation: https://github.com/blogminhquy/javis-os/pull/800.
+  implementation: https://github.com/ironmonkey654321-ship-it/tttos/pull/800.
   Changed-candidate execution, compose, real activation and live canary remain
   unavailable until their actual prerequisites and owner scope grants exist.
 - Task1 tests preserve actual A encrypted authoring and M1 context/case/contract/
@@ -2907,7 +2907,7 @@ controls and independent whole-D1 review/CI remain open; Task3 is not done.
 
 - Worktree: `C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/Javis-OS`;
   branch `codex/agent-skill-improvement-m2a`, release0.292.0 reservationf6d8d356,
-  attached draft PR799: https://github.com/blogminhquy/javis-os/pull/799.
+  attached draft PR799: https://github.com/ironmonkey654321-ship-it/tttos/pull/799.
 - Dependency M1 is published as0.291.0 on main9dd7a9f9. Replayed only A's six
   own commits onto that actual merged source; the resulting tree is byte-identical
   to the reviewed A checkpoint b01ddf1b. PR799 targets main for final CI/integration;

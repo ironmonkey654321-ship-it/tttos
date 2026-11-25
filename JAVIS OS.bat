@@ -10,6 +10,7 @@ REM  thanh CUA SO RIENG (Edge/Chrome che do --app: khong thanh dia chi, co o
 REM  rieng tren taskbar). Tu khoi dong cung may: javis-autostart.bat install.
 REM ============================================================
 
+if "%JAVIS_PORT%"=="" for /f "tokens=1,* delims==" %%a in ('findstr /b /i "JAVIS_PORT=" .env 2^>nul') do set "JAVIS_PORT=%%b"
 if "%JAVIS_PORT%"=="" set JAVIS_PORT=7777
 set "URL=http://127.0.0.1:%JAVIS_PORT%"
 

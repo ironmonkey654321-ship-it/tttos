@@ -16,8 +16,7 @@ Set fso = CreateObject("Scripting.FileSystemObject")
 Set sh = CreateObject("WScript.Shell")
 root = fso.GetParentFolderName(WScript.ScriptFullName)
 
-port = sh.ExpandEnvironmentStrings("%JAVIS_PORT%")
-If port = "%JAVIS_PORT%" Or port = "" Then port = "7777"
+port = DocCong()
 url = "http://127.0.0.1:" & port
 
 If ServerUp() Then
@@ -57,3 +56,20 @@ Sub OpenWindow()
   Next
   sh.Run url, 1, False
 End Sub
+
+Function DocCong()
+  ' Cong cua ban nay: bien moi truong JAVIS_PORT, khong co thi doc .env, khong co nua thi 7777.
+  Dim p, f, ln
+  p = sh.ExpandEnvironmentStrings("%JAVIS_PORT%")
+  If p = "%JAVIS_PORT%" Then p = ""
+  If p = "" And fso.FileExists(root & "\.env") Then
+    Set f = fso.OpenTextFile(root & "\.env", 1)
+    Do Until f.AtEndOfStream
+      ln = Trim(f.ReadLine)
+      If LCase(Left(ln, 11)) = "javis_port=" Then p = Trim(Replace(Mid(ln, 12), """", ""))
+    Loop
+    f.Close
+  End If
+  If p = "" Then p = "7777"
+  DocCong = p
+End Function

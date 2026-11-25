@@ -16,7 +16,7 @@ $Startup = [Environment]::GetFolderPath("Startup")
 $Lnk = Join-Path $Startup "JAVIS OS.lnk"          # muc cu (truoc 0.306.0), chi de don
 $RunKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
 $Approved = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run"
-$Name = "JavisOS"                                  # khop _AUTOSTART_NAME trong server/main.py
+$Name = "TTTOS"   # khac "JavisOS" de cai chung may voi Javis khong de muc tu khoi dong cua nhau                                  # khop _AUTOSTART_NAME trong server/main.py
 
 switch ($Action.ToLower()) {
   "install" {

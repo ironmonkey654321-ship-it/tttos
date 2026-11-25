@@ -17304,7 +17304,7 @@ async def do_update():
 # start-javis.vbs (đã tự tắt bản cũ + chạy NỀN ẩn). Per-user, KHÔNG cần quyền admin.
 # Registry là nguồn sự thật duy nhất - không lưu trùng vào settings.json.
 # ============================================================
-_AUTOSTART_NAME = "JavisOS"
+_AUTOSTART_NAME = "TTTOS"
 _AUTOSTART_RUN_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 # Task Manager tab "Startup" KHÔNG xoá mục trong Run key khi người dùng bấm Disable. Nó ghi
 # một cờ 12 byte vào khoá riêng dưới đây, rồi Explorer bỏ qua mục đó lúc đăng nhập.

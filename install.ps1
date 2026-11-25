@@ -4,7 +4,7 @@
 #   powershell -ExecutionPolicy Bypass -File install.ps1
 #
 # Cai het trong mot luot: Python deps (venv) + BON bo nao CLI chay bang goi thue bao
-# (claude, codex, agy, grok) + .env + giai phong port 7777, roi bat server.
+# (claude, codex, agy, grok) + .env + cong rieng (mac dinh 7779), roi bat server.
 #
 # Vi sao co file nay: truoc day nguoi dung Windows phai tu di bon duong khac nhau (setup.bat
 # chi cai claude + codex; agy va grok phai tu mo PowerShell go tung lenh cua nha cung cap),
@@ -276,16 +276,24 @@ if ((-not (Test-Path ".env")) -and (Test-Path "env.example")) {
   Ok ".env da co"
 }
 
-# ---------------------------------------------------------------- [5] port 7777
-Step 5 "Giai phong port 7777"
-$conns = Get-NetTCPConnection -LocalPort 7777 -State Listen -ErrorAction SilentlyContinue
+# ---------------------------------------------------------------- [5] cong rieng
+# Cong mac dinh cua ban Windows la 7779 (ghi vao .env neu chua co) de cai chung may voi Javis
+# hoac ban khac dang chay 7777. Chi tat ban cu CUA THU MUC NAY (stop-javis.ps1), khong bao gio
+# tat chuong trinh khac dang giu cong.
+$Port = $env:JAVIS_PORT
+if (Test-Path ".env") {
+  $m = Select-String -Path ".env" -Pattern '^\s*JAVIS_PORT\s*=\s*"?(\d+)' | Select-Object -Last 1
+  if ($m) { if (-not $Port) { $Port = $m.Matches[0].Groups[1].Value } }
+  elseif (-not $Port) { Add-Content -Path ".env" -Value "`r`nJAVIS_PORT=7779"; $Port = "7779" }
+}
+if (-not $Port) { $Port = "7777" }
+Step 5 "Cong $Port"
+& (Join-Path $PSHOME "powershell.exe") -NoProfile -ExecutionPolicy Bypass -File (Join-Path $Root "stop-javis.ps1") | Out-Null
+$conns = Get-NetTCPConnection -LocalPort ([int]$Port) -State Listen -ErrorAction SilentlyContinue
 if ($conns) {
-  foreach ($c in $conns) {
-    try { Stop-Process -Id $c.OwningProcess -Force -ErrorAction Stop; Ok "Da tat tien trinh cu PID $($c.OwningProcess)" }
-    catch { Warn "Khong tat duoc PID $($c.OwningProcess) - dong tay roi chay lai." }
-  }
+  Warn "Cong $Port dang bi chuong trinh khac giu (PID $($conns[0].OwningProcess)). Doi JAVIS_PORT trong .env roi chay lai."
 } else {
-  Ok "Port 7777 dang trong"
+  Ok "Cong $Port dang trong"
 }
 
 # ---------------------------------------------------------------- tong ket
@@ -342,5 +350,5 @@ if (Test-Path $vbs) {
   Ok "Server dang chay"
 }
 Line ""
-Line "  Mo: http://localhost:7777"
+Line "  Mo: http://localhost:$Port"
 Line ""

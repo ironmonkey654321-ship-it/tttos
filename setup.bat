@@ -70,16 +70,20 @@ if not "%JAVIS_NO_AUTOSTART%"=="1" (
   if not errorlevel 1 echo     OK  Tu khoi dong cung Windows: BAT
 )
 
-REM Giai phong port 7777 neu dang bi chiem
-echo [4/4] Giai phong port 7777...
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":7777" ^| findstr "LISTENING"') do (
-  echo     Dang tat tien trinh cu PID %%a
-  taskkill /F /PID %%a >nul 2>&1
+REM Cong rieng cho ban nay (mac dinh 7779) de khong dung Javis/ban khac dang chay o 7777.
+if not exist .env if exist env.example copy /y env.example .env >nul
+if exist .env (
+  findstr /b /i "JAVIS_PORT=" .env >nul 2>&1 || (echo.& echo JAVIS_PORT=7779)>>.env
 )
+set "CONG=7777"
+for /f "tokens=1,* delims==" %%a in ('findstr /b /i "JAVIS_PORT=" .env 2^>nul') do set "CONG=%%b"
+REM Chi tat ban cu CUA THU MUC NAY, khong tat chuong trinh khac dang giu cong.
+echo [4/4] Tat ban cu cua thu muc nay (cong %CONG%)...
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0stop-javis.ps1"
 
 echo.
 echo  ==========================================
-echo   Javis OS dang chay tai: http://localhost:7777
+echo   Javis OS dang chay tai: http://localhost:%CONG%
 echo   (Chon bo nao o trang Models - khong bat buoc mua API key)
 echo   Nhan Ctrl+C de dung.
 echo  ==========================================

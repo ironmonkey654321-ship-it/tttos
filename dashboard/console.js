@@ -1126,6 +1126,14 @@
 
   async function renderLogs(el) {
     _injectChangelogCss();
+    // tttos: bo nut Cap nhat va danh sach ban phat hanh cua repo goc. Giu khung trong
+    // (#tttosUpdSlot) de chu tu khai phan cap nhat rieng sau nay.
+    el.innerHTML = `<div class="cl-wrap"><section class="upd-card">
+        <div class="upd-title"><span class="upd-name">TTTOS</span><span class="gcard-tag" id="updVerTag">…</span></div>
+        <div class="tttos-upd-slot" id="tttosUpdSlot" style="margin-top:10px;min-height:72px;border:1px dashed rgba(120,140,160,.45);border-radius:8px"></div>
+      </section></div>`;
+    fetch("/version",{cache:"no-store"}).then(r=>r.json()).then(j=>{const t=document.getElementById("updVerTag");if(t)t.textContent="v"+(j.current||"?");}).catch(()=>{});
+    return;
     // Mở lại trang là nạp lại: tab để mở qua đêm mà vẫn thấy danh sách của hôm qua thì vô
     // duyên. Rẻ, vì server đã cache sẵn và mỗi trang chỉ còn ~30 KB.
     _clReset();
@@ -2666,15 +2674,7 @@
         <h3>${esc(window.t("cs.ov_version"))}</h3>
         <div class="gcard" style="max-width:640px">
           <div class="gcard-top"><span class="gcard-name">TTTOS</span><span class="gcard-tag" id="ovVerTag">…</span></div>
-          <div class="gcard-meta" id="ovVerMeta">${esc(window.t("cs.ov_checking"))}</div>
-          <div id="ovVerChangelog" style="display:none;margin:8px 0;padding:8px 10px;border-left:3px solid var(--accent,var(--accent));background:rgba(120,140,160,.08);border-radius:6px;font-size:13px;line-height:1.6"></div>
-          <div class="js-actions">
-            <button class="gcard-btn ghost" id="ovVerCheck">${esc(window.t("cs.ov_recheck"))}</button>
-            <button class="gcard-btn" id="ovVerUpdate" style="display:none">${ic("upload-cloud")} ${esc(window.t("cs.ov_update_now"))}</button>
-          </div>
-          <div id="ovVerProgress" style="display:none;margin-top:10px"></div>
-          <div class="gcard-meta" id="ovVerStatus"></div>
-          <div id="ovVerRollback" style="display:none;margin-top:10px;padding:10px;border:1px solid var(--red);border-radius:8px;background:rgba(200,80,80,.08);font-size:13px;line-height:1.6"></div>
+          <div class="tttos-upd-slot" id="tttosUpdSlotOv" style="margin-top:10px;min-height:72px;border:1px dashed rgba(120,140,160,.45);border-radius:8px"></div>
         </div>
       </div>
       <div class="cview-section">
@@ -2871,7 +2871,7 @@
         }
       }, 3000);
     };
-    ovLoadVersion();
+    fetch("/version",{cache:"no-store"}).then(r=>r.json()).then(j=>{const t=document.getElementById("ovVerTag");if(t)t.textContent="v"+(j.current||"?");}).catch(()=>{});  // tttos: chi hien so phien ban, khong so voi repo goc
 
     // ---- Tự khởi động cùng máy (chỉ Windows) ----
     async function ovLoadAutostart() {

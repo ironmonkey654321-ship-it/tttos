@@ -217,7 +217,7 @@
       </div>
       <div class="noti-foot">
         <button class="noti-text-btn" id="notificationRefresh" type="button" data-i18n="noti.refresh">↻ Làm mới</button>
-        <button class="noti-text-btn primary" id="notificationOpenUpdates" type="button" data-i18n="noti.open_updates">Xem nhật ký cập nhật →</button>
+        <button class="noti-text-btn primary" id="notificationOpenUpdates" type="button" style="display:none" data-i18n="noti.open_updates">Xem nhật ký cập nhật →</button>
       </div>
     </aside>
 
@@ -1194,7 +1194,6 @@
   <script src="/static/composer-plus.js?v=3"></script>
   <script src="/static/composer-folder.js?v=4"></script>
   <script src="/static/github-connect.js?v=5"></script>
-  <script src="/static/update-channel.js?v=1"></script>
   <script src="/static/branding.js?v=11"></script>
   <script src="/static/quick-settings.js?v=11"></script>
   <script src="/static/remote-access.js?v=2"></script>
@@ -1246,13 +1245,13 @@
   <script src="/static/login-vault.js?v=2"></script>
   <script src="/static/messenger-connect.js?v=3"></script>
   <script src="/static/voice-catalog.js?v=1"></script>
-  <script src="/static/console.js?v=212"></script>
+  <script src="/static/console.js?v=213"></script>
   <script src="/static/mobile-chat.js?v=17"></script>
   <script src="/static/brain-view.js?v=1"></script>
   <script src="/static/push.js?v=3"></script>
   <script src="/static/install-nudge.js?v=2"></script>
   <!-- Mời tặng sao GitHub (0.324.0): thẻ hiện ở khoảnh khắc vui, xem server/star_nudge.py. -->
-  <script src="/static/notifications.js?v=11"></script>
+  <script src="/static/notifications.js?v=12"></script>
   <!-- Linh vật ở mép màn hình. Nạp SAU app.js vì nó chỉ được app.js gọi vào
        (setOrbState -> JavisPet.setState), và sau console.js để trang Cài đặt vẽ được thẻ chọn. -->
   <!-- Mascot menu the owner arranges (Settings > Mascot): load BEFORE pet.js, which builds its menu from it. -->

@@ -605,7 +605,7 @@
       var response = await fetch("/notifications", { cache: "no-store" });
       if (!response.ok) throw new Error("HTTP " + response.status);
       var data = await response.json();
-      state.items = Array.isArray(data.items) ? data.items : [];
+      state.items = (Array.isArray(data.items) ? data.items : []).filter(function (i) { return i.kind !== "update"; });  // tttos: khong bao ban moi cua repo goc
       state.visibleCount = PAGE_SIZE;
       state.loadedAt = Date.now();
       await taiDaDoc();
